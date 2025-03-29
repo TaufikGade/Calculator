@@ -141,7 +141,7 @@ public class ScientificPanel extends JPanel {
                 btnColor = new Color(248, 249, 250);
             }
             button.setBackground(btnColor);
-
+            button.setFocusPainted(false);
             if (primaryCmd.equals("2nd")) {
                 button.addActionListener(e -> {
                     isSecondMode = !isSecondMode;
@@ -155,7 +155,6 @@ public class ScientificPanel extends JPanel {
             } else {
                 button.addActionListener(new ButtonHandler());
             }
-
             functionButtons.put(primaryCmd, button);
             panel.add(button);
         }
