@@ -76,8 +76,8 @@ public class ScientificPanel extends JPanel {
                 {"x^2", "x^2", "x^3", "x^3"},
                 {"\\frac{1}{x}", "1/x"},
                 {"|x|", "|x|", "\\lfloor x \\rfloor", "floor"},
-                {"\\exp", "exp", "Mod", "Mod"},
-                {"mod", "%", "\\frac{x}{y}", "÷*"},
+                {"\\exp", "exp"},
+                {"mod", "%"},
 
                 {"\\sqrt[2]{x}", "sqrt", "\\sqrt[3]{x}", "cbrt"},
                 {"(", "("},
@@ -97,7 +97,7 @@ public class ScientificPanel extends JPanel {
                 {"6", "6"},
                 {"-", "-"},
 
-                {"\\log", "log(", "\\log_{y}{x}", "log base"},
+                {"\\log", "log(", "\\log_{y}{x}", "log_base"},
                 {"1", "1"},
                 {"2", "2"},
                 {"3", "3"},
@@ -312,11 +312,6 @@ public class ScientificPanel extends JPanel {
                     display.setText(inputExpression.toString());
                     break;
 
-                case "log base":
-                    inputExpression.append("log(");
-                    display.setText(inputExpression.toString());
-                    break;
-
                 case "ln":
                     inputExpression.append("ln(");
                     display.setText(inputExpression.toString());
@@ -366,7 +361,12 @@ public class ScientificPanel extends JPanel {
                     break;
 
                 case "yroot":
-                    inputExpression.append("yroot");
+                    inputExpression.append(" yroot ");
+                    display.setText(inputExpression.toString());
+                    break;
+
+                case "log_base":
+                    inputExpression.append(" logbase ");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -388,11 +388,6 @@ public class ScientificPanel extends JPanel {
 
                 case "exp":
                     inputExpression.append("exp(");
-                    display.setText(inputExpression.toString());
-                    break;
-
-                case "Mod":
-                    inputExpression.append("mod(");
                     display.setText(inputExpression.toString());
                     break;
 

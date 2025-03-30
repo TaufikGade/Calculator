@@ -74,6 +74,20 @@ public class PostfixEvaluator {
                 if (b == 0) throw new ArithmeticException("Division by zero");
                 stack.push(a / b);
             }
+            case "%" -> {
+                if (b == 0) throw new ArithmeticException("Division by zero");
+                stack.push(a % b);
+            }
+            case"yroot" ->{
+                if (b == 0) throw new ArithmeticException("Division by zero");
+                stack.push(Math.pow(a,1.0/b));
+            }
+            case "logbase" -> {
+                if (b <= 0) throw new ArithmeticException("Base must be greater than 0 and not equal to 1");
+                if (b == 1) throw new ArithmeticException("Logarithm base cannot be 1");
+                if (a <= 0) throw new ArithmeticException("Logarithm operand must be greater than 0");
+                stack.push(Math.log(a) / Math.log(b)); // 使用换底公式计算 log_b(a)
+            }
             case "^" -> stack.push(Math.pow(a, b));
             default -> throw new UnsupportedOperatorException(op);
         }

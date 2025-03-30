@@ -14,6 +14,9 @@ public class Operator {
         defineOperator("-", 1, "LEFT", OperatorType.BINARY);
         defineOperator("×", 2, "LEFT", OperatorType.BINARY);
         defineOperator("÷", 2, "LEFT", OperatorType.BINARY);
+        defineOperator("%", 2, "LEFT", OperatorType.BINARY);
+        defineOperator("yroot", 5, "LEFT", OperatorType.BINARY);
+        defineOperator("logbase", 5, "LEFT", OperatorType.BINARY);
         defineOperator("^", 4, "RIGHT", OperatorType.BINARY);
         defineOperator("!", 5, "LEFT", OperatorType.UNARY);
         defineOperator("u-", 5, "RIGHT", OperatorType.UNARY); // 一元负号
