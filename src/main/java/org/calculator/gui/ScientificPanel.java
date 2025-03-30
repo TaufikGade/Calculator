@@ -8,14 +8,14 @@ import java.awt.event.ActionListener;
 import org.scilab.forge.jlatexmath.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 public class ScientificPanel extends JPanel {
     private JTextField display;
     private StringBuilder inputExpression;
     private final MathEvaluator evaluator;
     private boolean isSecondMode = false;
     private Map<String, FunctionButton> functionButtons;
+
 
     public ScientificPanel() {
         this.evaluator = new MathEvaluator();
@@ -53,6 +53,7 @@ public class ScientificPanel extends JPanel {
 
         for (String text : buttons) {
             JButton button = new JButton(text);
+            button.setFocusPainted(false);
             button.setFont(new Font("Arial", Font.PLAIN, 12));
             button.setBackground(new Color(238, 238, 238));
             button.setBorder(BorderFactory.createEmptyBorder());
@@ -81,14 +82,14 @@ public class ScientificPanel extends JPanel {
                 {"\\sqrt[2]{x}", "sqrt", "\\sqrt[3]{x}", "cbrt"},
                 {"(", "("},
                 {")", ")"},
-                {"n!", "n!"},
-                {"\\div", "÷"},
+                {"n!", "!"},
+                {"\\div", "/"},
 
                 {"x^y", "^", "\\sqrt[y]{x}", "yroot"},
                 {"7", "7"},
                 {"8", "8"},
                 {"9", "9"},
-                {"\\times", "×"},
+                {"\\times", "*"},
 
                 {"10^x", "10^", "2^x", "2^"},
                 {"4", "4"},
@@ -96,7 +97,7 @@ public class ScientificPanel extends JPanel {
                 {"6", "6"},
                 {"-", "-"},
 
-                {"\\log", "log", "\\log_{y}{x}", "log base"},
+                {"\\log", "log(", "\\log_{y}{x}", "log base"},
                 {"1", "1"},
                 {"2", "2"},
                 {"3", "3"},
@@ -307,7 +308,7 @@ public class ScientificPanel extends JPanel {
 
                 // 对数函数
                 case "log":
-                    inputExpression.append("log10(");
+                    inputExpression.append("log(");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -422,12 +423,12 @@ public class ScientificPanel extends JPanel {
 
                 // 常量
                 case "π":
-                    inputExpression.append("pi");
+                    inputExpression.append(Math.PI);
                     display.setText(inputExpression.toString());
                     break;
 
                 case "e":
-                    inputExpression.append("e");
+                    inputExpression.append(Math.E);
                     display.setText(inputExpression.toString());
                     break;
 

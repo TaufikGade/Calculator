@@ -2,6 +2,7 @@ package org.calculator.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class DrawingPanel extends JPanel {
     private JButton showBarChartButton; // 显示柱状图按钮
     private JButton showPieChartButton; // 显示饼图按钮
     private JButton showLineChartButton; // 显示折线图按钮
+
+    private final int PADDING = 15; // 折线图间距
 
     public DrawingPanel() {
         setLayout(new BorderLayout()); // 设置布局为BorderLayout
@@ -40,11 +43,18 @@ public class DrawingPanel extends JPanel {
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 5));
         addInputButton = new JButton("增加输入");
+        addInputButton.setFocusPainted(false);
         removeInputButton = new JButton("减少输入");
-        showBarChartButton = new JButton("显示柱状图");
-        showPieChartButton = new JButton("显示饼图");
-        showLineChartButton = new JButton("显示折线图");
+        removeInputButton.setFocusPainted(false);
+        showBarChartButton = new JButton("柱状图");
+        showBarChartButton.setFocusPainted(false);
+        showPieChartButton = new JButton("饼图");
+        showPieChartButton.setFocusPainted(false);
+        showLineChartButton = new JButton("折线图");
+        showLineChartButton.setFocusPainted(false);
+        
 
         buttonPanel.add(addInputButton);
         buttonPanel.add(removeInputButton);
@@ -103,7 +113,7 @@ public class DrawingPanel extends JPanel {
 
         // 添加输入框面板和按钮面板到输入部分
         inputPanel.add(inputFieldPanel, BorderLayout.CENTER);
-        inputPanel.add(buttonPanel, BorderLayout.EAST);
+        //inputPanel.add(buttonPanel, BorderLayout.PAGE_END);
 
         // 创建图表面板
         chartPanel = new JPanel();
@@ -112,6 +122,7 @@ public class DrawingPanel extends JPanel {
         // 将输入部分和图表面板添加到DrawingPanel
         add(inputPanel, BorderLayout.NORTH);
         add(chartPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.PAGE_END);
     }
     /*
     // 生成柱状图
@@ -228,25 +239,49 @@ public class DrawingPanel extends JPanel {
                 super.paintComponent(g);
                 int width = getWidth();
                 int height = getHeight();
+                int radius = Math.min(width, height);
                 //int width = 360;
                 //int height = 360;
                 int total = data.stream().mapToInt(Double::intValue).sum();
-                int startAngle = 0;
+                double startAngle = 0;
 
+                // for (int i = 0; i < data.size(); i++) {
+                //     int arcAngle = (int) ((data.get(i) / total) * 360);
+                //     g.setColor(getRandomColor()); // 随机颜色
+                //     if (i == data.size() - 1) {
+                //         g.fillArc(0, 0, width, height, startAngle, 360 - startAngle);
+                //         startAngle = 360;
+                //     }
+                //     else {
+                //         g.fillArc(0, 0, width, height, startAngle, arcAngle);
+                //         startAngle += arcAngle;
+                //     }
+                // }
+                int x = (width - radius) / 2;
+                int y = (height - radius) / 2;
+
+                Graphics2D g2d= (Graphics2D)g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 for (int i = 0; i < data.size(); i++) {
-                    int arcAngle = (int) ((data.get(i) / total) * 360);
-                    g.setColor(getRandomColor()); // 随机颜色
-                    g.fillArc(0, 0, width, height, startAngle, arcAngle);
+                    g2d.setColor(getRandomColor());
+                    // 使用Arc2D和Path2D确保平滑边缘
+                    double arcAngle = (data.get(i) / total) * 360;
+                    Arc2D arc = new Arc2D.Double(x, y, radius, radius, startAngle, arcAngle, Arc2D.PIE);
+                    Path2D path = new Path2D.Double();
+                    path.append(arc, true);
+                    g2d.fill(path);
                     startAngle += arcAngle;
                 }
             }
         };
+        pieChartPanel.setBorder(BorderFactory.createEmptyBorder());
         pieChartPanel.setPreferredSize(new Dimension(400, 400));
-        pieChartPanel.setBorder(BorderFactory.createTitledBorder("饼图"));
+        
+        //pieChartPanel.setBorder(BorderFactory.createTitledBorder("饼图"));
 
         // 清空并添加饼图面板到chartPanel
         chartPanel.removeAll();
-        chartPanel.add(pieChartPanel, BorderLayout.CENTER);
+        chartPanel.add(pieChartPanel);
         chartPanel.revalidate();
         chartPanel.repaint();
     }
@@ -268,25 +303,42 @@ public class DrawingPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                int width = getWidth();
-                int height = getHeight();
-                int maxData = (int) Math.max(1, data.stream().mapToInt(Double::intValue).max().orElse(1));
+                Graphics2D g2d = (Graphics2D)g;
+
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+                int width = getWidth() - 2 * PADDING;
+                int height = getHeight() - 2 * PADDING;
+
+                double maxData = Math.max(1, data.stream().mapToDouble(Double::intValue).max().orElse(1));
+                double minData = Math.min(1, data.stream().mapToDouble(Double::intValue).min().orElse(1));
+                double dataDiff = maxData - minData;
+
                 int pointRadius = 5;
-
+                
+                Path2D path = new Path2D.Double();
                 for (int i = 0; i < data.size(); i++) {
-                    int x = (i * width) / (data.size() - 1);
-                    int y = height - (int) ((data.get(i) / maxData) * height);
-
-                    g.setColor(Color.BLACK);
-                    g.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
+                    int x = (i * width) / (data.size() - 1) + PADDING;
+                    int y = height - (int) (((data.get(i) - minData) / dataDiff) * height) + PADDING;
+                    // 坐标 y 的计算应该为 该数据在 最大值-最小值 中所占的比例 再乘以面板宽度
+                    g2d.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
                     if (i > 0) {
-                        int prevX = ((i - 1) * width) / (data.size() - 1);
-                        int prevY = height - (int) ((data.get(i - 1) / maxData) * height);
-                        g.drawLine(prevX, prevY, x, y); // 绘制连线
+                        //int prevX = ((i - 1) * width) / (data.size() - 1);
+                        //int prevY = height - (int) ((data.get(i - 1) / maxData) * height);
+                        //path.moveTo(prevX, prevY);
+                        //g2d.draw(path); // 绘制连线
+                        path.lineTo(x, y);
+                    }
+                    else {
+                        path.moveTo(x, y);
                     }
                 }
+                g2d.setColor(Color.BLACK);
+                g2d.draw(path);
             }
         };
+        lineChartPanel.setBackground(Color.white);
         lineChartPanel.setPreferredSize(new Dimension(400, 300));
         lineChartPanel.setBorder(BorderFactory.createTitledBorder("折线图"));
 
