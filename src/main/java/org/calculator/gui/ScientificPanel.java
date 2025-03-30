@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import org.scilab.forge.jlatexmath.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ScientificPanel extends JPanel {
     private JTextField display;
@@ -16,6 +18,8 @@ public class ScientificPanel extends JPanel {
     private boolean isSecondMode = false;
     private Map<String, FunctionButton> functionButtons;
 
+    private JTextArea historyArea;
+    private JScrollPane historyScroll;
 
     public ScientificPanel() {
         this.evaluator = new MathEvaluator();
@@ -43,6 +47,45 @@ public class ScientificPanel extends JPanel {
         // 下方符号面板
         JPanel symbolPanel = createSymbolPanel();
         add(symbolPanel, BorderLayout.PAGE_END);
+
+        // 历史记录面板（右侧）
+        JPanel historyPanel = new JPanel(new BorderLayout());
+        historyArea = new JTextArea("历史记录：\n", 15, 25);
+        historyArea.setEditable(false);
+        historyScroll = new JScrollPane(historyArea);
+        historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        // 清除历史按钮
+        JButton clearHistory = new JButton("清除历史");
+        clearHistory.addActionListener(e -> historyArea.setText("历史记录：\n"));
+
+        historyPanel.add(new JLabel("历史记录"), BorderLayout.NORTH);
+        historyPanel.add(historyScroll, BorderLayout.CENTER);
+        historyPanel.add(clearHistory, BorderLayout.SOUTH);
+        historyArea.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int pos = historyArea.viewToModel(e.getPoint());
+                    try {
+                        int start = historyArea.getLineStartOffset(historyArea.getLineOfOffset(pos));
+                        int end = historyArea.getLineEndOffset(historyArea.getLineOfOffset(pos));
+                        String selectedLine = historyArea.getText(start, end - start);
+
+                        // 提取表达式部分（示例格式：[15:30:45] 2+3*4=14.0）
+                        String expression = selectedLine.split("=")[0].split("] ")[1];
+                        inputExpression.setLength(0);
+                        inputExpression.append(expression);
+                        display.setText(expression);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+        // 主界面布局调整
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controPanel, historyPanel);
+        splitPane.setDividerLocation(400); // 设置分割位置
+        add(splitPane, BorderLayout.CENTER);
     }
 
     private JPanel createControlPanel() {
@@ -218,7 +261,17 @@ public class ScientificPanel extends JPanel {
             switch (cmd) {
                 case "=":
                     try {
+                        String expression = inputExpression.toString();
                         double result = evaluator.evaluate(inputExpression.toString());
+
+                        // 添加到历史记录
+                        String historyEntry = String.format("[%tT] %s = %.4f\n",
+                                new java.util.Date(), expression, result);
+                        historyArea.append(historyEntry);
+
+                        // 自动滚动到底部
+                        historyArea.setCaretPosition(historyArea.getDocument().getLength());
+
                         display.setText(String.valueOf(result));
                         inputExpression.setLength(0);
                         inputExpression.append(result);
