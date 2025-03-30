@@ -12,8 +12,8 @@ public class Operator {
         // 定义运算符优先级、结合性和类型
         defineOperator("+", 1, "LEFT", OperatorType.BINARY);
         defineOperator("-", 1, "LEFT", OperatorType.BINARY);
-        defineOperator("*", 2, "LEFT", OperatorType.BINARY);
-        defineOperator("/", 2, "LEFT", OperatorType.BINARY);
+        defineOperator("×", 2, "LEFT", OperatorType.BINARY);
+        defineOperator("÷", 2, "LEFT", OperatorType.BINARY);
         defineOperator("^", 4, "RIGHT", OperatorType.BINARY);
         defineOperator("!", 5, "LEFT", OperatorType.UNARY);
         defineOperator("u-", 5, "RIGHT", OperatorType.UNARY); // 一元负号
