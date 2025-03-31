@@ -14,8 +14,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
     <dependencies>
         <!-- 添加 JLaTeXMath 库（用于数学公式渲染） -->
+
+
         <dependency>
             <groupId>org.scilab.forge</groupId>
             <artifactId>jlatexmath</artifactId>

@@ -11,6 +11,7 @@ public class CalculatorGUI extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Scientific", new ScientificPanel());
         tabbedPane.addTab("Drawing", new DrawingPanel());
+        tabbedPane.addTab("SimpleLinearRegression", new SimpleLinearRegressionPanel());
         tabbedPane.addTab("Date", new DatePanel());
 
         add(tabbedPane);
