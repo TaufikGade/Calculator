@@ -50,6 +50,19 @@ public class PostfixEvaluator {
             case "sqrt" -> stack.push(Math.sqrt(arg));
             case "cbrt" -> stack.push(Math.cbrt(arg));
             case "abs" -> stack.push(Math.abs(arg));
+            case "asin" -> {
+                if (arg < -1 || arg > 1) {
+                    throw new IllegalArgumentException("asin() input out of range: " + arg);
+                }
+                stack.push(Math.asin(arg));
+            }
+            case "acos" -> {
+                if (arg < -1 || arg > 1) {
+                    throw new IllegalArgumentException("acos() input out of range: " + arg);
+                }
+                stack.push(Math.acos(arg));
+            }
+            case "atan" -> stack.push(Math.atan(arg)); //
             default -> throw new UnsupportedOperatorException(func);
         }
     }

@@ -11,7 +11,6 @@ public class InfixToPostfixConverter {
         Stack<ExpressionToken> stack = new Stack<>();
 
         for (ExpressionToken token : tokens) {
-            System.out.println(token);
             if (token instanceof NumberToken) {
                 output.add(token);
             } else if (token instanceof ParenthesisToken) {

@@ -21,6 +21,9 @@ public class Operator {
         defineOperator("!", 5, "LEFT", OperatorType.UNARY);
         defineOperator("u-", 5, "RIGHT", OperatorType.UNARY); // 一元负号
         defineOperator("sin", 5, "LEFT", OperatorType.FUNCTION);
+        defineOperator("asin", 5, "LEFT", OperatorType.FUNCTION);
+        defineOperator("acos", 5, "LEFT", OperatorType.FUNCTION);
+        defineOperator("atan", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("cos", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("tan", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("log", 5, "LEFT", OperatorType.FUNCTION);

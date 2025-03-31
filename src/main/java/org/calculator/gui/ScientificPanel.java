@@ -21,6 +21,10 @@ public class ScientificPanel extends JPanel {
     private JTextArea historyArea;
     private JScrollPane historyScroll;
 
+    // 添加三角函数弹出菜单
+    private JPopupMenu trigPopupMenu;
+    private JButton trigButton;
+
     public ScientificPanel() {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
@@ -40,15 +44,121 @@ public class ScientificPanel extends JPanel {
 
         inputExpression = new StringBuilder();
 
+        // 创建顶部面板，包含特殊功能按钮（如三角函数按钮）
+        JPanel topFunctionsPanel = createTopFunctionsPanel();
+
         // 控制符号面板
         JPanel controPanel = createControlPanel();
-        add(controPanel, BorderLayout.CENTER);
+
+        // 将两个面板放在一个垂直面板中
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.add(topFunctionsPanel, BorderLayout.NORTH);
+        northPanel.add(controPanel, BorderLayout.CENTER);
 
         // 下方符号面板
         JPanel symbolPanel = createSymbolPanel();
-        add(symbolPanel, BorderLayout.PAGE_END);
+
+        // 创建中央面板来容纳北部面板和符号面板
+        JPanel centralPanel = new JPanel(new BorderLayout());
+        centralPanel.add(northPanel, BorderLayout.NORTH);
+        centralPanel.add(symbolPanel, BorderLayout.CENTER);
 
         // 历史记录面板（右侧）
+        JPanel historyPanel = createHistoryPanel();
+
+        // 主界面布局调整
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, centralPanel, historyPanel);
+        splitPane.setDividerLocation(400); // 设置分割位置
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    // 创建顶部特殊功能按钮面板
+    private JPanel createTopFunctionsPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panel.setBackground(new Color(240, 240, 240));
+
+        // 创建三角学按钮
+        trigButton = new JButton("三角学 ▼");
+        trigButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        trigButton.setFocusPainted(false);
+        trigButton.setBackground(new Color(248, 249, 250));
+
+        // 创建三角函数弹出菜单
+        trigPopupMenu = createTrigPopupMenu();
+
+        // 添加三角学按钮点击事件
+        trigButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 显示弹出菜单在按钮下方
+                trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
+            }
+        });
+        panel.add(trigButton);
+
+        return panel;
+    }
+
+    // 创建三角函数弹出菜单
+    private JPopupMenu createTrigPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        menu.setBackground(new Color(248, 249, 250));
+
+        // 创建包含三角函数按钮的面板
+        JPanel trigPanel = new JPanel(new GridLayout(2, 3, 2, 2));
+        trigPanel.setBackground(new Color(248, 249, 250));
+
+        // 添加三角函数按钮
+        String[] regularFunctions = {"sin", "cos", "tan"};
+        String[] inverseFunctions = {"asin", "acos", "atan"};
+
+        // 添加常规三角函数
+        for (String function : regularFunctions) {
+            JButton button = new JButton(function);
+            button.setFont(new Font("Arial", Font.PLAIN, 12));
+            button.setForeground(Color.BLACK);
+            button.setBackground(new Color(248, 249, 250));
+            button.setFocusPainted(false);
+            button.setActionCommand(function);
+            button.addActionListener(new ButtonHandler());
+            trigPanel.add(button);
+        }
+
+        // 添加反三角函数
+        for (String function : inverseFunctions) {
+            JButton button = new JButton(function);
+            button.setFont(new Font("Arial", Font.PLAIN, 12));
+            button.setForeground(Color.BLACK);
+            button.setBackground(new Color(248, 249, 250));
+            button.setFocusPainted(false);
+            button.setActionCommand(function);
+            button.addActionListener(new ButtonHandler());
+            trigPanel.add(button);
+        }
+
+        menu.add(trigPanel);
+        return menu;
+    }
+
+    private JPanel createControlPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 6, 10,10));
+        String[] buttons = {
+                "MC", "MR", "M+","M-", "MS", "M"
+        };
+
+        for (String text : buttons) {
+            JButton button = new JButton(text);
+            button.setFocusPainted(false);
+            button.setFont(new Font("Arial", Font.PLAIN, 12));
+            button.setBackground(new Color(238, 238, 238));
+            button.setBorder(BorderFactory.createEmptyBorder());
+            button.addActionListener(new ButtonHandler());
+            panel.add(button);
+        }
+        return panel;
+    }
+
+    private JPanel createHistoryPanel() {
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyArea = new JTextArea("历史记录：\n", 15, 25);
         historyArea.setEditable(false);
@@ -82,28 +192,8 @@ public class ScientificPanel extends JPanel {
                 }
             }
         });
-        // 主界面布局调整
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controPanel, historyPanel);
-        splitPane.setDividerLocation(400); // 设置分割位置
-        add(splitPane, BorderLayout.CENTER);
-    }
 
-    private JPanel createControlPanel() {
-        JPanel panel = new JPanel(new GridLayout(1, 6, 10,10));
-        String[] buttons = {
-                "MC", "MR", "M+","M-", "MS", "M"
-        };
-
-        for (String text : buttons) {
-            JButton button = new JButton(text);
-            button.setFocusPainted(false);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setBackground(new Color(238, 238, 238));
-            button.setBorder(BorderFactory.createEmptyBorder());
-            button.addActionListener(new ButtonHandler());
-            panel.add(button);
-        }
-        return panel;
+        return historyPanel;
     }
 
     private JPanel createSymbolPanel() {
@@ -276,7 +366,7 @@ public class ScientificPanel extends JPanel {
                         inputExpression.setLength(0);
                         inputExpression.append(result);
                     } catch (Exception ex) {
-                        display.setText("错误");
+                        display.setText("ERROR");
                         inputExpression.setLength(0);
                     }
                     break;
@@ -360,7 +450,7 @@ public class ScientificPanel extends JPanel {
                     break;
 
                 // 对数函数
-                case "log":
+                case "log(":
                     inputExpression.append("log(");
                     display.setText(inputExpression.toString());
                     break;
