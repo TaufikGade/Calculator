@@ -16,10 +16,9 @@ public class ScientificPanel extends JPanel {
     private StringBuilder inputExpression;
     private final MathEvaluator evaluator;
     private boolean isSecondMode = false;
-    private Map<String, FunctionButton> functionButtons;
+    private final Map<String, FunctionButton> functionButtons;
 
     private JTextArea historyArea;
-    private JScrollPane historyScroll;
 
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
@@ -36,7 +35,7 @@ public class ScientificPanel extends JPanel {
 
         // 显示屏
         display = new JTextField();
-        display.setFont(new Font("Arial", Font.BOLD, 38));
+        display.setFont(new Font("Microsoft YaHei", Font.BOLD, 38));
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setEditable(false);
         display.setSize(400, 150);
@@ -87,12 +86,9 @@ public class ScientificPanel extends JPanel {
         trigPopupMenu = createTrigPopupMenu();
 
         // 添加三角学按钮点击事件
-        trigButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // 显示弹出菜单在按钮下方
-                trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
-            }
+        trigButton.addActionListener(e -> {
+            // 显示弹出菜单在按钮下方
+            trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
         });
         panel.add(trigButton);
 
@@ -162,7 +158,7 @@ public class ScientificPanel extends JPanel {
         JPanel historyPanel = new JPanel(new BorderLayout());
         historyArea = new JTextArea("历史记录：\n", 15, 25);
         historyArea.setEditable(false);
-        historyScroll = new JScrollPane(historyArea);
+        JScrollPane historyScroll = new JScrollPane(historyArea);
         historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // 清除历史按钮
@@ -175,7 +171,7 @@ public class ScientificPanel extends JPanel {
         historyArea.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    int pos = historyArea.viewToModel(e.getPoint());
+                    int pos = historyArea.viewToModel2D(e.getPoint());
                     try {
                         int start = historyArea.getLineStartOffset(historyArea.getLineOfOffset(pos));
                         int end = historyArea.getLineEndOffset(historyArea.getLineOfOffset(pos));
@@ -365,8 +361,11 @@ public class ScientificPanel extends JPanel {
                         display.setText(String.valueOf(result));
                         inputExpression.setLength(0);
                         inputExpression.append(result);
+                    } catch (StackOverflowError | ArithmeticException ex) {
+                        display.setText("溢出");
+                        inputExpression.setLength(0);
                     } catch (Exception ex) {
-                        display.setText("ERROR");
+                        display.setText("错误");
                         inputExpression.setLength(0);
                     }
                     break;
@@ -406,7 +405,7 @@ public class ScientificPanel extends JPanel {
                     break;
 
                 case "⌫":
-                    if (inputExpression.length() > 0) {
+                    if (!inputExpression.isEmpty()) {
                         inputExpression.deleteCharAt(inputExpression.length() - 1);
                         display.setText(inputExpression.toString());
                     }
@@ -541,7 +540,7 @@ public class ScientificPanel extends JPanel {
                     break;
 
                 case "+/-":
-                    if (inputExpression.length() > 0) {
+                    if (!inputExpression.isEmpty()) {
                         try {
                             double currentValue = Double.parseDouble(display.getText());
                             currentValue = -currentValue;
