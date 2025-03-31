@@ -32,7 +32,7 @@ public class DrawingPanel extends JPanel {
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout());
         JPanel inputFieldPanel = new JPanel();
-        inputFieldPanel.setLayout(new GridLayout(1, 10)); // 输入框面板使用GridLayout
+        inputFieldPanel.setLayout(new GridLayout(1, MAX_INPUTS)); // 输入框面板使用GridLayout
 
         // 初始化输入框
         for (int i = 0; i < inputCount; i++) {
