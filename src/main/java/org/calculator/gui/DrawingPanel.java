@@ -21,7 +21,8 @@ public class DrawingPanel extends JPanel {
     private JButton showPieChartButton; // 显示饼图按钮
     private JButton showLineChartButton; // 显示折线图按钮
 
-    private final int PADDING = 15; // 折线图间距
+    private final int LINE_PADDING = 15; // 折线图间距
+    private final int BAR_PADDING = 25; // 柱状图间距
 
     public DrawingPanel() {
         setLayout(new BorderLayout()); // 设置布局为BorderLayout
@@ -30,9 +31,10 @@ public class DrawingPanel extends JPanel {
 
         // 创建输入部分的面板
         JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BorderLayout());
+        //inputPanel.setLayout(new BorderLayout());
         JPanel inputFieldPanel = new JPanel();
-        inputFieldPanel.setLayout(new GridLayout(1, MAX_INPUTS)); // 输入框面板使用GridLayout
+        inputFieldPanel.setLayout(new GridLayout(1, MAX_INPUTS + 1)); // 输入框面板使用GridLayout
+        inputFieldPanel.add(new JLabel("数据："));
 
         // 初始化输入框
         for (int i = 0; i < inputCount; i++) {
@@ -54,7 +56,7 @@ public class DrawingPanel extends JPanel {
         showPieChartButton.setFocusPainted(false);
         showLineChartButton = new JButton("折线图");
         showLineChartButton.setFocusPainted(false);
-        
+
 
         buttonPanel.add(addInputButton);
         buttonPanel.add(removeInputButton);
@@ -183,30 +185,57 @@ public class DrawingPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                int width = getWidth();
-                int height = getHeight();
-                //int width = 360;
-                //int height = 360;
+                int width = getWidth() - 2 * BAR_PADDING;
+                int height = getHeight() - 2 * BAR_PADDING;
+
                 int barWidth = width / data.size();
-                int maxData = (int) Math.max(1, data.stream().mapToInt(Double::intValue).max().orElse(1));
+                double maxData = Math.max(data.getFirst(), data.stream().mapToDouble(Double::doubleValue).max().orElse(1));
+                double minData = Math.min(data.getFirst(), data.stream().mapToDouble(Double::doubleValue).min().orElse(1));
+                double dataDiff = maxData - minData;
+
+                if (minData < 0) {
+                    int y = (int) ((1 - (Math.abs(minData) / dataDiff)) * height);
+                    g.drawLine(BAR_PADDING, y, width + BAR_PADDING, y);
+                    g.drawString("0", 10, y);
+
+                    for (int i = 0; i < data.size(); i++) {
+                        double num = data.get(i);
+                        g.setColor(getRandomColor()); // 随机颜色
+                        if (num > 0) {
+                            int barHeight = (int) (num / dataDiff * height) - BAR_PADDING;
+                            g.fillRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
+                            g.setColor(Color.BLACK);
+                            g.drawString("Data " + (i + 1), i * barWidth + 30, y - 10);
+                        } else {
+                            int barHeight = (int) (-num / dataDiff * height) + BAR_PADDING;
+                            g.fillRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
+                            g.setColor(Color.BLACK);
+                            g.drawString("Data " + (i + 1), i * barWidth + 30, y + 15);
+                        }
+
+
+                    }
+                } else {
+                    for (int i = 0; i < data.size(); i++) {
+                        int barHeight = (int) (((data.get(i)) / maxData) * height);
+                        g.setColor(getRandomColor()); // 随机颜色
+                        g.fillRect(i * barWidth + BAR_PADDING, height - barHeight + BAR_PADDING, barWidth, barHeight);
+                        g.setColor(Color.BLACK);
+                        g.drawString("Data " + (i + 1), i * barWidth + 30, height + 10);
+                    }
+                }
+                // 绘制柱状图
+
 
                 // 绘制 Y 方向的单位分割线
                 int numTicks = 5; // Y 轴的分割线数量
                 for (int i = 0; i <= numTicks; i++) {
-                    int y = height - (i * height / numTicks);
+                    int y = height - (i * height / numTicks) + BAR_PADDING;
                     g.setColor(Color.LIGHT_GRAY);
-                    g.drawLine(0, y, width, y); // 绘制分割线
+                    g.drawLine(BAR_PADDING, y, width + BAR_PADDING, y); // 绘制分割线
                     g.setColor(Color.BLACK);
-                    g.drawString(String.valueOf((i * maxData) / numTicks), 0, y); // 标注数值
-                }
-
-                // 绘制柱状图
-                for (int i = 0; i < data.size(); i++) {
-                    int barHeight = (int) ((data.get(i) / maxData) * height);
-                    g.setColor(getRandomColor()); // 随机颜色
-                    g.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
-                    g.setColor(Color.BLACK);
-                    g.drawString("Data " + (i + 1), i * barWidth, height);
+                    g.drawString(String.valueOf(Math.round(i * dataDiff / numTicks + minData)), 10, y); // 标注数值
+                    g.setFont(new Font("Arial", Font.PLAIN, 12));
                 }
             }
         };
@@ -239,28 +268,15 @@ public class DrawingPanel extends JPanel {
                 super.paintComponent(g);
                 int width = getWidth();
                 int height = getHeight();
-                int radius = Math.min(width, height);
-                //int width = 360;
-                //int height = 360;
+                int radius = Math.min(width, height) - LINE_PADDING;
+
                 int total = data.stream().mapToInt(Double::intValue).sum();
                 double startAngle = 0;
 
-                // for (int i = 0; i < data.size(); i++) {
-                //     int arcAngle = (int) ((data.get(i) / total) * 360);
-                //     g.setColor(getRandomColor()); // 随机颜色
-                //     if (i == data.size() - 1) {
-                //         g.fillArc(0, 0, width, height, startAngle, 360 - startAngle);
-                //         startAngle = 360;
-                //     }
-                //     else {
-                //         g.fillArc(0, 0, width, height, startAngle, arcAngle);
-                //         startAngle += arcAngle;
-                //     }
-                // }
                 int x = (width - radius) / 2;
                 int y = (height - radius) / 2;
 
-                Graphics2D g2d= (Graphics2D)g;
+                Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 for (int i = 0; i < data.size(); i++) {
                     g2d.setColor(getRandomColor());
@@ -274,9 +290,9 @@ public class DrawingPanel extends JPanel {
                 }
             }
         };
-        pieChartPanel.setBorder(BorderFactory.createEmptyBorder());
+        pieChartPanel.setBorder(BorderFactory.createTitledBorder("饼图"));
         pieChartPanel.setPreferredSize(new Dimension(400, 400));
-        
+
         //pieChartPanel.setBorder(BorderFactory.createTitledBorder("饼图"));
 
         // 清空并添加饼图面板到chartPanel
@@ -303,34 +319,29 @@ public class DrawingPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D)g;
+                Graphics2D g2d = (Graphics2D) g;
 
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-                int width = getWidth() - 2 * PADDING;
-                int height = getHeight() - 2 * PADDING;
+                int width = getWidth() - 2 * LINE_PADDING;
+                int height = getHeight() - 2 * LINE_PADDING;
 
-                double maxData = Math.max(1, data.stream().mapToDouble(Double::intValue).max().orElse(1));
-                double minData = Math.min(1, data.stream().mapToDouble(Double::intValue).min().orElse(1));
+                double maxData = Math.max(data.getFirst(), data.stream().mapToDouble(Double::doubleValue).max().orElse(1));
+                double minData = Math.min(data.getFirst(), data.stream().mapToDouble(Double::doubleValue).min().orElse(1));
                 double dataDiff = maxData - minData;
 
                 int pointRadius = 5;
-                
+
                 Path2D path = new Path2D.Double();
                 for (int i = 0; i < data.size(); i++) {
-                    int x = (i * width) / (data.size() - 1) + PADDING;
-                    int y = height - (int) (((data.get(i) - minData) / dataDiff) * height) + PADDING;
+                    int x = (i * width) / (data.size() - 1) + LINE_PADDING;
+                    int y = height - (int) (((data.get(i) - minData) / dataDiff) * height) + LINE_PADDING;
                     // 坐标 y 的计算应该为 该数据在 最大值-最小值 中所占的比例 再乘以面板宽度
                     g2d.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
                     if (i > 0) {
-                        //int prevX = ((i - 1) * width) / (data.size() - 1);
-                        //int prevY = height - (int) ((data.get(i - 1) / maxData) * height);
-                        //path.moveTo(prevX, prevY);
-                        //g2d.draw(path); // 绘制连线
                         path.lineTo(x, y);
-                    }
-                    else {
+                    } else {
                         path.moveTo(x, y);
                     }
                 }

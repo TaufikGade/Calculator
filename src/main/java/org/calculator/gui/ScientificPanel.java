@@ -1,15 +1,19 @@
 package org.calculator.gui;
 
 import org.calculator.math.MathEvaluator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import org.scilab.forge.jlatexmath.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Objects;
 
 public class ScientificPanel extends JPanel {
     private JTextField display;
@@ -18,19 +22,20 @@ public class ScientificPanel extends JPanel {
     private boolean isSecondMode = false;
     private final Map<String, FunctionButton> functionButtons;
 
-    private JTextArea historyArea;
-
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
     private JButton trigButton;
     private double memoryValue = 0.0; // 新增变量，用于存储内存中的值
+
+    private HistoryPanel historyPanel;
+
     public ScientificPanel() {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         initUI();
     }
 
-    private void initUI(){
+    private void initUI() {
         setLayout(new BorderLayout());
 
         // 显示屏
@@ -63,7 +68,7 @@ public class ScientificPanel extends JPanel {
         centralPanel.add(symbolPanel, BorderLayout.CENTER);
 
         // 历史记录面板（右侧）
-        JPanel historyPanel = createHistoryPanel();
+        historyPanel = new HistoryPanel();
 
         // 主界面布局调整
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, centralPanel, historyPanel);
@@ -117,6 +122,7 @@ public class ScientificPanel extends JPanel {
             button.setFocusPainted(false);
             button.setActionCommand(function);
             button.addActionListener(new ButtonHandler());
+            //button.setSize(100,80);
             trigPanel.add(button);
         }
 
@@ -137,9 +143,9 @@ public class ScientificPanel extends JPanel {
     }
 
     private JPanel createControlPanel() {
-        JPanel panel = new JPanel(new GridLayout(1, 6, 10,10));
+        JPanel panel = new JPanel(new GridLayout(1, 6, 10, 10));
         String[] buttons = {
-                "MC", "MR", "M+","M-", "MS", "M"
+                "MC", "MR", "M+", "M-", "MS", "M"
         };
 
         for (String text : buttons) {
@@ -152,44 +158,6 @@ public class ScientificPanel extends JPanel {
             panel.add(button);
         }
         return panel;
-    }
-
-    private JPanel createHistoryPanel() {
-        JPanel historyPanel = new JPanel(new BorderLayout());
-        historyArea = new JTextArea("历史记录：\n", 15, 25);
-        historyArea.setEditable(false);
-        JScrollPane historyScroll = new JScrollPane(historyArea);
-        historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-        // 清除历史按钮
-        JButton clearHistory = new JButton("清除历史");
-        clearHistory.addActionListener(e -> historyArea.setText("历史记录：\n"));
-
-        historyPanel.add(new JLabel("历史记录"), BorderLayout.NORTH);
-        historyPanel.add(historyScroll, BorderLayout.CENTER);
-        historyPanel.add(clearHistory, BorderLayout.SOUTH);
-        historyArea.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int pos = historyArea.viewToModel2D(e.getPoint());
-                    try {
-                        int start = historyArea.getLineStartOffset(historyArea.getLineOfOffset(pos));
-                        int end = historyArea.getLineEndOffset(historyArea.getLineOfOffset(pos));
-                        String selectedLine = historyArea.getText(start, end - start);
-
-                        // 提取表达式部分（示例格式：[15:30:45] 2+3*4=14.0）
-                        String expression = selectedLine.split("=")[0].split("] ")[1];
-                        inputExpression.setLength(0);
-                        inputExpression.append(expression);
-                        display.setText(expression);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        return historyPanel;
     }
 
     private JPanel createSymbolPanel() {
@@ -340,6 +308,7 @@ public class ScientificPanel extends JPanel {
         }
     }
 
+
     private class ButtonHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String cmd = e.getActionCommand();
@@ -353,10 +322,7 @@ public class ScientificPanel extends JPanel {
                         // 添加到历史记录
                         String historyEntry = String.format("[%tT] %s = %.4f\n",
                                 new java.util.Date(), expression, result);
-                        historyArea.append(historyEntry);
-
-                        // 自动滚动到底部
-                        historyArea.setCaretPosition(historyArea.getDocument().getLength());
+                        historyPanel.AddHistory(historyEntry);
 
                         display.setText(String.valueOf(result));
                         inputExpression.setLength(0);
@@ -597,6 +563,59 @@ public class ScientificPanel extends JPanel {
                     display.setText(inputExpression.toString());
                     break;
             }
+        }
+    }
+
+    public class HistoryPanel extends JPanel {
+        private JTextArea historyArea;
+
+        public HistoryPanel() {
+            setLayout(new BorderLayout());
+            historyArea = new JTextArea("没有历史记录\n");
+            historyArea.setEditable(false);
+            JScrollPane historyScroll = new JScrollPane(historyArea);
+            historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+            // 清除历史按钮
+            JButton clearHistory = new JButton("清除历史");
+            clearHistory.addActionListener(e -> historyArea.setText("没有历史记录\n"));
+
+            add(new JLabel("历史记录"), BorderLayout.NORTH);
+            add(historyScroll, BorderLayout.CENTER);
+            add(clearHistory, BorderLayout.SOUTH);
+            historyArea.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        int pos = historyArea.viewToModel2D(e.getPoint());
+                        try {
+                            int start = historyArea.getLineStartOffset(historyArea.getLineOfOffset(pos));
+                            int end = historyArea.getLineEndOffset(historyArea.getLineOfOffset(pos));
+                            String selectedLine = historyArea.getText(start, end - start);
+
+                            if (start == end || Objects.equals(selectedLine, "没有历史记录\n")) return;
+
+                            // 提取表达式部分（示例格式：[15:30:45] 2+3*4=14.0）
+                            String expression = selectedLine.split("=")[0].split("] ")[1];
+                            expression = expression.substring(0, expression.length() - 1);
+
+                            inputExpression.setLength(0);
+                            inputExpression.append(expression);
+                            display.setText(expression);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+
+        public void AddHistory(String historyEntry) {
+            if (Objects.equals(historyArea.getText(), "没有历史记录\n")) historyArea.setText("");
+
+            historyArea.append(historyEntry);
+
+            // 自动滚动到底部
+            historyArea.setCaretPosition(historyArea.getDocument().getLength());
         }
     }
 }
