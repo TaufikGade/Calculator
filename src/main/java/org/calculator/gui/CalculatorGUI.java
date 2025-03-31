@@ -5,7 +5,7 @@ import javax.swing.*;
 public class CalculatorGUI extends JFrame {
     public CalculatorGUI() {
         setTitle("Java Calculator");
-        setSize(600, 800);
+        setSize(450, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JTabbedPane tabbedPane = new JTabbedPane();

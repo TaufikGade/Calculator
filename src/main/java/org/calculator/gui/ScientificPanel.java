@@ -23,7 +23,7 @@ public class ScientificPanel extends JPanel {
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
     private JButton trigButton;
-
+    private double memoryValue = 0.0; // 新增变量，用于存储内存中的值
     public ScientificPanel() {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
@@ -370,38 +370,60 @@ public class ScientificPanel extends JPanel {
                     }
                     break;
 
-                case "MC":
-                    //evaluator.clearMemory();
+//                case "MC":
+//                    //evaluator.clearMemory();
+//                    break;
+//
+//                case "MR":
+//                    //double memValue = evaluator.recallMemory();
+//                    //inputExpression.append(String.valueOf(memValue));
+//                    //display.setText(inputExpression.toString());
+//                    break;
+//
+//                case "M+":
+//                    //try {
+//                    //evaluator.addToMemory(Double.parseDouble(display.getText()));
+//                    // } catch (NumberFormatException ex) {
+//                    // 忽略非数字
+//                    //}
+//                    break;
+//
+//                case "M-":
+//                    /*try {
+//                        evaluator.subtractFromMemory(Double.parseDouble(display.getText()));
+//                    } catch (NumberFormatException ex) {
+//                        // 忽略非数字
+//                    }*/
+//                    break;
+                case "MC": // 清除内存
+                    memoryValue = 0.0; // 将内存值重置为 0
                     break;
-
-                case "MR":
-                    //double memValue = evaluator.recallMemory();
-                    //inputExpression.append(String.valueOf(memValue));
-                    //display.setText(inputExpression.toString());
+                case "MR": // 回忆内存中的值
+                    inputExpression.append(memoryValue); // 将内存值追加到输入表达式
+                    display.setText(String.valueOf(memoryValue)); // 显示在显示屏上
                     break;
-
-                case "M+":
-                    //try {
-                    //evaluator.addToMemory(Double.parseDouble(display.getText()));
-                    // } catch (NumberFormatException ex) {
-                    // 忽略非数字
-                    //}
-                    break;
-
-                case "M-":
-                    /*try {
-                        evaluator.subtractFromMemory(Double.parseDouble(display.getText()));
+                case "M+": // 将当前值加到内存
+                    try {
+                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
+                        memoryValue += currentValue; // 将当前值加到内存
                     } catch (NumberFormatException ex) {
-                        // 忽略非数字
-                    }*/
+                        display.setText("错误"); // 如果解析失败，显示错误
+                    }
                     break;
-
-                case "MS":
-                    /* try {
-                        evaluator.storeInMemory(Double.parseDouble(display.getText()));
+                case "M-": // 从内存中减去当前值
+                    try {
+                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
+                        memoryValue -= currentValue; // 从内存中减去当前值
                     } catch (NumberFormatException ex) {
-                        // 忽略非数字
-                    }*/
+                        display.setText("错误"); // 如果解析失败，显示错误
+                    }
+                    break;
+                case "MS": // 将当前值存储到内存
+                    try {
+                        memoryValue = Double.parseDouble(display.getText()); // 将当前显示屏上的值存储到内存
+                    } catch (NumberFormatException ex) {
+                        display.setText("错误"); // 如果解析失败，显示错误
+                    }
                     break;
 
                 case "⌫":
