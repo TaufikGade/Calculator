@@ -278,10 +278,10 @@ public class DrawingPanel extends JPanel {
 
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                for (int i = 0; i < data.size(); i++) {
+                for (Double datum : data) {
                     g2d.setColor(getRandomColor());
                     // 使用Arc2D和Path2D确保平滑边缘
-                    double arcAngle = (data.get(i) / total) * 360;
+                    double arcAngle = (datum / total) * 360;
                     Arc2D arc = new Arc2D.Double(x, y, radius, radius, startAngle, arcAngle, Arc2D.PIE);
                     Path2D path = new Path2D.Double();
                     path.append(arc, true);

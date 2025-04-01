@@ -1,49 +1,41 @@
-package org.calculator.gui;
+package org.calculator.gui.scientific;
 
 import org.calculator.math.MathEvaluator;
+import org.scilab.forge.jlatexmath.TeXConstants;
+import org.scilab.forge.jlatexmath.TeXFormula;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import org.scilab.forge.jlatexmath.*;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Objects;
 
-public class ScientificPanel extends JPanel {
+public class MainPanel extends JPanel {
+    private ScientificPanel topPanel;
     private JTextField display;
     private StringBuilder inputExpression;
     private final MathEvaluator evaluator;
     private boolean isSecondMode = false;
     private final Map<String, FunctionButton> functionButtons;
-
+    private final ButtonHandler buttonHandler;
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
     private JButton trigButton;
-    private double memoryValue = 0.0; // 新增变量，用于存储内存中的值
+    private double memoryValue = Double.MAX_VALUE; // 新增变量，用于存储内存中的值
 
-    private HistoryPanel historyPanel;
+    public MainPanel(ScientificPanel top) {
+        this.topPanel = top;
 
-    public ScientificPanel() {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
-        initUI();
-    }
-
-    private void initUI() {
+        buttonHandler = new ButtonHandler();
         setLayout(new BorderLayout());
-
         // 显示屏
         display = new JTextField();
         display.setFont(new Font("Microsoft YaHei", Font.BOLD, 38));
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setEditable(false);
-        display.setSize(400, 150);
         add(display, BorderLayout.NORTH);
 
         inputExpression = new StringBuilder();
@@ -52,12 +44,12 @@ public class ScientificPanel extends JPanel {
         JPanel topFunctionsPanel = createTopFunctionsPanel();
 
         // 控制符号面板
-        JPanel controPanel = createControlPanel();
+        ControlPanel controlPanel = new ControlPanel();
 
         // 将两个面板放在一个垂直面板中
-        JPanel northPanel = new JPanel(new BorderLayout());
+        JPanel northPanel = new JPanel(new GridLayout(2, 1));
         northPanel.add(topFunctionsPanel, BorderLayout.NORTH);
-        northPanel.add(controPanel, BorderLayout.CENTER);
+        northPanel.add(controlPanel, BorderLayout.CENTER);
 
         // 下方符号面板
         JPanel symbolPanel = createSymbolPanel();
@@ -67,13 +59,7 @@ public class ScientificPanel extends JPanel {
         centralPanel.add(northPanel, BorderLayout.NORTH);
         centralPanel.add(symbolPanel, BorderLayout.CENTER);
 
-        // 历史记录面板（右侧）
-        historyPanel = new HistoryPanel();
-
-        // 主界面布局调整
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, centralPanel, historyPanel);
-        splitPane.setDividerLocation(400); // 设置分割位置
-        add(splitPane, BorderLayout.CENTER);
+        add(centralPanel, BorderLayout.CENTER);
     }
 
     // 创建顶部特殊功能按钮面板
@@ -121,7 +107,7 @@ public class ScientificPanel extends JPanel {
             button.setBackground(new Color(248, 249, 250));
             button.setFocusPainted(false);
             button.setActionCommand(function);
-            button.addActionListener(new ButtonHandler());
+            button.addActionListener(buttonHandler);
             //button.setSize(100,80);
             trigPanel.add(button);
         }
@@ -134,30 +120,12 @@ public class ScientificPanel extends JPanel {
             button.setBackground(new Color(248, 249, 250));
             button.setFocusPainted(false);
             button.setActionCommand(function);
-            button.addActionListener(new ButtonHandler());
+            button.addActionListener(buttonHandler);
             trigPanel.add(button);
         }
 
         menu.add(trigPanel);
         return menu;
-    }
-
-    private JPanel createControlPanel() {
-        JPanel panel = new JPanel(new GridLayout(1, 6, 10, 10));
-        String[] buttons = {
-                "MC", "MR", "M+", "M-", "MS", "M"
-        };
-
-        for (String text : buttons) {
-            JButton button = new JButton(text);
-            button.setFocusPainted(false);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setBackground(new Color(238, 238, 238));
-            button.setBorder(BorderFactory.createEmptyBorder());
-            button.addActionListener(new ButtonHandler());
-            panel.add(button);
-        }
-        return panel;
     }
 
     private JPanel createSymbolPanel() {
@@ -251,7 +219,7 @@ public class ScientificPanel extends JPanel {
                     }
                 });
             } else {
-                button.addActionListener(new ButtonHandler());
+                button.addActionListener(buttonHandler);
             }
             functionButtons.put(primaryCmd, button);
             panel.add(button);
@@ -265,49 +233,10 @@ public class ScientificPanel extends JPanel {
         }
     }
 
-    private class FunctionButton extends JButton {
-        private Icon primaryIcon;
-        private Icon secondaryIcon;
-        private String primaryCommand;
-        private String secondaryCommand;
-        private boolean isInSecondMode = false;
-        private boolean hasSecondaryFunction;
-
-        public FunctionButton(Icon primaryIcon, Icon secondaryIcon, String primaryCommand, String secondaryCommand) {
-            super(primaryIcon);
-            this.primaryIcon = primaryIcon;
-            this.secondaryIcon = secondaryIcon;
-            this.primaryCommand = primaryCommand;
-            this.secondaryCommand = secondaryCommand;
-            setActionCommand(primaryCommand);
-            this.hasSecondaryFunction = secondaryCommand != null && !secondaryCommand.isEmpty() && !secondaryCommand.equals(primaryCommand);
-        }
-
-        public FunctionButton(Icon primaryIcon, String primaryCommand) {
-            this(primaryIcon, primaryIcon, primaryCommand, primaryCommand);
-            this.hasSecondaryFunction = false;
-        }
-
-        public void setSecondMode(boolean secondMode) {
-            if (hasSecondaryFunction) {
-                isInSecondMode = secondMode;
-                Dimension currentSize = getSize();
-
-                if (secondMode) {
-                    setIcon(secondaryIcon);
-                    setActionCommand(secondaryCommand);
-                } else {
-                    setIcon(primaryIcon);
-                    setActionCommand(primaryCommand);
-                }
-
-                setPreferredSize(currentSize);
-                setMinimumSize(currentSize);
-                setMaximumSize(currentSize);
-            }
-        }
+    public void catchCalHistory(String history) {
+        inputExpression.append(history);
+        display.setText(inputExpression.toString());
     }
-
 
     private class ButtonHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -322,7 +251,7 @@ public class ScientificPanel extends JPanel {
                         // 添加到历史记录
                         String historyEntry = String.format("[%tT] %s = %.4f\n",
                                 new java.util.Date(), expression, result);
-                        historyPanel.AddHistory(historyEntry);
+                        topPanel.addCalHistory(historyEntry);
 
                         display.setText(String.valueOf(result));
                         inputExpression.setLength(0);
@@ -335,62 +264,38 @@ public class ScientificPanel extends JPanel {
                         inputExpression.setLength(0);
                     }
                     break;
-
-//                case "MC":
-//                    //evaluator.clearMemory();
+//                case "MC": // 清除内存
+//                    memoryValue = Double.MAX_VALUE; // 将内存值重置为 无限大
 //                    break;
-//
-//                case "MR":
-//                    //double memValue = evaluator.recallMemory();
-//                    //inputExpression.append(String.valueOf(memValue));
-//                    //display.setText(inputExpression.toString());
+//                case "MR": // 回忆内存中的值
+//                    inputExpression.append(memoryValue); // 将内存值追加到输入表达式
+//                    display.setText(String.valueOf(memoryValue)); // 显示在显示屏上
 //                    break;
-//
-//                case "M+":
-//                    //try {
-//                    //evaluator.addToMemory(Double.parseDouble(display.getText()));
-//                    // } catch (NumberFormatException ex) {
-//                    // 忽略非数字
-//                    //}
-//                    break;
-//
-//                case "M-":
-//                    /*try {
-//                        evaluator.subtractFromMemory(Double.parseDouble(display.getText()));
+//                case "M+": // 将当前值加到内存
+//                    try {
+//                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
+//                        if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
+//                        memoryValue += currentValue; // 将当前值加到内存
 //                    } catch (NumberFormatException ex) {
-//                        // 忽略非数字
-//                    }*/
+//                        display.setText("错误"); // 如果解析失败，显示错误
+//                    }
 //                    break;
-                case "MC": // 清除内存
-                    memoryValue = 0.0; // 将内存值重置为 0
-                    break;
-                case "MR": // 回忆内存中的值
-                    inputExpression.append(memoryValue); // 将内存值追加到输入表达式
-                    display.setText(String.valueOf(memoryValue)); // 显示在显示屏上
-                    break;
-                case "M+": // 将当前值加到内存
-                    try {
-                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
-                        memoryValue += currentValue; // 将当前值加到内存
-                    } catch (NumberFormatException ex) {
-                        display.setText("错误"); // 如果解析失败，显示错误
-                    }
-                    break;
-                case "M-": // 从内存中减去当前值
-                    try {
-                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
-                        memoryValue -= currentValue; // 从内存中减去当前值
-                    } catch (NumberFormatException ex) {
-                        display.setText("错误"); // 如果解析失败，显示错误
-                    }
-                    break;
-                case "MS": // 将当前值存储到内存
-                    try {
-                        memoryValue = Double.parseDouble(display.getText()); // 将当前显示屏上的值存储到内存
-                    } catch (NumberFormatException ex) {
-                        display.setText("错误"); // 如果解析失败，显示错误
-                    }
-                    break;
+//                case "M-": // 从内存中减去当前值
+//                    try {
+//                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
+//                        if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
+//                        memoryValue -= currentValue; // 从内存中减去当前值
+//                    } catch (NumberFormatException ex) {
+//                        display.setText("错误"); // 如果解析失败，显示错误
+//                    }
+//                    break;
+//                case "MS": // 将当前值存储到内存
+//                    try {
+//                        memoryValue = Double.parseDouble(display.getText()); // 将当前显示屏上的值存储到内存
+//                    } catch (NumberFormatException ex) {
+//                        display.setText("错误"); // 如果解析失败，显示错误
+//                    }
+//                    break;
 
                 case "⌫":
                     if (!inputExpression.isEmpty()) {
@@ -566,56 +471,159 @@ public class ScientificPanel extends JPanel {
         }
     }
 
-    public class HistoryPanel extends JPanel {
-        private JTextArea historyArea;
+    private class FunctionButton extends JButton {
+        private Icon primaryIcon;
+        private Icon secondaryIcon;
+        private String primaryCommand;
+        private String secondaryCommand;
+        private boolean isInSecondMode = false;
+        private boolean hasSecondaryFunction;
 
-        public HistoryPanel() {
-            setLayout(new BorderLayout());
-            historyArea = new JTextArea("没有历史记录\n");
-            historyArea.setEditable(false);
-            JScrollPane historyScroll = new JScrollPane(historyArea);
-            historyScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-            // 清除历史按钮
-            JButton clearHistory = new JButton("清除历史");
-            clearHistory.addActionListener(e -> historyArea.setText("没有历史记录\n"));
-
-            add(new JLabel("历史记录"), BorderLayout.NORTH);
-            add(historyScroll, BorderLayout.CENTER);
-            add(clearHistory, BorderLayout.SOUTH);
-            historyArea.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        int pos = historyArea.viewToModel2D(e.getPoint());
-                        try {
-                            int start = historyArea.getLineStartOffset(historyArea.getLineOfOffset(pos));
-                            int end = historyArea.getLineEndOffset(historyArea.getLineOfOffset(pos));
-                            String selectedLine = historyArea.getText(start, end - start);
-
-                            if (start == end || Objects.equals(selectedLine, "没有历史记录\n")) return;
-
-                            // 提取表达式部分（示例格式：[15:30:45] 2+3*4=14.0）
-                            String expression = selectedLine.split("=")[0].split("] ")[1];
-                            expression = expression.substring(0, expression.length() - 1);
-
-                            inputExpression.setLength(0);
-                            inputExpression.append(expression);
-                            display.setText(expression);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            });
+        public FunctionButton(Icon primaryIcon, Icon secondaryIcon, String primaryCommand, String secondaryCommand) {
+            super(primaryIcon);
+            this.primaryIcon = primaryIcon;
+            this.secondaryIcon = secondaryIcon;
+            this.primaryCommand = primaryCommand;
+            this.secondaryCommand = secondaryCommand;
+            setActionCommand(primaryCommand);
+            this.hasSecondaryFunction = secondaryCommand != null && !secondaryCommand.isEmpty() && !secondaryCommand.equals(primaryCommand);
         }
 
-        public void AddHistory(String historyEntry) {
-            if (Objects.equals(historyArea.getText(), "没有历史记录\n")) historyArea.setText("");
+        public FunctionButton(Icon primaryIcon, String primaryCommand) {
+            this(primaryIcon, primaryIcon, primaryCommand, primaryCommand);
+            this.hasSecondaryFunction = false;
+        }
 
-            historyArea.append(historyEntry);
+        public void setSecondMode(boolean secondMode) {
+            if (hasSecondaryFunction) {
+                isInSecondMode = secondMode;
+                Dimension currentSize = getSize();
 
-            // 自动滚动到底部
-            historyArea.setCaretPosition(historyArea.getDocument().getLength());
+                if (secondMode) {
+                    setIcon(secondaryIcon);
+                    setActionCommand(secondaryCommand);
+                } else {
+                    setIcon(primaryIcon);
+                    setActionCommand(primaryCommand);
+                }
+
+                setPreferredSize(currentSize);
+                setMinimumSize(currentSize);
+                setMaximumSize(currentSize);
+            }
         }
     }
-}
+
+    private class ControlPanel extends JPanel {
+        private JButton MCButton;
+        private JButton MRButton;
+
+        public ControlPanel() {
+            setLayout(new GridLayout(1, 6, 10, 10));
+            String[] buttons = {
+                    "MC", "MR", "M+", "M-", "MS", "History"
+            };
+
+            for (int i = 0; i < 6; i++) {
+                String text = buttons[i];
+                JButton button = new JButton(text);
+                button.setFocusPainted(false);
+                button.setFont(new Font("Arial", Font.PLAIN, 15));
+                button.setBackground(new Color(238, 238, 238));
+                button.setBorder(BorderFactory.createEmptyBorder());
+                switch (i) {
+                    case 0:
+                        button.addActionListener(e -> memoryClear());
+                        MCButton = button;
+                        break;
+                    case 1:
+                        button.addActionListener(e -> memoryRecall());
+                        MRButton = button;
+                        break;
+                    case 2:
+                        button.addActionListener(e -> memoryAdd());
+                        break;
+                    case 3:
+                        button.addActionListener(e -> memorySubtract());
+                        break;
+                    case 4:
+                        button.addActionListener(e -> memoryStore());
+                        break;
+                    case 5:
+                        button.addActionListener(e -> historyButton(button));
+                        break;
+                }
+                add(button);
+            }
+            updateButtonState();
+        }
+
+        private void memoryClear() {
+            memoryValue = Double.MAX_VALUE;
+            updateButtonState();
+        }
+
+        private void memoryRecall() {
+            inputExpression.append(memoryValue); // 将内存值追加到输入表达式
+            display.setText(String.valueOf(memoryValue)); // 显示在显示屏上
+        }
+
+        private void memoryStore() {
+            String text = display.getText(); // 获取当前显示屏上的值
+            if (!text.isEmpty()) {
+                try {
+                    memoryValue = Double.parseDouble(text); // 从内存中减去当前值
+                } catch (NumberFormatException ex) {
+                    display.setText("错误"); // 如果解析失败，显示错误
+                }
+            }
+            updateButtonState();
+        }
+
+        private void memoryAdd() {
+            if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
+            String text = display.getText(); // 获取当前显示屏上的值
+            if (!text.isEmpty()) {
+                try {
+                    double currentValue = Double.parseDouble(text);
+                    memoryValue += currentValue; // 从内存中减去当前值
+                } catch (NumberFormatException ex) {
+                    display.setText("错误"); // 如果解析失败，显示错误
+                }
+            }
+            updateButtonState();
+        }
+
+        private void memorySubtract() {
+            if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
+            String text = display.getText(); // 获取当前显示屏上的值
+            if (!text.isEmpty()) {
+                try {
+                    double currentValue = Double.parseDouble(text);
+                    memoryValue -= currentValue; // 从内存中减去当前值
+                } catch (NumberFormatException ex) {
+                    display.setText("错误"); // 如果解析失败，显示错误
+                }
+            }
+            updateButtonState();
+        }
+
+            private void historyButton (JButton button){
+                if (topPanel.switchHistoryPanelState()) {
+                    button.setBackground(new Color(0, 103, 192));
+                } else {
+                    button.setBackground(new Color(238, 238, 238));
+                }
+            }
+
+            private void updateButtonState () {
+                if (memoryValue == Double.MAX_VALUE) {
+                    MCButton.setEnabled(false);
+                    MRButton.setEnabled(false);
+                } else {
+                    MCButton.setEnabled(true);
+                    MRButton.setEnabled(true);
+                }
+            }
+        }
+    }

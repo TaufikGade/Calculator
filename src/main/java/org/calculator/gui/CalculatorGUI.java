@@ -1,5 +1,7 @@
 package org.calculator.gui;
 
+import org.calculator.gui.scientific.ScientificPanel;
+
 import javax.swing.*;
 
 public class CalculatorGUI extends JFrame {
