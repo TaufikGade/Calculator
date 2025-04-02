@@ -7,8 +7,8 @@ import java.awt.event.MouseEvent;
 import java.util.Objects;
 
 public class HistoryPanel extends JPanel {
-    private ScientificPanel topPanel;
-    private JTextArea historyArea;
+    private final ScientificPanel topPanel;
+    private final JTextArea historyArea;
 
     public HistoryPanel(ScientificPanel top) {
         this.topPanel = top;
@@ -20,10 +20,26 @@ public class HistoryPanel extends JPanel {
                 BorderFactory.createEmptyBorder(5, 10, 10, 10)
         ));
 
+        Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 20);
+
+        // 顶部区域
+        JPanel topArea = new JPanel(new BorderLayout());
+        topArea.setBorder(BorderFactory.createEmptyBorder());
+
         // title标题
         JLabel title = new JLabel("历史记录");
-        title.setFont(new Font("Microsoft YaHei", Font.PLAIN, 20));
-        add(title, BorderLayout.NORTH);
+        title.setFont(chineseFont);
+        topArea.add(title, BorderLayout.WEST);
+
+        JButton closeButton = new JButton("关闭历史记录");
+        closeButton.setBorder(BorderFactory.createEmptyBorder());
+        closeButton.setFont(chineseFont);
+        closeButton.setFocusPainted(false);
+        closeButton.setBackground(new Color(238, 238, 238));
+        topArea.add(closeButton, BorderLayout.EAST);
+        closeButton.addActionListener(e -> topPanel.switchHistoryPanelState());
+
+        add(topArea, BorderLayout.NORTH);
 
         // historyArea 历史记录区域
         historyArea = new JTextArea("没有历史记录\n");
@@ -36,9 +52,10 @@ public class HistoryPanel extends JPanel {
         add(historyScroll, BorderLayout.CENTER);
 
         // 清除历史按钮
-        JButton clearHistory = new JButton("清除历史");
-        clearHistory.addActionListener(e -> historyArea.setText("没有历史记录\n"));
-        add(clearHistory, BorderLayout.SOUTH);
+        JButton clearButton = new JButton("清除历史");
+        clearButton.addActionListener(e -> historyArea.setText("没有历史记录\n"));
+        clearButton.setFocusPainted(false);
+        add(clearButton, BorderLayout.SOUTH);
 
         historyArea.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {

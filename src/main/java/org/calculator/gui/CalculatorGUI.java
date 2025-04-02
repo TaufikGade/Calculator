@@ -1,5 +1,6 @@
 package org.calculator.gui;
 
+import org.calculator.gui.drawing.DrawingPanel;
 import org.calculator.gui.scientific.ScientificPanel;
 
 import javax.swing.*;

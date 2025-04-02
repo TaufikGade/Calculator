@@ -1,185 +1,61 @@
-package org.calculator.gui;
+package org.calculator.gui.drawing;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Path2D;
 
-public class DrawingPanel extends JPanel {
-    private List<JTextField> inputFields; // 存储输入框的列表
-    private int inputCount = 3; // 当前输入框的数量
-    private final int MAX_INPUTS = 10; // 最大输入框数量限制
-    private final int MIN_INPUTS = 1; // 最小输入框数量限制
-    private List<Double> data; // 存储输入的数据
-    private JPanel chartPanel; // 用于显示图表的面板
-    private JButton addInputButton; // 增加输入框按钮
-    private JButton removeInputButton; // 减少输入框按钮
-    private JButton showBarChartButton; // 显示柱状图按钮
-    private JButton showPieChartButton; // 显示饼图按钮
-    private JButton showLineChartButton; // 显示折线图按钮
+public class MainPanel extends JPanel {
+    private final DrawingPanel topPanel;
+    private final JPanel chartPanel; // 用于显示图表的面板
+    private final JButton showDataButton; // 显示数据区域按钮
 
     private final int LINE_PADDING = 15; // 折线图间距
     private final int BAR_PADDING = 25; // 柱状图间距
 
-    public DrawingPanel() {
-        setLayout(new BorderLayout()); // 设置布局为BorderLayout
-        inputFields = new ArrayList<>();
-        data = new ArrayList<>();
+    public MainPanel(DrawingPanel top) {
+        this.topPanel = top;
 
-        // 创建输入部分的面板
-        JPanel inputPanel = new JPanel();
-        //inputPanel.setLayout(new BorderLayout());
-        JPanel inputFieldPanel = new JPanel();
-        inputFieldPanel.setLayout(new GridLayout(1, MAX_INPUTS + 1)); // 输入框面板使用GridLayout
-        inputFieldPanel.add(new JLabel("数据："));
-
-        // 初始化输入框
-        for (int i = 0; i < inputCount; i++) {
-            JTextField textField = new JTextField(10);
-            inputFields.add(textField);
-            inputFieldPanel.add(textField);
-        }
+        setLayout(new BorderLayout());
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 5));
-        addInputButton = new JButton("增加输入");
-        addInputButton.setFocusPainted(false);
-        removeInputButton = new JButton("减少输入");
-        removeInputButton.setFocusPainted(false);
-        showBarChartButton = new JButton("柱状图");
-        showBarChartButton.setFocusPainted(false);
-        showPieChartButton = new JButton("饼图");
-        showPieChartButton.setFocusPainted(false);
-        showLineChartButton = new JButton("折线图");
-        showLineChartButton.setFocusPainted(false);
+        buttonPanel.setLayout(new GridLayout(1, 4));
+        showDataButton = topPanel.initButton("数据");
+        // 显示柱状图按钮
+        JButton showBarChartButton = topPanel.initButton("柱状图");
+        // 显示饼图按钮
+        JButton showPieChartButton = topPanel.initButton("饼图");
+        // 显示折线图按钮
+        JButton showLineChartButton = topPanel.initButton("折线图");
 
-
-        buttonPanel.add(addInputButton);
-        buttonPanel.add(removeInputButton);
+        buttonPanel.add(showDataButton);
         buttonPanel.add(showBarChartButton);
         buttonPanel.add(showPieChartButton);
         buttonPanel.add(showLineChartButton);
 
-        // 添加按钮的监听器
-        addInputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (inputCount < MAX_INPUTS) {
-                    inputCount++;
-                    JTextField textField = new JTextField(10);
-                    inputFields.add(textField);
-                    inputFieldPanel.add(textField);
-                    inputFieldPanel.revalidate();
-                    inputFieldPanel.repaint();
-                }
-            }
-        });
+        // 添加按钮事件
+        showDataButton.addActionListener(e -> topPanel.switchDataPanelState());
 
-        removeInputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (inputCount > MIN_INPUTS) {
-                    inputCount--;
-                    inputFieldPanel.remove(inputFields.get(inputFields.size() - 1));
-                    inputFields.remove(inputFields.size() - 1);
-                    inputFieldPanel.revalidate();
-                    inputFieldPanel.repaint();
-                }
-            }
-        });
+        showBarChartButton.addActionListener(e -> generateBarChart());
 
-        showBarChartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generateBarChart();
-            }
-        });
+        showPieChartButton.addActionListener(e -> generatePieChart());
 
-        showPieChartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generatePieChart();
-            }
-        });
-
-        showLineChartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generateLineChart();
-            }
-        });
-
-        // 添加输入框面板和按钮面板到输入部分
-        inputPanel.add(inputFieldPanel, BorderLayout.CENTER);
-        //inputPanel.add(buttonPanel, BorderLayout.PAGE_END);
+        showLineChartButton.addActionListener(e -> generateLineChart());
 
         // 创建图表面板
         chartPanel = new JPanel();
         chartPanel.setLayout(new BorderLayout());
 
-        // 将输入部分和图表面板添加到DrawingPanel
-        add(inputPanel, BorderLayout.NORTH);
+        // 将图表面板添加到DrawingPanel
         add(chartPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.PAGE_END);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
-    /*
-    // 生成柱状图
-    private void generateBarChart() {
-        // 清空数据
-        data.clear();
-        for (JTextField textField : inputFields) {
-            try {
-                data.add(Double.parseDouble(textField.getText()));
-            } catch (NumberFormatException e) {
-                data.add(0.0); // 如果输入无效，添加0
-            }
-        }
-
-        // 创建柱状图面板
-        JPanel barChartPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                int width = getWidth();
-                int height = getHeight();
-                int barWidth = width / data.size();
-                int maxData = (int) Math.max(1, data.stream().mapToInt(Double::intValue).max().orElse(1));
-
-                for (int i = 0; i < data.size(); i++) {
-                    int barHeight = (int) ((data.get(i) / maxData) * height);
-                    g.setColor(getRandomColor()); // 随机颜色
-                    g.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
-                    g.setColor(Color.BLACK);
-                    g.drawString("Data " + (i + 1), i * barWidth, height);
-                }
-            }
-        };
-        barChartPanel.setPreferredSize(new Dimension(400, 300));
-        barChartPanel.setBorder(BorderFactory.createTitledBorder("柱状图"));
-
-        // 清空并添加柱状图面板到chartPanel
-        chartPanel.removeAll();
-        chartPanel.add(barChartPanel, BorderLayout.CENTER);
-        chartPanel.revalidate();
-        chartPanel.repaint();
-    }
-    */
 
     private void generateBarChart() {
-        // 清空数据
-        data.clear();
-        for (JTextField textField : inputFields) {
-            try {
-                data.add(Double.parseDouble(textField.getText()));
-            } catch (NumberFormatException e) {
-                data.add(0.0); // 如果输入无效，添加0
-            }
-        }
-
+        // 获取数据
+        var data = topPanel.getData();
+        if (data.isEmpty()) return;
         // 创建柱状图面板
         JPanel barChartPanel = new JPanel() {
             @Override
@@ -239,6 +115,7 @@ public class DrawingPanel extends JPanel {
                 }
             }
         };
+        barChartPanel.setBackground(Color.white);
         barChartPanel.setPreferredSize(new Dimension(400, 300));
         barChartPanel.setBorder(BorderFactory.createTitledBorder("柱状图"));
 
@@ -251,16 +128,9 @@ public class DrawingPanel extends JPanel {
 
     // 生成饼图
     private void generatePieChart() {
-        // 清空数据
-        data.clear();
-        for (JTextField textField : inputFields) {
-            try {
-                data.add(Double.parseDouble(textField.getText()));
-            } catch (NumberFormatException e) {
-                data.add(0.0); // 如果输入无效，添加0
-            }
-        }
-
+        // 获取数据
+        var data = topPanel.getData();
+        if (data.isEmpty()) return;
         // 创建饼图面板
         JPanel pieChartPanel = new JPanel() {
             @Override
@@ -290,6 +160,7 @@ public class DrawingPanel extends JPanel {
                 }
             }
         };
+        pieChartPanel.setBackground(Color.white);
         pieChartPanel.setBorder(BorderFactory.createTitledBorder("饼图"));
         pieChartPanel.setPreferredSize(new Dimension(400, 400));
 
@@ -304,16 +175,9 @@ public class DrawingPanel extends JPanel {
 
     // 生成折线图
     private void generateLineChart() {
-        // 清空数据
-        data.clear();
-        for (JTextField textField : inputFields) {
-            try {
-                data.add(Double.parseDouble(textField.getText()));
-            } catch (NumberFormatException e) {
-                data.add(0.0); // 如果输入无效，添加0
-            }
-        }
-
+        // 获取数据
+        var data = topPanel.getData();
+        if (data.isEmpty()) return;
         // 创建折线图面板
         JPanel lineChartPanel = new JPanel() {
             @Override
@@ -363,5 +227,9 @@ public class DrawingPanel extends JPanel {
     // 获取随机颜色
     private Color getRandomColor() {
         return new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
+    }
+
+    public void onDataPanelVisible(boolean isVisible) {
+        showDataButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
     }
 }

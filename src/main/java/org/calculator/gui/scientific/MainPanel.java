@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainPanel extends JPanel {
-    private ScientificPanel topPanel;
-    private JTextField display;
-    private StringBuilder inputExpression;
+    private final ScientificPanel topPanel;
+    private final JTextField display;
+    private final StringBuilder inputExpression;
     private final MathEvaluator evaluator;
     private boolean isSecondMode = false;
     private final Map<String, FunctionButton> functionButtons;
@@ -22,6 +22,7 @@ public class MainPanel extends JPanel {
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
     private JButton trigButton;
+    private final ControlPanel controlPanel;
     private double memoryValue = Double.MAX_VALUE; // 新增变量，用于存储内存中的值
 
     public MainPanel(ScientificPanel top) {
@@ -44,7 +45,7 @@ public class MainPanel extends JPanel {
         JPanel topFunctionsPanel = createTopFunctionsPanel();
 
         // 控制符号面板
-        ControlPanel controlPanel = new ControlPanel();
+        controlPanel = new ControlPanel();
 
         // 将两个面板放在一个垂直面板中
         JPanel northPanel = new JPanel(new GridLayout(2, 1));
@@ -238,6 +239,10 @@ public class MainPanel extends JPanel {
         display.setText(inputExpression.toString());
     }
 
+    public void onHistoryPanelVisible(boolean isVisible) {
+        controlPanel.updateHistoryButton(isVisible);
+    }
+
     private class ButtonHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String cmd = e.getActionCommand();
@@ -264,38 +269,6 @@ public class MainPanel extends JPanel {
                         inputExpression.setLength(0);
                     }
                     break;
-//                case "MC": // 清除内存
-//                    memoryValue = Double.MAX_VALUE; // 将内存值重置为 无限大
-//                    break;
-//                case "MR": // 回忆内存中的值
-//                    inputExpression.append(memoryValue); // 将内存值追加到输入表达式
-//                    display.setText(String.valueOf(memoryValue)); // 显示在显示屏上
-//                    break;
-//                case "M+": // 将当前值加到内存
-//                    try {
-//                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
-//                        if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
-//                        memoryValue += currentValue; // 将当前值加到内存
-//                    } catch (NumberFormatException ex) {
-//                        display.setText("错误"); // 如果解析失败，显示错误
-//                    }
-//                    break;
-//                case "M-": // 从内存中减去当前值
-//                    try {
-//                        double currentValue = Double.parseDouble(display.getText()); // 获取当前显示屏上的值
-//                        if (memoryValue == Double.MAX_VALUE) memoryValue = 0;
-//                        memoryValue -= currentValue; // 从内存中减去当前值
-//                    } catch (NumberFormatException ex) {
-//                        display.setText("错误"); // 如果解析失败，显示错误
-//                    }
-//                    break;
-//                case "MS": // 将当前值存储到内存
-//                    try {
-//                        memoryValue = Double.parseDouble(display.getText()); // 将当前显示屏上的值存储到内存
-//                    } catch (NumberFormatException ex) {
-//                        display.setText("错误"); // 如果解析失败，显示错误
-//                    }
-//                    break;
 
                 case "⌫":
                     if (!inputExpression.isEmpty()) {
@@ -428,7 +401,7 @@ public class MainPanel extends JPanel {
 
                 case "rand":
                     double random = Math.random();
-                    inputExpression.append(String.valueOf(random));
+                    inputExpression.append(random);
                     display.setText(inputExpression.toString());
                     break;
 
@@ -472,10 +445,10 @@ public class MainPanel extends JPanel {
     }
 
     private class FunctionButton extends JButton {
-        private Icon primaryIcon;
-        private Icon secondaryIcon;
-        private String primaryCommand;
-        private String secondaryCommand;
+        private final Icon primaryIcon;
+        private final Icon secondaryIcon;
+        private final String primaryCommand;
+        private final String secondaryCommand;
         private boolean isInSecondMode = false;
         private boolean hasSecondaryFunction;
 
@@ -512,11 +485,16 @@ public class MainPanel extends JPanel {
                 setMaximumSize(currentSize);
             }
         }
+
+        public boolean isInSecondMode() {
+            return isInSecondMode;
+        }
     }
 
     private class ControlPanel extends JPanel {
         private JButton MCButton;
         private JButton MRButton;
+        private JButton historyButton;
 
         public ControlPanel() {
             setLayout(new GridLayout(1, 6, 10, 10));
@@ -550,7 +528,8 @@ public class MainPanel extends JPanel {
                         button.addActionListener(e -> memoryStore());
                         break;
                     case 5:
-                        button.addActionListener(e -> historyButton(button));
+                        button.addActionListener(e -> historyButton());
+                        historyButton = button;
                         break;
                 }
                 add(button);
@@ -608,22 +587,23 @@ public class MainPanel extends JPanel {
             updateButtonState();
         }
 
-            private void historyButton (JButton button){
-                if (topPanel.switchHistoryPanelState()) {
-                    button.setBackground(new Color(0, 103, 192));
-                } else {
-                    button.setBackground(new Color(238, 238, 238));
-                }
-            }
+        private void historyButton() {
+            topPanel.switchHistoryPanelState();
+        }
 
-            private void updateButtonState () {
-                if (memoryValue == Double.MAX_VALUE) {
-                    MCButton.setEnabled(false);
-                    MRButton.setEnabled(false);
-                } else {
-                    MCButton.setEnabled(true);
-                    MRButton.setEnabled(true);
-                }
+        private void updateButtonState() {
+            if (memoryValue == Double.MAX_VALUE) {
+                MCButton.setEnabled(false);
+                MRButton.setEnabled(false);
+            } else {
+                MCButton.setEnabled(true);
+                MRButton.setEnabled(true);
             }
         }
+
+        public void updateHistoryButton(boolean isVisible) {
+            historyButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
+            // #EEEEEE
+        }
     }
+}

@@ -26,14 +26,9 @@ public class ScientificPanel extends JLayeredPane {
 
     // 返回true  表示历史记录面板出现
     // 返回false 表示隐藏历史记录面板
-    public boolean switchHistoryPanelState() {
-        if (!historyPanel.isVisible()) {
-            historyPanel.setVisible(true);
-            return true;
-        } else {
-            historyPanel.setVisible(false);
-            return false;
-        }
+    public void switchHistoryPanelState() {
+        historyPanel.setVisible(!historyPanel.isVisible());
+        mainPanel.onHistoryPanelVisible(historyPanel.isVisible());
     }
 
     public void addCalHistory(String result) {
