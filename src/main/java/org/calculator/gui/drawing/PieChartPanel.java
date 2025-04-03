@@ -12,6 +12,7 @@ public class PieChartPanel extends ChartPanel {
     private int centerX;
     private int centerY;
     private int radius;
+    private double dataSum = 0;
     private List<Color> fragmentColor;
 
     public PieChartPanel(List<Double> data, MainPanel top) {
@@ -19,7 +20,11 @@ public class PieChartPanel extends ChartPanel {
 
         setBorder(BorderFactory.createTitledBorder("饼状图"));
         setPreferredSize(new Dimension(400, 400));
+
         fragmentColor = new ArrayList<>();
+
+        JLabel tipLabel = new JLabel("注：负数不计入饼状图");
+        add(tipLabel, -1);
     }
 
     @Override
@@ -29,7 +34,10 @@ public class PieChartPanel extends ChartPanel {
         super.paintComponent(g);
         calculateLayout();
 
-        double total = data.stream().mapToDouble(Double::doubleValue).sum();
+        dataSum = 0;
+        for (double datum : data) {
+            if (datum > 0) dataSum += datum;
+        }
         double startAngle = 0;
 
         Graphics2D g2d = (Graphics2D) g;
@@ -41,8 +49,9 @@ public class PieChartPanel extends ChartPanel {
                 fragmentColor.add(color);
             }
             g2d.setColor(i == hoveredIndex ? fragmentColor.get(i).brighter() : fragmentColor.get(i));
+            if (datum < 0) continue;
             // 使用Arc2D和Path2D确保平滑边缘
-            double arcAngle = (datum / total) * 360;
+            double arcAngle = (datum / dataSum) * 360;
             Arc2D arc = new Arc2D.Double(centerX - radius / 2.0f, centerY - radius / 2.0f, radius, radius, startAngle, arcAngle, Arc2D.PIE);
             Path2D path = new Path2D.Double();
             path.append(arc, true);
@@ -76,11 +85,11 @@ public class PieChartPanel extends ChartPanel {
         angle = (angle + 360) % 360;
 
         // 遍历所有扇区检测匹配
-        double total = data.stream().mapToDouble(Double::doubleValue).sum();
         double startAngle = 0;
 
         for (int i = 0; i < data.size(); i++) {
-            double sweepAngle = (data.get(i) / total) * 360;
+            if (data.get(i) < 0) continue;
+            double sweepAngle = (data.get(i) / dataSum) * 360;
             double endAngle = startAngle + sweepAngle;
 
             if (angle >= startAngle && angle <= endAngle) {
@@ -98,9 +107,10 @@ public class PieChartPanel extends ChartPanel {
 
     @Override
     protected void drawTooltip(Graphics g, int index) {
-        String text = String.format("数据%02d：%f  占比：%.1f%%",
+
+        String text = String.format("数据%02d：%f(%.1f%%)",
                 (index + 1), data.get(index),
-                (data.get(index) / data.stream().mapToDouble(Double::doubleValue).sum()) * 100);
+                (data.get(index) / dataSum) * 100);
 
         // 计算提示框位置
         Point mousePos = getMousePosition();

@@ -26,8 +26,8 @@ public class BarChartPanel extends ChartPanel {
 
         super.paintComponent(g);
 
-        barLowerBounds = new ArrayList<Integer>(data.size());
-        barUpperBounds = new ArrayList<Integer>(data.size());
+        barLowerBounds = new ArrayList<>(data.size());
+        barUpperBounds = new ArrayList<>(data.size());
 
         int width = getWidth() - 2 * BAR_PADDING;
         int height = getHeight() - 2 * BAR_PADDING;
