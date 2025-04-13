@@ -15,15 +15,43 @@
     </properties>
 
 
+    <repositories>
+        <!-- 添加 JitPack 仓库 -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
-        <!-- 添加 JLaTeXMath 库（用于数学公式渲染） -->
-
-
+        <!-- JLaTeXMath 依赖 -->
         <dependency>
             <groupId>org.scilab.forge</groupId>
             <artifactId>jlatexmath</artifactId>
             <version>1.0.7</version>
         </dependency>
+
+        <!-- 使用 Matheclipse 依赖 -->
+        <dependency>
+            <groupId>org.matheclipse</groupId>
+            <artifactId>matheclipse-core</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- Log4j2 核心 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
+        <!-- SLF4J 到 Log4j2 的桥接 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
