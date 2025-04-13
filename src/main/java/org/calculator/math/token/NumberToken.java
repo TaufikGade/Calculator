@@ -1,3 +1,4 @@
+// NumberToken.java
 package org.calculator.math.token;
 
 public class NumberToken extends ExpressionToken {
@@ -7,7 +8,13 @@ public class NumberToken extends ExpressionToken {
         this.value = value;
     }
 
-    public double getValue() {
+    @Override
+    public String getStringValue() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public double getNumericValue() {
         return value;
     }
 }

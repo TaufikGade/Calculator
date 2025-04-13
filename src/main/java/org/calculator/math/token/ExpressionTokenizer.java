@@ -9,78 +9,53 @@ public class ExpressionTokenizer {
     public List<ExpressionToken> tokenize(String expression) {
         List<ExpressionToken> tokens = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
-        // 不要移除空格，我们将使用空格作为分隔符
-        expression = expression.toLowerCase();
+        int i = 0;
 
-        for (int i = 0; i < expression.length(); i++) {
+        while (i < expression.length()) {
             char c = expression.charAt(i);
-
-            if (c == ' ') {
-                // 处理当前缓冲区中的数字
-                if (buffer.length() > 0) {
-                    tokens.add(parseNumber(buffer.toString()));
-                    buffer.setLength(0);
+            if (Character.isWhitespace(c)) {
+                i++;
+            } else if (Character.isLetter(c)) {
+                int endIndex = i;
+                while (endIndex < expression.length() && Character.isLetter(expression.charAt(endIndex))) {
+                    endIndex++;
                 }
-
-                // 查找下一个非空格字符的位置
-                int nextNonSpaceIndex = i + 1;
-                while (nextNonSpaceIndex < expression.length() &&
-                        expression.charAt(nextNonSpaceIndex) == ' ') {
-                    nextNonSpaceIndex++;
+                String token = expression.substring(i, endIndex);
+                if (Operator.isOperator(token)) {
+                    tokens.add(new OperatorToken(token));
+                } else {
+                    tokens.add(new FunctionToken(token));
                 }
-
-                // 如果还有字符，且下一个字符是字母，则尝试解析特殊操作符或函数
-                if (nextNonSpaceIndex < expression.length() &&
-                        Character.isLetter(expression.charAt(nextNonSpaceIndex))){
-
-                    int endIndex = nextNonSpaceIndex;
-                    // 一直读取直到遇到空格或其他非字母字符
-                    while (endIndex < expression.length() &&
-                            Character.isLetter(expression.charAt(endIndex))) {
-                        endIndex++;
-                    }
-
-                    String token = expression.substring(nextNonSpaceIndex, endIndex);
-                    // 使用Operator类判断token类型
-                    addTokenBasedOnType(tokens, token);
-                    i = endIndex - 1; // 调整索引，减1是因为循环会自增
-                }
+                i = endIndex;
             } else if (Character.isDigit(c) || c == '.') {
                 buffer.append(c);
-            } else if (c == '-' && (i == 0 || isOperatorOrParenthesis(expression.charAt(i - 1)) ||
-                    expression.charAt(i - 1) == ' ')) {
-                // 处理一元负号
+                if (i + 1 < expression.length() && (Character.isDigit(expression.charAt(i + 1)) || expression.charAt(i + 1) == '.')) {
+                    i++;
+                } else {
+                    tokens.add(new NumberToken(Double.parseDouble(buffer.toString())));
+                    buffer.setLength(0);
+                    i++;
+                }
+            } else if (c == '(' || c == ')') {
                 if (buffer.length() > 0) {
                     tokens.add(new NumberToken(Double.parseDouble(buffer.toString())));
                     buffer.setLength(0);
                 }
-                tokens.add(new OperatorToken("u-"));
+                tokens.add(new ParenthesisToken(c == '('));
+                i++;
             } else {
                 if (buffer.length() > 0) {
-                    tokens.add(parseNumber(buffer.toString()));
+                    tokens.add(new NumberToken(Double.parseDouble(buffer.toString())));
                     buffer.setLength(0);
                 }
-
-                if (c == '(' || c == ')') {
-                    tokens.add(new ParenthesisToken(c == '('));
-                } else if (Character.isLetter(c)) {
-                    String func = parseFunction(expression, i);
-                    // 使用Operator类判断token类型
-                    addTokenBasedOnType(tokens, func);
-                    i += func.length() - 1;
+                String opStr = String.valueOf(c);
+                if (Operator.isOperator(opStr)) {
+                    tokens.add(new OperatorToken(opStr));
                 } else {
-                    String opStr = String.valueOf(c);
-                    if (Operator.isOperator(opStr)) {
-                        tokens.add(new OperatorToken(opStr));
-                    } else {
-                        throw new InvalidExpressionException("Invalid character: " + c);
-                    }
+                    throw new InvalidExpressionException("Invalid character: " + c);
                 }
+                i++;
             }
-        }
-
-        if (buffer.length() > 0) {
-            tokens.add(parseNumber(buffer.toString()));
         }
 
         return tokens;
@@ -118,4 +93,5 @@ public class ExpressionTokenizer {
     private boolean isOperatorOrParenthesis(char c) {
         return c == '(' || c == ')' || Operator.isOperator(String.valueOf(c));
     }
+
 }

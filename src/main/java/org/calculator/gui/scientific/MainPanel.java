@@ -63,7 +63,6 @@ public class MainPanel extends JPanel {
         add(centralPanel, BorderLayout.CENTER);
     }
 
-    // 创建顶部特殊功能按钮面板
     private JPanel createTopFunctionsPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel.setBackground(new Color(240, 240, 240));
@@ -83,6 +82,26 @@ public class MainPanel extends JPanel {
             trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
         });
         panel.add(trigButton);
+
+        // 添加求导按钮
+        JButton derivativeButton = new JButton("求导");
+        derivativeButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        derivativeButton.setFocusPainted(false);
+        derivativeButton.setBackground(new Color(248, 249, 250));
+        derivativeButton.addActionListener(buttonHandler);
+        panel.add(derivativeButton);
+
+        // 添加函数按钮
+        JButton functionButton = new JButton("函数");
+        functionButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        functionButton.setFocusPainted(false);
+        functionButton.setBackground(new Color(248, 249, 250));
+        functionButton.addActionListener(e -> {
+            // 显示函数弹出菜单在按钮下方
+            JPopupMenu functionPopupMenu = createFunctionPopupMenu();
+            functionPopupMenu.show(functionButton, 0, functionButton.getHeight());
+        });
+        panel.add(functionButton);
 
         return panel;
     }
@@ -109,7 +128,6 @@ public class MainPanel extends JPanel {
             button.setFocusPainted(false);
             button.setActionCommand(function);
             button.addActionListener(buttonHandler);
-            //button.setSize(100,80);
             trigPanel.add(button);
         }
 
@@ -126,6 +144,35 @@ public class MainPanel extends JPanel {
         }
 
         menu.add(trigPanel);
+        return menu;
+    }
+
+    private JPopupMenu createFunctionPopupMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        menu.setBackground(new Color(248, 249, 250));
+
+        // 创建包含函数按钮的面板
+        JPanel functionPanel = new JPanel(new GridLayout(2, 3, 2, 2));
+        functionPanel.setBackground(new Color(248, 249, 250));
+
+        // 添加函数按钮
+        String[] functions = {"sin(x)", "cos(x)", "tan(x)", "log(x)", "ln(x)", "exp(x)"};
+
+        for (String function : functions) {
+            JButton button = new JButton(function);
+            button.setFont(new Font("Arial", Font.PLAIN, 12));
+            button.setForeground(Color.BLACK);
+            button.setBackground(new Color(248, 249, 250));
+            button.setFocusPainted(false);
+            button.setActionCommand(function);
+            button.addActionListener(e -> {
+                inputExpression.append(function);
+                display.setText(inputExpression.toString());
+            });
+            functionPanel.add(button);
+        }
+
+        menu.add(functionPanel);
         return menu;
     }
 
@@ -284,118 +331,140 @@ public class MainPanel extends JPanel {
 
                 // 三角函数
                 case "sin":
-                    inputExpression.append("sin(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("sin(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "cos":
-                    inputExpression.append("cos(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("cos(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "tan":
-                    inputExpression.append("tan(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("tan(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 // 反三角函数
                 case "asin":
-                    inputExpression.append("asin(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("asin(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "acos":
-                    inputExpression.append("acos(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("acos(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "atan":
-                    inputExpression.append("atan(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("atan(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 // 对数函数
                 case "log(":
-                    inputExpression.append("log(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("log(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "ln":
-                    inputExpression.append("ln(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("ln(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 // 指数函数
                 case "10^":
-                    inputExpression.append("10^(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("10^x");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "2^":
-                    inputExpression.append("2^(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("2^x");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "e^":
-                    inputExpression.append("exp("); // Use 'exp' for e^ in MathEvaluator
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("exp(x)"); // Use 'exp' for e^ in MathEvaluator
                     display.setText(inputExpression.toString());
                     break;
 
                 // 幂函数
                 case "x^2":
-                    inputExpression.append("^2");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("x^2");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "x^3":
-                    inputExpression.append("^3");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("x^3");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "^":
-                    inputExpression.append("^");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("x^y");
                     display.setText(inputExpression.toString());
                     break;
 
                 // 开方
                 case "sqrt":
-                    inputExpression.append("sqrt(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("sqrt(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "cbrt":
-                    inputExpression.append("cbrt(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("cbrt(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "yroot":
-                    inputExpression.append(" yroot ");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("yroot(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "log_base":
-                    inputExpression.append(" logbase ");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("log_base(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 // 其他数学函数
                 case "1/x":
-                    inputExpression.append("1/(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("1/x");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "|x|":
-                    inputExpression.append("abs(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("abs(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "floor":
-                    inputExpression.append("floor(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("floor(x)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "exp":
-                    inputExpression.append("exp(");
+                    inputExpression.setLength(0); // 清空输入表达式
+                    inputExpression.append("exp(x)");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -440,9 +509,23 @@ public class MainPanel extends JPanel {
                     inputExpression.append(cmd);
                     display.setText(inputExpression.toString());
                     break;
+
+                // 求导
+                case "求导":
+                    try {
+                        String expression = inputExpression.toString();
+                        String derivative = evaluator.derivative(expression);
+                        display.setText(derivative);
+                    } catch (Exception ex) {
+                        display.setText("无法求导");
+                    }
+                    break;
             }
         }
     }
+
+
+
 
     private class FunctionButton extends JButton {
         private final Icon primaryIcon;

@@ -10,4 +10,14 @@ public class ParenthesisToken extends ExpressionToken {
     public boolean isOpen() {
         return isOpen;
     }
+
+    @Override
+    public String getStringValue() {
+        return "";
+    }
+
+    @Override
+    public double getNumericValue() {
+        return 0;
+    }
 }

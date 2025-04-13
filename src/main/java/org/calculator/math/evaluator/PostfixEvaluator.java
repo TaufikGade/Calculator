@@ -14,7 +14,7 @@ public class PostfixEvaluator {
 
         for (ExpressionToken token : postfix) {
             if (token instanceof NumberToken) {
-                stack.push(((NumberToken) token).getValue());
+                stack.push(token.getNumericValue()); // 使用 getNumericValue()
             } else if (token instanceof OperatorToken) {
                 processOperator((OperatorToken) token, stack);
             } else if (token instanceof FunctionToken) {
@@ -62,10 +62,11 @@ public class PostfixEvaluator {
                 }
                 stack.push(Math.acos(arg));
             }
-            case "atan" -> stack.push(Math.atan(arg)); //
+            case "atan" -> stack.push(Math.atan(arg));
             default -> throw new UnsupportedOperatorException(func);
         }
     }
+
     private void handleUnaryOperator(String op, Stack<Double> stack) {
         if (op.equals("u-")) {
             stack.push(-stack.pop());
@@ -91,9 +92,9 @@ public class PostfixEvaluator {
                 if (b == 0) throw new ArithmeticException("Division by zero");
                 stack.push(a % b);
             }
-            case"yroot" ->{
+            case "yroot" -> {
                 if (b == 0) throw new ArithmeticException("Division by zero");
-                stack.push(Math.pow(a,1.0/b));
+                stack.push(Math.pow(a, 1.0 / b));
             }
             case "logbase" -> {
                 if (b <= 0) throw new ArithmeticException("Base must be greater than 0 and not equal to 1");

@@ -42,34 +42,17 @@ public class LineChartPanel extends ChartPanel {
         double dataDiff = yMax - yMin;
 
         Path2D path = new Path2D.Double();
-
-        if (yMin >= 0) {
-            for (int i = 0; i < data.size(); i++) {
-                int x = (i * chartWidth) / (data.size() - 1) + LINE_PADDING;
-                int y = chartHeight - (int) ((data.get(i) / yMax) * chartHeight) + LINE_PADDING;
-                dataPointX.add(x);
-                dataPointY.add(y);
-                // 坐标 y 的计算应该为 该数据在 最大值-最小值 中所占的比例 再乘以面板宽度
-                g2d.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
-                if (i > 0) {
-                    path.lineTo(x, y);
-                } else {
-                    path.moveTo(x, y);
-                }
-            }
-        } else {
-            for (int i = 0; i < data.size(); i++) {
-                int x = (i * chartWidth) / (data.size() - 1) + LINE_PADDING;
-                int y = chartHeight - (int) (((data.get(i) - yMin) / dataDiff) * chartHeight) + LINE_PADDING;
-                dataPointX.add(x);
-                dataPointY.add(y);
-                // 坐标 y 的计算应该为 该数据在 最大值-最小值 中所占的比例 再乘以面板宽度
-                g2d.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
-                if (i > 0) {
-                    path.lineTo(x, y);
-                } else {
-                    path.moveTo(x, y);
-                }
+        for (int i = 0; i < data.size(); i++) {
+            int x = (i * chartWidth) / (data.size() - 1) + LINE_PADDING;
+            int y = chartHeight - (int) (((data.get(i) - yMin) / dataDiff) * chartHeight) + LINE_PADDING;
+            dataPointX.add(x);
+            dataPointY.add(y);
+            // 坐标 y 的计算应该为 该数据在 最大值-最小值 中所占的比例 再乘以面板宽度
+            g2d.fillOval(x - pointRadius, y - pointRadius, pointRadius * 2, pointRadius * 2); // 绘制点
+            if (i > 0) {
+                path.lineTo(x, y);
+            } else {
+                path.moveTo(x, y);
             }
         }
         g2d.setColor(new Color(70, 130, 255));
@@ -154,26 +137,13 @@ public class LineChartPanel extends ChartPanel {
         int numTicks = 5;
 
         g.setFont(new Font("Arial", Font.PLAIN, 12));
-        if (yMin >= 0) {
-            for (int i = 0; i <= numTicks; i++) {
-                int ty = chartHeight - (i * chartHeight / 5) + LINE_PADDING;
-                g.setColor(Color.DARK_GRAY);
-                g.drawLine(LINE_PADDING, ty, chartWidth + LINE_PADDING, ty); // 绘制分割线
-                g.setColor(Color.BLACK);
-                g.drawString(String.format("%.2f", i * yMax / numTicks), 10, ty); // 标注数值
+        for (int i = 0; i <= numTicks; i++) {
+            int ty = chartHeight - (i * chartHeight / 5) + LINE_PADDING;
+            g.setColor(Color.DARK_GRAY);
+            g.drawLine(LINE_PADDING, ty, chartWidth + LINE_PADDING, ty); // 绘制分割线
+            g.setColor(Color.BLACK);
+            g.drawString(String.format("%.2f", i * (yMax - yMin) / numTicks + yMin), 10, ty); // 标注数值
 
-            }
-        } else {
-            int y = (int) ((1 - (Math.abs(yMin) / (yMax - yMin)) * chartHeight));
-            g.drawLine(LINE_PADDING, y, chartWidth + LINE_PADDING, y);
-            g.drawString("0", 10, y);
-            for (int i = 0; i <= numTicks; i++) {
-                int ty = chartHeight - (i * chartHeight / 5) + LINE_PADDING;
-                g.setColor(Color.DARK_GRAY);
-                g.drawLine(LINE_PADDING, ty, chartWidth + LINE_PADDING, ty); // 绘制分割线
-                g.setColor(Color.BLACK);
-                g.drawString(String.format("%.2f", i * (yMax - yMin) / numTicks + yMin), 10, ty); // 标注数值
-            }
         }
     }
 }
