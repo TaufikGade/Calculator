@@ -157,7 +157,7 @@ public class MainPanel extends JPanel {
         JPanel functionPanel = new JPanel(new GridLayout(2, 3, 2, 2));
         functionPanel.setBackground(new Color(248, 249, 250));
 
-        String[] functions = {"sin[x]", "cos[x]", "tan[x]", "ln[x]", "log[10, x]", "exp[x]"};
+        String[] functions = {"sin(x)", "cos(x)", "tan(x)", "ln(x)", "lg(10, x)", "exp(x)"};
 
         for (String function : functions) {
             JButton button = new JButton(function);
@@ -169,7 +169,7 @@ public class MainPanel extends JPanel {
             button.addActionListener(e -> {
                 // 如果前一个字符是数字，则自动添加乘号
                 if (!inputExpression.isEmpty() && Character.isDigit(inputExpression.charAt(inputExpression.length() - 1))) {
-                    inputExpression.append("*");
+                    inputExpression.append("×");
                 }
                 inputExpression.append(function);
                 display.setText(inputExpression.toString());
@@ -293,10 +293,6 @@ public class MainPanel extends JPanel {
 
     public void onHistoryPanelVisible(boolean isVisible) {
         controlPanel.updateHistoryButton(isVisible);
-    }
-
-    public MathEvaluator getSymEvaluator() {
-        return symEvaluator;
     }
 
     private class ButtonHandler implements ActionListener {
@@ -496,6 +492,8 @@ public class MainPanel extends JPanel {
                     try {
                         String expression = inputExpression.toString();
                         String derivative = evaluator.derivativeWithSymja(expression);
+                        inputExpression.setLength(0);
+                        inputExpression.append(derivative);
                         display.setText(derivative);
                     } catch (Exception ex) {
                         display.setText("无法求导");
@@ -581,24 +579,24 @@ public class MainPanel extends JPanel {
                 button.setBorder(BorderFactory.createEmptyBorder());
                 switch (i) {
                     case 0:
-                        button.addActionListener(e -> memoryClear());
+                        button.addActionListener(_ -> memoryClear());
                         MCButton = button;
                         break;
                     case 1:
-                        button.addActionListener(e -> memoryRecall());
+                        button.addActionListener(_ -> memoryRecall());
                         MRButton = button;
                         break;
                     case 2:
-                        button.addActionListener(e -> memoryAdd());
+                        button.addActionListener(_ -> memoryAdd());
                         break;
                     case 3:
-                        button.addActionListener(e -> memorySubtract());
+                        button.addActionListener(_ -> memorySubtract());
                         break;
                     case 4:
-                        button.addActionListener(e -> memoryStore());
+                        button.addActionListener(_ -> memoryStore());
                         break;
                     case 5:
-                        button.addActionListener(e -> historyButton());
+                        button.addActionListener(_ -> historyButton());
                         historyButton = button;
                         break;
                 }
