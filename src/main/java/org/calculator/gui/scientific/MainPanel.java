@@ -445,7 +445,7 @@ public class MainPanel extends JPanel {
                     break;
 
                 case "yroot":
-                    inputExpression.append(" ^(1/ ");
+                    inputExpression.append("^(1/");
                     display.setText(inputExpression.toString());
                     break;
 
