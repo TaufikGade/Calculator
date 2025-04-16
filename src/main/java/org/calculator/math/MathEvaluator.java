@@ -35,6 +35,8 @@ public class MathEvaluator {
     public String derivativeWithSymja(String expression) {
         // TODO:泛型的函数求导
         try {
+            expression = convertLogbase(expression);
+
             StringBuilder sb = new StringBuilder(expression);
             int lb = 0, rb = 0;
             for (int i = 0; i < sb.length(); i++) {
@@ -42,6 +44,7 @@ public class MathEvaluator {
                 if (sb.charAt(i) == '(') lb++;
                 if (sb.charAt(i) == ')') rb++;
             }
+
             while (lb != rb) {
                 sb.insert(sb.length(), ')');
                 rb++;
@@ -57,5 +60,49 @@ public class MathEvaluator {
         } catch (Exception e) {
             throw new RuntimeException("Symja 求导失败: " + e.getMessage());
         }
+    }
+
+    public static String convertLogbase(String expression) {
+        // 1. 处理括号包围的 a 和 b，例如 "(a + b) logbase (c)"
+        String regex1 = "\\$([^)]+)\\$\\s+logbase\\s+\\$([^)]+)\\$";
+        String replaced = expression.replaceAll(regex1, "log($1, $2)");
+
+        // 2. 处理 a 带括号、b 不带括号，例如 "(a) logbase b"
+        String regex2 = "\\$([^)]+)\\$\\s+logbase\\s+([^\\s]+)";
+        replaced = replaced.replaceAll(regex2, "log($1, $2)");
+
+        // 3. 处理 a 不带括号、b 带括号，例如 "a logbase (b)"
+        String regex3 = "([^\\s]+)\\s+logbase\\s+\\$([^)]+)\\$";
+        replaced = replaced.replaceAll(regex3, "log($1, $2)");
+
+        // 4. 处理 a 和 b 都不带括号，例如 "3 logbase 5"
+        String regex4 = "([^\\s]+)\\s+logbase\\s+([^\\s]+)";
+        replaced = replaced.replaceAll(regex4, "log($1, $2)");
+
+        return replaced;
+    }
+
+    public String solveEquation(String expression) {
+        StringBuilder sb = new StringBuilder(expression);
+        sb.replace(0, 0, "Solve({");
+        sb.replace(sb.length(), sb.length(), "}, {x})");
+        IExpr result = symjaEvaluator.evaluate(sb.toString());
+        sb = new StringBuilder(result.toString());
+        int index = sb.indexOf("->");
+        while (index != -1) {
+            sb.replace(index, index + 2, "==");
+            index = sb.indexOf("->");
+        }
+        index = sb.indexOf("{");
+        while (index != -1) {
+            sb.replace(index, index + 1, "");
+            index = sb.indexOf("{");
+        }
+        index = sb.indexOf("}");
+        while (index != -1) {
+            sb.replace(index, index + 1, "");
+            index = sb.indexOf("}");
+        }
+        return sb.toString();
     }
 }

@@ -83,7 +83,7 @@ public class PostfixEvaluator {
             case "+" -> stack.push(a + b);
             case "-" -> stack.push(a - b);
             case "×" -> stack.push(a * b);
-            case "÷" -> {
+            case "/", "÷" -> {
                 if (b == 0) throw new ArithmeticException("Division by zero");
                 stack.push(a / b);
             }

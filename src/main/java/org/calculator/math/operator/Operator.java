@@ -14,6 +14,7 @@ public class Operator {
         defineOperator("-", 1, "LEFT", OperatorType.BINARY);
         defineOperator("×", 2, "LEFT", OperatorType.BINARY);
         defineOperator("÷", 2, "LEFT", OperatorType.BINARY);
+        defineOperator("/", 2, "LEFT", OperatorType.BINARY);
         defineOperator("%", 2, "LEFT", OperatorType.BINARY);
         defineOperator("yroot", 5, "LEFT", OperatorType.BINARY);
         defineOperator("logbase", 5, "LEFT", OperatorType.BINARY);

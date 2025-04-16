@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,17 @@ public class MainPanel extends JPanel {
         setLayout(new BorderLayout());
         // 显示屏
         display = new JTextField();
-        display.setFont(new Font("Microsoft YaHei", Font.BOLD, 38));
+
+        try {
+            InputStream fontStream = MainPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(38f);
+            display.setFont(customFont);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "字体加载失败！");
+        }
+
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setEditable(false);
         add(display, BorderLayout.NORTH);
@@ -193,7 +204,7 @@ public class MainPanel extends JPanel {
 
                 {"x^2", "x^2", "x^3", "x^3"},
                 {"\\frac{1}{x}", "1/x"},
-                {"|x|", "|x|", "\\lfloor x \\rfloor", "floor"},
+                {"|x|", "|x|", "x", "x"},
                 {"\\exp", "exp"},
                 {"mod", "%"},
 
@@ -301,25 +312,38 @@ public class MainPanel extends JPanel {
 
             switch (cmd) {
                 case "=":
-                    try {
-                        String expression = inputExpression.toString();
-                        double result = evaluator.evaluate(inputExpression.toString());
+                    String expression = inputExpression.toString();
+                    if (expression.contains("x")) {
+                        if (expression.contains("=")) {
+                            String result = evaluator.solveEquation(expression);
+                            display.setText(result);
+                            inputExpression.setLength(0);
+                            inputExpression.append(result);
+                        } else {
+                            inputExpression.append("==");
+                            display.setText(inputExpression.toString());
+                        }
+                    } else {
+                        try {
+                            double result = evaluator.evaluate(inputExpression.toString());
 
-                        // 添加到历史记录
-                        String historyEntry = String.format("[%tT] %s = %.4f\n",
-                                new Date(), expression, result);
-                        topPanel.addCalHistory(historyEntry);
+                            // 添加到历史记录
+                            String historyEntry = String.format("[%tT] %s = %.4f\n",
+                                    new Date(), expression, result);
+                            topPanel.addCalHistory(historyEntry);
 
-                        display.setText(String.valueOf(result));
-                        inputExpression.setLength(0);
-                        inputExpression.append(result);
-                    } catch (StackOverflowError | ArithmeticException ex) {
-                        display.setText("溢出");
-                        inputExpression.setLength(0);
-                    } catch (Exception ex) {
-                        display.setText("错误");
-                        inputExpression.setLength(0);
+                            display.setText(String.valueOf(result));
+                            inputExpression.setLength(0);
+                            inputExpression.append(result);
+                        } catch (StackOverflowError | ArithmeticException ex) {
+                            display.setText("溢出");
+                            inputExpression.setLength(0);
+                        } catch (Exception ex) {
+                            display.setText("错误");
+                            inputExpression.setLength(0);
+                        }
                     }
+
                     break;
 
                 case "⌫":
@@ -421,7 +445,7 @@ public class MainPanel extends JPanel {
                     break;
 
                 case "yroot":
-                    inputExpression.append(" yroot ");
+                    inputExpression.append(" ^(1/ ");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -441,8 +465,8 @@ public class MainPanel extends JPanel {
                     display.setText(inputExpression.toString());
                     break;
 
-                case "floor":
-                    inputExpression.append("floor(");
+                case "x":
+                    inputExpression.append("x");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -490,7 +514,7 @@ public class MainPanel extends JPanel {
                 // 求导
                 case "求导":
                     try {
-                        String expression = inputExpression.toString();
+                        expression = inputExpression.toString();
                         String derivative = evaluator.derivativeWithSymja(expression);
                         inputExpression.setLength(0);
                         inputExpression.append(derivative);
@@ -508,8 +532,6 @@ public class MainPanel extends JPanel {
             }
         }
     }
-
-
 
 
     private class FunctionButton extends JButton {
