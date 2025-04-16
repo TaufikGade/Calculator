@@ -1,6 +1,7 @@
 package org.calculator.gui;
 
 import org.calculator.gui.drawing.DrawingPanel;
+import org.calculator.gui.plotting.PlottingPanel;
 import org.calculator.gui.scientific.ScientificPanel;
 import org.calculator.gui.regression.RegressionPanel;
 
@@ -14,6 +15,7 @@ public class CalculatorGUI extends JFrame {
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Scientific", new ScientificPanel());
+        tabbedPane.addTab("Plotting", new PlottingPanel());
         tabbedPane.addTab("Drawing", new DrawingPanel());
         tabbedPane.addTab("Regression", new RegressionPanel());
         tabbedPane.addTab("Date", new DatePanel());
