@@ -1,8 +1,9 @@
 package org.calculator.gui.drawing;
 
+import org.calculator.gui.CalculatorGUI;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Path2D;
 
 public class MainPanel extends JPanel {
     private final DrawingPanel topPanel;
@@ -12,11 +13,16 @@ public class MainPanel extends JPanel {
     private final PieChartPanel pieChartPanel;
     private final LineChartPanel lineChartPanel;
     private ChartPanel currentPanel = null;
+    //region ColorDefinitions
+    private final Color dayBgColor = new Color(238, 238, 238);
+    private final Color darkBgColor = new Color(40, 40, 40);
+    //endregion
 
     public MainPanel(DrawingPanel top) {
         this.topPanel = top;
 
         setLayout(new BorderLayout());
+        setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
@@ -49,6 +55,8 @@ public class MainPanel extends JPanel {
 
         // 创建图表面板
         chartPanel = new JPanel();
+        chartPanel.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        chartPanel.setBorder(null);
         chartPanel.setLayout(new BorderLayout());
 
         // 将图表面板添加到DrawingPanel
@@ -116,9 +124,9 @@ public class MainPanel extends JPanel {
     }
 
     public void onDataPanelVisible(boolean isVisible) {
-        showDataButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
-        if (!isVisible && currentPanel != null) {
-            currentPanel.updateData(this.topPanel.getData());
-        }
+//        showDataButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
+//        if (!isVisible && currentPanel != null) {
+//            currentPanel.updateData(this.topPanel.getData());
+//        }
     }
 }

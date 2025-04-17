@@ -1,5 +1,7 @@
 package org.calculator.gui.regression;
 
+import org.calculator.gui.CalculatorGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,26 +23,23 @@ public class DataPanel extends JPanel {
         yFields = new ArrayList<>();
         data = new ArrayList<>();
 
-        setBackground(Color.white);
+        setBackground(CalculatorGUI.isDarkMode ? Color.black : topPanel.dayBgColor);
         setLayout(new BorderLayout());
-        this.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0, 0, 0, 20), 1),
-                BorderFactory.createEmptyBorder(5, 10, 10, 10)
-        ));
+        this.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
         // 顶部区域
         JPanel topArea = new JPanel(new BorderLayout());
-        topArea.setBorder(BorderFactory.createEmptyBorder());
-        topArea.setBackground(Color.white);
+        topArea.setBorder(null);
+        topArea.setBackground(CalculatorGUI.isDarkMode ? Color.black : Color.white);
 
         Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 25);
 
         // title标题
         JLabel title = new JLabel("数据：");
         title.setFont(chineseFont);
+        title.setForeground(CalculatorGUI.isDarkMode ? top.darkTextColor : top.dayTextColor);
 
-        JButton closeButton = topPanel.initButton("关闭数据面板", Color.white);
-        closeButton.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+        JButton closeButton = topPanel.initButton("关闭数据面板");
         closeButton.addActionListener(_ -> topPanel.switchDataPanelState(false));
 
         topArea.add(title, BorderLayout.WEST);
@@ -50,22 +49,24 @@ public class DataPanel extends JPanel {
         // 创建输入部分的面板（中部区域）
         inputFieldPanel = new JPanel();
         inputFieldPanel.setLayout(new BoxLayout(inputFieldPanel, BoxLayout.Y_AXIS));
+        inputFieldPanel.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        inputFieldPanel.setBorder(null);
 
         // 添加输入框面板和按钮面板到中央滚动面板
         JScrollPane dataPane = new JScrollPane(inputFieldPanel);
         dataPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        dataPane.setBorder(null);
 
 
         // 创建底部按钮区域
         JPanel bottomArea = new JPanel(new GridLayout(1, 2, 0, 20));
         bottomArea.setBackground(Color.white);
+        bottomArea.setBorder(null);
 
         // 增加输入框按钮
-        JButton addInputButton = topPanel.initButton("增加数据", Color.white);
-        addInputButton.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+        JButton addInputButton = topPanel.initButton("增加数据");
         // 减少输入框按钮
-        JButton removeInputButton = topPanel.initButton("减少输入", Color.white);
-        removeInputButton.setBorder(BorderFactory.createLineBorder(new Color(238, 238, 238)));
+        JButton removeInputButton = topPanel.initButton("减少输入");
         bottomArea.add(addInputButton);
         bottomArea.add(removeInputButton);
 
@@ -105,28 +106,40 @@ public class DataPanel extends JPanel {
         if (inputCount == MAX_DATA_POINTS) return;
 
         JPanel inputItem = new JPanel(new BorderLayout());
+        inputItem.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
 
         JLabel label = new JLabel(String.format("数据%02d：", xFields.size() + 1));
         label.setFont(labelFont);
+        label.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        label.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
         inputItem.add(label, BorderLayout.WEST);
 
         JPanel SingleInputPanelX = new JPanel(new BorderLayout());
         JLabel dimensionLabelX = new JLabel("x:");
+        dimensionLabelX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        dimensionLabelX.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
         JTextField textFieldX = new JTextField(30);
         textFieldX.setFont(dataFont);
+        textFieldX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : Color.white);
+        textFieldX.setForeground(CalculatorGUI.isDarkMode ? Color.lightGray : Color.black);
         SingleInputPanelX.add(dimensionLabelX, BorderLayout.WEST);
         SingleInputPanelX.add(textFieldX, BorderLayout.CENTER);
+        SingleInputPanelX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
 
         JPanel SingleInputPanelY = new JPanel(new BorderLayout());
         JLabel dimensionLabelY = new JLabel("y:");
+        dimensionLabelY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        dimensionLabelY.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
         JTextField textFieldY = new JTextField(30);
         textFieldY.setFont(dataFont);
+        textFieldY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : Color.white);
+        textFieldY.setForeground(CalculatorGUI.isDarkMode ? Color.lightGray : Color.black);
         SingleInputPanelY.add(dimensionLabelY, BorderLayout.WEST);
         SingleInputPanelY.add(textFieldY, BorderLayout.CENTER);
-
-        textFieldY.setFont(dataFont);
+        SingleInputPanelY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
 
         JPanel inputPart = new JPanel(new GridLayout(1, 2, 10, 10));
+        inputPart.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
         inputPart.add(SingleInputPanelX);
         inputPart.add(SingleInputPanelY);
 

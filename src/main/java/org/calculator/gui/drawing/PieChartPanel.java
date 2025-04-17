@@ -20,12 +20,13 @@ public class PieChartPanel extends ChartPanel {
     public PieChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
-        setBorder(BorderFactory.createTitledBorder("饼状图"));
+        //setBorder(BorderFactory.createTitledBorder("饼状图"));
         setPreferredSize(new Dimension(400, 400));
 
         fragmentColor = new ArrayList<>();
 
         JLabel tipLabel = new JLabel("注：负数不计入饼状图");
+        tipLabel.setForeground(CalculatorGUI.isDarkMode ? Color.lightGray : Color.black);
         add(tipLabel, -1);
     }
 
@@ -34,6 +35,7 @@ public class PieChartPanel extends ChartPanel {
         if (this.data == null) return;
 
         super.paintComponent(g);
+        setBackground(topPanel.getBackground());
         calculateLayout();
 
         dataSum = 0;

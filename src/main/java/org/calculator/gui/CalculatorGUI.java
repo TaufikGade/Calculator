@@ -9,7 +9,6 @@ import javax.swing.*;
 
 public class CalculatorGUI extends JFrame {
     public static boolean isDarkMode = false;
-
     private final JTabbedPane tabbedPane;
 
     public CalculatorGUI() {
@@ -31,8 +30,8 @@ public class CalculatorGUI extends JFrame {
         tabbedPane.addTab("Scientific", new ScientificPanel());
         tabbedPane.addTab("Drawing", new DrawingPanel());
         tabbedPane.addTab("Regression", new RegressionPanel());
-        tabbedPane.addTab("PlottingPanel", new PlottingPanel());
-        tabbedPane.addTab("Date", new DatePanel());
+        tabbedPane.addTab("Plotting", new PlottingPanel());
+        //tabbedPane.addTab("Date", new DatePanel());
     }
 
     private void remove() {

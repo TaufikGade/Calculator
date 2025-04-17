@@ -2,7 +2,6 @@ package org.calculator.gui.drawing;
 
 import org.calculator.gui.CalculatorGUI;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -11,17 +10,19 @@ public class BarChartPanel extends ChartPanel {
     private final int BAR_PADDING = 25;
     private List<Integer> barLowerBounds;
     private List<Integer> barUpperBounds;
-    private List<Color> barColors;
-    private Color dayDataColor = Color.BLACK;
-    private Color darkDataColor = Color.WHITE;
-    private Color daySplitColor = Color.LIGHT_GRAY;
-    private Color darkSplitColor = Color.LIGHT_GRAY;
+    private final List<Color> barColors;
+    //region ColorDefinitions
+    private final Color dayDataColor = Color.BLACK;
+    private final Color darkDataColor = Color.WHITE;
+    private final Color daySplitColor = Color.LIGHT_GRAY;
+    private final Color darkSplitColor = Color.LIGHT_GRAY;
+    //endregion
 
     public BarChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
         setPreferredSize(new Dimension(400, 300));
-        setBorder(BorderFactory.createTitledBorder("柱状图"));
+        //setBorder(BorderFactory.createTitledBorder("柱状图"));
 
         barColors = new ArrayList<>();
     }
@@ -31,7 +32,7 @@ public class BarChartPanel extends ChartPanel {
         if (this.data == null) return;
 
         super.paintComponent(g);
-
+        setBackground(topPanel.getBackground());
         barLowerBounds = new ArrayList<>(data.size());
         barUpperBounds = new ArrayList<>(data.size());
 

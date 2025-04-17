@@ -1,33 +1,122 @@
 package org.calculator.gui.regression;
 
+import org.calculator.gui.CalculatorGUI;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChartPanel extends JPanel {
     private final RegressionPanel topPanel;
-    private final JButton dataButton;
+    private JButton dataButton;
     private List<Integer> dataPointX;
     private List<Integer> dataPointY;
     private List<TwoPoint> dataPoints;
     private int hoveredIndex = -1;
     private final int POINT_RADIUS = 3;
+    //region ColorDefinitions
+    private final Color dayLineColor = new Color(70, 130, 255);
+    private final Color darkLineColor = new Color(70, 130, 255);
+    private final Color dayAxisColor = Color.BLACK;
+    private final Color darkAxisColor = Color.WHITE;
+    private final Color dayPointColor = new Color(33, 33, 33);
+    private final Color darkPointColor = new Color(230, 230, 230);
+    protected Color dayTooltipBgColor = new Color(255, 255, 200);
+    protected Color darkTooltipBgColor = new Color(25, 25, 25);
+    protected Color dayTooltipBorderColor = Color.DARK_GRAY;
+    protected Color darkTooltipBorderColor = Color.DARK_GRAY;
+    protected Color dayTooltipTextColor = Color.BLACK;
+    protected Color darkTooltipTextColor = Color.lightGray;
+    //endregion
 
     public ChartPanel(RegressionPanel top) {
         this.topPanel = top;
         this.setLayout(null);
         this.setPreferredSize(new Dimension(400, 400)); // 设置图表区域大小
-        this.setBorder(BorderFactory.createTitledBorder("Chart"));
+        this.setBackground(topPanel.getBackground());
+        //this.setBorder(BorderFactory.createTitledBorder("Chart"));
+
+        try {
+            // 从类路径加载图片
+            InputStream imgStream = ChartPanel.class.getResourceAsStream("/images/123pic.png");
+            if (imgStream == null) {
+                throw new IOException("图片资源未找到！");
+            }
+            BufferedImage originalImage = ImageIO.read(imgStream);
+
+            // 调整大小并创建图标
+            Image scaledImage = originalImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+            ImageIcon icon = new ImageIcon(scaledImage);
+
+            dataButton = new JButton(icon) {
+                // 定义按钮形状为圆形
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    // 绘制圆形背景
+                    if (getModel().isArmed()) {
+                        g2.setColor(Color.darkGray); // 按下时颜色
+                    } else {
+                        g2.setColor(Color.lightGray);
+                    }
+                    int radius = Math.min(getWidth(), getHeight());
+                    g2.fillOval(0, 0, radius, radius);
+
+                    // 绘制文字
+                    super.paintComponent(g2);
+                    g2.dispose();
+                }
+
+                // 设置按钮形状边界为圆形
+                @Override
+                public Dimension getPreferredSize() {
+                    return new Dimension(100, 100); // 按钮大小
+                }
+
+                @Override
+                public boolean contains(int x, int y) {
+                    return new Ellipse2D.Float(0, 0, getWidth(), getHeight()).contains(x, y);
+                }
+            };
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
 
 
-        dataButton = topPanel.initButton("数据区域", Color.white);
+        // 设置按钮属性
+        dataButton.setOpaque(false);
+        dataButton.setContentAreaFilled(false);
+        dataButton.setBorderPainted(false);
+        dataButton.setFocusPainted(false);
+        dataButton.setBackground(new Color(0, 150, 255)); // 默认背景色
+        dataButton.setForeground(Color.WHITE); // 文字颜色
+
+        // 添加悬停效果
+        dataButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                dataButton.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkHoverColor : topPanel.dayHoverColor); // 悬停颜色
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                dataButton.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkBgColor : topPanel.dayBgColor); // 恢复默认颜色
+            }
+        });
 
         dataButton.addActionListener(_ -> topPanel.switchDataPanelState(true));
 
-        this.add(dataButton);
+        this.add(dataButton, BorderLayout.PAGE_END);
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -49,7 +138,7 @@ public class ChartPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        dataButton.setBounds(this.getWidth() - 150, this.getHeight() - 60, 150, 60);
+        dataButton.setBounds(this.getWidth() - 60, this.getHeight() - 120, 40, 40);
         dataPointX = new ArrayList<>();
         dataPointY = new ArrayList<>();
         drawChart(g);
@@ -57,7 +146,7 @@ public class ChartPanel extends JPanel {
 
     private void drawChart(Graphics g) {
         dataPoints = topPanel.getDataPoints();
-        g.setColor(Color.WHITE);
+        g.setColor(CalculatorGUI.isDarkMode ? topPanel.darkBgColor : topPanel.dayBgColor);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         Graphics2D g2d = (Graphics2D) g;
@@ -65,12 +154,12 @@ public class ChartPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         // 绘制坐标轴
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(CalculatorGUI.isDarkMode ? darkAxisColor : dayAxisColor);
         g2d.drawLine(50, this.getHeight() - 50, this.getWidth() - 50, this.getHeight() - 50); // X轴
         g2d.drawLine(50, 50, 50, this.getHeight() - 50); // Y轴
 
         // 绘制数据点
-        g2d.setColor(Color.BLUE);
+        g2d.setColor(CalculatorGUI.isDarkMode ? darkPointColor : dayPointColor);
         for (TwoPoint p : dataPoints) {
             int x = (int) ((p.getX() / getMaxX(dataPoints)) * (this.getWidth() - 100)) + 50;
             int y = this.getHeight() - 50 - (int) ((p.getY() / getMaxY(dataPoints)) * (this.getHeight() - 100));
@@ -90,7 +179,7 @@ public class ChartPanel extends JPanel {
             int startY = this.getHeight() - 50 - (int) ((slope * 0 + intercept) / getMaxY(dataPoints) * (this.getHeight() - 100));
             int endY = this.getHeight() - 50 - (int) ((slope * getMaxX(dataPoints) + intercept) / getMaxY(dataPoints) * (this.getHeight() - 100));
 
-            g2d.setColor(Color.RED);
+            g2d.setColor(CalculatorGUI.isDarkMode ? darkLineColor : dayLineColor);
 
             g2d.drawLine(startX, startY, endX, endY);
         }
@@ -171,15 +260,15 @@ public class ChartPanel extends JPanel {
         }
 
         // 绘制背景
-        g.setColor(new Color(255, 255, 200));
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBgColor : dayTooltipBgColor);
         g.fillRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        g.setColor(Color.DARK_GRAY);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor);
         g.drawRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        g.setColor(Color.BLACK);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipTextColor : dayTooltipTextColor);
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }
 }

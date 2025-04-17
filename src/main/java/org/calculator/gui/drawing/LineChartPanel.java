@@ -1,9 +1,7 @@
 package org.calculator.gui.drawing;
 
 import org.calculator.gui.CalculatorGUI;
-import org.checkerframework.checker.units.qual.C;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -18,26 +16,32 @@ public class LineChartPanel extends ChartPanel {
 
     private double yMin, yMax;
     private int chartWidth, chartHeight;
-    private Color dayLineColor = new Color(70, 130, 255);
-    private Color darkLineColor = new Color(70, 130, 255);
-    private Color dayAxisColor = Color.BLACK;
-    private Color darkAxisColor = Color.WHITE;
-    private Color daySplitColor = Color.DARK_GRAY;
-    private Color darkSplitColor = Color.DARK_GRAY;
-    private Color dayDataColor = Color.BLACK;
-    private Color darkDataColor = Color.WHITE;
+    //region ColorDefinitions
+    private final Color dayLineColor = new Color(70, 130, 255);
+    private final Color darkLineColor = new Color(70, 130, 255);
+    private final Color dayAxisColor = Color.BLACK;
+    private final Color darkAxisColor = Color.WHITE;
+    private final Color daySplitColor = Color.DARK_GRAY;
+    private final Color darkSplitColor = Color.DARK_GRAY;
+    private final Color dayDataColor = Color.BLACK;
+    private final Color darkDataColor = Color.WHITE;
+    private final Color dayPointColor = new Color(33, 33, 33);
+    private final Color darkPointColor = new Color(230, 230, 230);
+    //endregion
 
 
     public LineChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
         setPreferredSize(new Dimension(400, 300));
-        setBorder(BorderFactory.createTitledBorder("折线图"));
+        //setBorder(BorderFactory.createTitledBorder("折线图"));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        setBackground(topPanel.getBackground());
+
         Graphics2D g2d = (Graphics2D) g;
 
         dataPointX = new ArrayList<>();
@@ -54,6 +58,7 @@ public class LineChartPanel extends ChartPanel {
         double dataDiff = yMax - yMin;
 
         Path2D path = new Path2D.Double();
+        g2d.setColor(CalculatorGUI.isDarkMode ? darkPointColor : dayPointColor);
         for (int i = 0; i < data.size(); i++) {
             int x = (i * chartWidth) / (data.size() - 1) + LINE_PADDING;
             int y = chartHeight - (int) (((data.get(i) - yMin) / dataDiff) * chartHeight) + LINE_PADDING;
