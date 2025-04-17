@@ -1,7 +1,9 @@
 package org.calculator.gui.plotting;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Path2D;
 import java.util.List;
 
 public class GraphPanel extends JPanel {
@@ -11,19 +13,19 @@ public class GraphPanel extends JPanel {
     private double yMax = 15;
     private Point dragStart;
     private final PlottingPanel topPanel;
-    //private List<String> functions;
+    private List<PlottingPanel.FunctionData> functions;
 
     // Colors similar to Windows Calculator
     private final Color BACKGROUND_COLOR = Color.WHITE;
     private final Color MAJOR_GRID_COLOR = new Color(220, 220, 220);
     private final Color MINOR_GRID_COLOR = new Color(240, 240, 240);
     private final Color AXIS_COLOR = new Color(0, 0, 0);
-    private final Color FUNCTION_COLOR = new Color(0, 120, 215); // Windows blue
 
     public GraphPanel(PlottingPanel top) {
         this.topPanel = top;
         setBackground(BACKGROUND_COLOR);
         setLayout(new BorderLayout());
+
         // Mouse event handlers for panning and zooming
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
@@ -76,6 +78,11 @@ public class GraphPanel extends JPanel {
         addMouseMotionListener(mouseAdapter);
         addMouseWheelListener(mouseAdapter);
     }
+
+    public void setFunctions(List<PlottingPanel.FunctionData> functions) {
+        this.functions = functions;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -91,11 +98,11 @@ public class GraphPanel extends JPanel {
         drawGrid(g2, width, height);
 
         // Draw functions
-//        if (functions != null) {
-//            for (String function : functions) {
-//                drawFunction(g2, width, height, function);
-//            }
-//        }
+        if (functions != null && !functions.isEmpty()) {
+            for (PlottingPanel.FunctionData function : functions) {
+                drawFunction(g2, width, height, function.getExpression(), function.getColor());
+            }
+        }
     }
 
     private void drawGrid(Graphics2D g2, int width, int height) {
@@ -276,62 +283,61 @@ public class GraphPanel extends JPanel {
         return 5 * Math.pow(10, exponent);
     }
 
-//    private void drawFunction(Graphics2D g2, int width, int height, String function) {
-//        g2.setColor(FUNCTION_COLOR);
-//        g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-//
-//        Path2D path = new Path2D.Double();
-//        boolean started = false;
-//        Double lastY = null;
-//
-//        // Calculate points with adaptive sampling
-//        for (int screenX = 0; screenX < width; screenX++) {
-//            double x = xMin + screenX * (xMax - xMin) / width;
-//
-//            try {
-//                double y = evaluateFunction(function, x);
-//
-//                // Skip points outside the visible area
-//                if (Double.isNaN(y) || Double.isInfinite(y) || y < yMin || y > yMax) {
-//                    started = false;
-//                    continue;
-//                }
-//
-//                int screenY = mapY(y, height);
-//
-//                // Detect discontinuities
-//                if (lastY != null && Math.abs(y - lastY) > (yMax - yMin) / 10) {
-//                    started = false;
-//                }
-//
-//                if (!started) {
-//                    path.moveTo(screenX, screenY);
-//                    started = true;
-//                } else {
-//                    path.lineTo(screenX, screenY);
-//                }
-//
-//                lastY = y;
-//            } catch (Exception e) {
-//                started = false;
-//            }
-//        }
-//
-//        g2.draw(path);
-//    }
+    private void drawFunction(Graphics2D g2, int width, int height, String function, Color color) {
+        g2.setColor(color);
+        g2.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-//    private double evaluateFunction(String function, double x) {
-//        // This should be replaced with your actual function evaluation code
-//        if ("sin(x)".equals(function)) {
-//            return Math.sin(x);
-//        } else if ("cos(x)".equals(function)) {
-//            return Math.cos(x);
-//        } else if ("x^2".equals(function)) {
-//            return x * x;
-//        }
-//        // Add more function cases as needed
-//        return 0;
-//    }
+        Path2D path = new Path2D.Double();
+        boolean started = false;
+        Double lastY = null;
+
+        // Calculate points with adaptive sampling
+        for (int screenX = 0; screenX < width; screenX++) {
+            double x = xMin + screenX * (xMax - xMin) / width;
+
+            try {
+                double y = evaluateFunction(function, x);
+
+                // Skip points outside the visible area
+                if (Double.isNaN(y) || Double.isInfinite(y) || y < yMin || y > yMax) {
+                    started = false;
+                    continue;
+                }
+
+                int screenY = mapY(y, height);
+
+                // Detect discontinuities
+                if (lastY != null && Math.abs(y - lastY) > (yMax - yMin) / 10) {
+                    started = false;
+                }
+
+                if (!started) {
+                    path.moveTo(screenX, screenY);
+                    started = true;
+                } else {
+                    path.lineTo(screenX, screenY);
+                }
+
+                lastY = y;
+            } catch (Exception e) {
+                started = false;
+            }
+        }
+
+        g2.draw(path);
+    }
+
+    private double evaluateFunction(String function, double x) {
+        try {
+            // 替换函数中的 x 变量为具体值
+            String expression = function.replaceAll("x", "(" + x + ")");
+
+            // 使用MathEvaluator计算表达式的值
+            return topPanel.getEvaluator().evaluate(expression);
+        } catch (Exception e) {
+            return Double.NaN;
+        }
+    }
 
     private int mapX(double x, int width) {
         return (int) ((x - xMin) / (xMax - xMin) * width);
