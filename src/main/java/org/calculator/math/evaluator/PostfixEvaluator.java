@@ -44,7 +44,7 @@ public class PostfixEvaluator {
             case "sin" -> stack.push(Math.sin(Math.toRadians(arg)));
             case "cos" -> stack.push(Math.cos(Math.toRadians(arg)));
             case "tan" -> stack.push(Math.tan(Math.toRadians(arg)));
-            case "log" -> stack.push(Math.log10(arg));
+            case "lg" -> stack.push(Math.log10(arg));
             case "ln" -> stack.push(Math.log(arg));
             case "exp" -> stack.push(Math.exp(arg));
             case "sqrt" -> stack.push(Math.sqrt(arg));

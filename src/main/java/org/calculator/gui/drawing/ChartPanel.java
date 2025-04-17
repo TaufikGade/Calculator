@@ -10,7 +10,12 @@ public class ChartPanel extends JPanel {
     protected List<Double> data; // 存储输入的数据
     protected MainPanel topPanel;
     protected int hoveredIndex = -1;
-
+    protected Color dayTooltipBgColor = new Color(255, 255, 200);
+    protected Color darkTooltipBgColor = new Color(255, 255, 200);
+    protected Color dayTooltipBorderColor = Color.DARK_GRAY;
+    protected Color darkTooltipBorderColor = Color.DARK_GRAY;
+    protected Color dayTooltipTextColor = Color.BLACK;
+    protected Color darkTooltipTextColor = Color.WHITE;
     public ChartPanel(List<Double> data, MainPanel top) {
         this.data = data;
         this.topPanel = top;

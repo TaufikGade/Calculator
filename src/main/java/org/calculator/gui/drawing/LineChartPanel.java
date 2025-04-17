@@ -1,5 +1,8 @@
 package org.calculator.gui.drawing;
 
+import org.calculator.gui.CalculatorGUI;
+import org.checkerframework.checker.units.qual.C;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -15,6 +18,15 @@ public class LineChartPanel extends ChartPanel {
 
     private double yMin, yMax;
     private int chartWidth, chartHeight;
+    private Color dayLineColor = new Color(70, 130, 255);
+    private Color darkLineColor = new Color(70, 130, 255);
+    private Color dayAxisColor = Color.BLACK;
+    private Color darkAxisColor = Color.WHITE;
+    private Color daySplitColor = Color.DARK_GRAY;
+    private Color darkSplitColor = Color.DARK_GRAY;
+    private Color dayDataColor = Color.BLACK;
+    private Color darkDataColor = Color.WHITE;
+
 
     public LineChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
@@ -55,7 +67,8 @@ public class LineChartPanel extends ChartPanel {
                 path.moveTo(x, y);
             }
         }
-        g2d.setColor(new Color(70, 130, 255));
+        //g2d.setColor(new Color(70, 130, 255));
+        g2d.setColor(CalculatorGUI.isDarkMode ? darkLineColor : dayLineColor);
         g2d.draw(path);
 
         drawAxes(g2d);
@@ -113,20 +126,24 @@ public class LineChartPanel extends ChartPanel {
         }
 
         // 绘制背景
-        g.setColor(new Color(255, 255, 200));
+        //g.setColor(new Color(255, 255, 200));
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBgColor : dayTooltipBgColor);
         g.fillRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        g.setColor(Color.DARK_GRAY);
+        //g.setColor(Color.DARK_GRAY);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor);
         g.drawRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        g.setColor(Color.BLACK);
+        //g.setColor(Color.BLACK);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipTextColor : dayTooltipTextColor);
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }
 
     private void drawAxes(Graphics g) {
-        g.setColor(Color.BLACK);
+        //g.setColor(Color.BLACK);
+        g.setColor(CalculatorGUI.isDarkMode ? darkAxisColor : dayAxisColor);
 
         // 绘制坐标轴线
         g.drawLine(LINE_PADDING, getHeight() - LINE_PADDING,
@@ -139,9 +156,11 @@ public class LineChartPanel extends ChartPanel {
         g.setFont(new Font("Arial", Font.PLAIN, 12));
         for (int i = 0; i <= numTicks; i++) {
             int ty = chartHeight - (i * chartHeight / 5) + LINE_PADDING;
-            g.setColor(Color.DARK_GRAY);
+            //g.setColor(Color.DARK_GRAY);
+            g.setColor(CalculatorGUI.isDarkMode ? darkSplitColor : daySplitColor);
             g.drawLine(LINE_PADDING, ty, chartWidth + LINE_PADDING, ty); // 绘制分割线
-            g.setColor(Color.BLACK);
+            //g.setColor(Color.BLACK);
+            g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
             g.drawString(String.format("%.2f", i * (yMax - yMin) / numTicks + yMin), 10, ty); // 标注数值
 
         }

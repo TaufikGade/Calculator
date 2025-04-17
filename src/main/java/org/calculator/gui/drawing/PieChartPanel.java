@@ -1,5 +1,7 @@
 package org.calculator.gui.drawing;
 
+import org.calculator.gui.CalculatorGUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
@@ -130,15 +132,18 @@ public class PieChartPanel extends ChartPanel {
         if (y < 20) y = 20;
 
         // 绘制背景
-        g.setColor(new Color(255, 255, 200));
+        //g.setColor(new Color(255, 255, 200));
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBgColor : dayTooltipBgColor);
         g.fillRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        g.setColor(Color.DARK_GRAY);
+        //g.setColor(Color.DARK_GRAY);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor);
         g.drawRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        g.setColor(Color.BLACK);
+        //g.setColor(Color.BLACK);
+        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipTextColor : dayTooltipTextColor);
         g.drawString(text, x + 5, y + textHeight - 2);
     }
 

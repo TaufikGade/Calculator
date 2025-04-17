@@ -27,7 +27,7 @@ public class Operator {
         defineOperator("atan", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("cos", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("tan", 5, "LEFT", OperatorType.FUNCTION);
-        defineOperator("log", 5, "LEFT", OperatorType.FUNCTION);
+        defineOperator("lg", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("ln", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("exp", 5, "LEFT", OperatorType.FUNCTION);
         defineOperator("sqrt", 5, "LEFT", OperatorType.FUNCTION);
