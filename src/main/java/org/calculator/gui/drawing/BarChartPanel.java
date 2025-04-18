@@ -1,6 +1,5 @@
 package org.calculator.gui.drawing;
 
-import org.calculator.gui.CalculatorGUI;
 import org.calculator.gui.ThemeColors;
 
 import java.awt.*;

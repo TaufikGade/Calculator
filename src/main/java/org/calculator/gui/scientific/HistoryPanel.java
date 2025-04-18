@@ -41,7 +41,7 @@ public class HistoryPanel extends JPanel {
         closeButton.setFocusPainted(false);
         //closeButton.setBackground(new Color(238, 238, 238));
         topArea.add(closeButton, BorderLayout.EAST);
-        closeButton.addActionListener(e -> topPanel.switchHistoryPanelState());
+        closeButton.addActionListener(_ -> topPanel.switchHistoryPanelState());
         closeButton.addMouseListener(new ButtonMouseHandler(closeButton));
 
         add(topArea, BorderLayout.NORTH);
@@ -62,7 +62,7 @@ public class HistoryPanel extends JPanel {
 
         // 清除历史按钮
         JButton clearButton = new JButton("清除历史");
-        clearButton.addActionListener(e -> historyArea.setText("没有历史记录\n"));
+        clearButton.addActionListener(_ -> historyArea.setText("没有历史记录\n"));
         clearButton.setFocusPainted(false);
         clearButton.setBorder(null);
         clearButton.setBackground(ThemeColors.getDarkBgColor());

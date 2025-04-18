@@ -1,9 +1,7 @@
 package org.calculator.gui.scientific;
 
-import org.calculator.gui.CalculatorGUI;
 import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
-import org.knowm.xchart.style.theme.Theme;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -99,7 +97,7 @@ public class MainPanel extends JPanel {
         createTrigPopupMenu();
 
         // 添加三角学按钮点击事件
-        trigButton.addActionListener(e -> {
+        trigButton.addActionListener(_ -> {
             // 显示弹出菜单在按钮下方
             trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
         });
@@ -274,7 +272,7 @@ public class MainPanel extends JPanel {
             button.setBorder(null);
             button.setFocusPainted(false);
             if (primaryCmd.equals("2nd")) {
-                button.addActionListener(e -> {
+                button.addActionListener(_ -> {
                     isSecondMode = !isSecondMode;
                     updateButtonsMode();
                 });
@@ -756,10 +754,6 @@ public class MainPanel extends JPanel {
                 setMinimumSize(currentSize);
                 setMaximumSize(currentSize);
             }
-        }
-
-        public boolean isInSecondMode() {
-            return isInSecondMode;
         }
     }
 

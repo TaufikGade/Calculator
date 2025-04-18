@@ -1,6 +1,5 @@
 package org.calculator.gui.regression;
 
-import org.calculator.gui.CalculatorGUI;
 import org.calculator.gui.ThemeColors;
 
 import javax.imageio.ImageIO;

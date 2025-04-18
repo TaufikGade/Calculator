@@ -12,7 +12,7 @@ public class DataPanel extends JPanel {
     private final List<JTextField> inputFields; // 存储输入框的列表
     private int inputCount = 0; // 当前输入框的数量
     private final int MAX_INPUTS = 50; // 最大输入框数量限制
-    private List<Double> data; // 存储输入的数据
+    private final List<Double> data; // 存储输入的数据
     private final JPanel inputFieldPanel;
 
     public DataPanel(DrawingPanel top) {
@@ -37,7 +37,7 @@ public class DataPanel extends JPanel {
         title.setForeground(ThemeColors.getTextColor());
 
         JButton closeButton = topPanel.initButton("关闭数据面板");
-        closeButton.addActionListener(e -> topPanel.switchDataPanelState());
+        closeButton.addActionListener(_ -> topPanel.switchDataPanelState());
 
         topArea.add(title, BorderLayout.WEST);
         topArea.add(closeButton, BorderLayout.EAST);
@@ -68,9 +68,9 @@ public class DataPanel extends JPanel {
         bottomArea.add(removeInputButton);
 
         // 添加按钮事件
-        addInputButton.addActionListener(e -> addInputItem());
+        addInputButton.addActionListener(_ -> addInputItem());
 
-        removeInputButton.addActionListener(e -> removeInputItem());
+        removeInputButton.addActionListener(_ -> removeInputItem());
 
         add(topArea, BorderLayout.NORTH);
 

@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PieChartPanel extends ChartPanel {
-    private final int PIE_PADDING = 15;
     private int centerX;
     private int centerY;
     private int radius;
     private double dataSum = 0;
-    private List<Color> fragmentColor;
+    private final List<Color> fragmentColor;
 
     public PieChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
