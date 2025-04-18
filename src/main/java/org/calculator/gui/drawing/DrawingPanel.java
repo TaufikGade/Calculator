@@ -13,13 +13,23 @@ import java.util.List;
 
 public class DrawingPanel extends JLayeredPane {
 
-    private final MainPanel mainPanel;
+    private MainPanel mainPanel;
     private final DataPanel dataPanel;
     private final Font font = new Font("Microsoft YaHei", Font.PLAIN, 25);
 
     public DrawingPanel() {
-        mainPanel = new MainPanel(this);
+
         dataPanel = new DataPanel(this);
+        init();
+    }
+
+    public DrawingPanel(List<Double> data) {
+        dataPanel = new DataPanel(this, data);
+        init();
+    }
+
+    private void init() {
+        mainPanel = new MainPanel(this);
         dataPanel.setVisible(false);
         add(mainPanel, JLayeredPane.DEFAULT_LAYER);
         add(dataPanel, JLayeredPane.PALETTE_LAYER);

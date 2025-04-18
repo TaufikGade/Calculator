@@ -83,6 +83,80 @@ public class DataPanel extends JPanel {
 
         for (int i = 0; i < INITIAL_DATA_POINTS; i++) addInputItem();
     }
+    public DataPanel(RegressionPanel top, List<Double> dataX, List<Double> dataY) {
+        this.topPanel = top;
+        xFields = new ArrayList<>();
+        yFields = new ArrayList<>();
+        data = new ArrayList<>();
+
+        for (int i = 0; i < dataX.size(); i++) {
+            data.add(new TwoPoint(dataX.get(i), dataY.get(i)));
+        }
+
+
+        setBackground(ThemeColors.getTotalBgColor());
+        setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+
+        // 顶部区域
+        JPanel topArea = new JPanel(new BorderLayout());
+        topArea.setBorder(null);
+        topArea.setBackground(ThemeColors.getTotalBgColor());
+
+        Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 25);
+
+        // title标题
+        JLabel title = new JLabel("数据：");
+        title.setFont(chineseFont);
+        title.setForeground(ThemeColors.getTextColor());
+
+        JButton closeButton = topPanel.initButton("关闭数据面板");
+        closeButton.addActionListener(_ -> topPanel.switchDataPanelState(false));
+
+        topArea.add(title, BorderLayout.WEST);
+        topArea.add(closeButton, BorderLayout.EAST);
+
+
+        // 创建输入部分的面板（中部区域）
+        inputFieldPanel = new JPanel();
+        inputFieldPanel.setLayout(new BoxLayout(inputFieldPanel, BoxLayout.Y_AXIS));
+        inputFieldPanel.setBackground(ThemeColors.getDarkContentColor());
+        inputFieldPanel.setBorder(null);
+
+        // 添加输入框面板和按钮面板到中央滚动面板
+        JScrollPane dataPane = new JScrollPane(inputFieldPanel);
+        dataPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        dataPane.setBorder(null);
+
+        for (int i = 0; i < dataX.size(); i++) {
+            addInputItem();
+            xFields.get(i).setText(String.valueOf(dataX.get(i)));
+            yFields.get(i).setText(String.valueOf(dataY.get(i)));
+        }
+
+        // 创建底部按钮区域
+        JPanel bottomArea = new JPanel(new GridLayout(1, 2, 0, 20));
+        bottomArea.setBackground(Color.white);
+        bottomArea.setBorder(null);
+
+        // 增加输入框按钮
+        JButton addInputButton = topPanel.initButton("增加数据");
+        // 减少输入框按钮
+        JButton removeInputButton = topPanel.initButton("减少输入");
+        bottomArea.add(addInputButton);
+        bottomArea.add(removeInputButton);
+
+        // 添加按钮事件
+        addInputButton.addActionListener(_ -> addInputItem());
+
+        removeInputButton.addActionListener(_ -> removeInputItem());
+
+        add(topArea, BorderLayout.NORTH);
+
+        add(dataPane, BorderLayout.CENTER);
+
+        add(bottomArea, BorderLayout.SOUTH);
+    }
 
     public List<TwoPoint> getData() {
         data.clear();

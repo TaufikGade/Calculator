@@ -10,11 +10,20 @@ import java.util.Objects;
 
 public class HistoryPanel extends JPanel {
     private final ScientificPanel topPanel;
-    private final JTextArea historyArea;
+    private JTextArea historyArea;
 
     public HistoryPanel(ScientificPanel top) {
         this.topPanel = top;
+        init();
+    }
 
+    public HistoryPanel(ScientificPanel top, String history) {
+        this.topPanel = top;
+        init();
+        historyArea.setText(history);
+    }
+
+    private void init() {
         // Panel本体
         setLayout(new BorderLayout());
         setBackground(ThemeColors.getDarkBgColor());
@@ -140,5 +149,9 @@ public class HistoryPanel extends JPanel {
             super.mouseExited(e);
             button.setBackground(ThemeColors.getDarkBgColor());
         }
+    }
+
+    public String getHistory() {
+        return historyArea.getText();
     }
 }

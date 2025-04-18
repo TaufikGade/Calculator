@@ -1,6 +1,7 @@
 package org.calculator.gui.regression;
 
 import org.calculator.gui.ThemeColors;
+import org.matheclipse.core.reflection.system.D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RegressionPanel extends JLayeredPane {
@@ -21,6 +23,18 @@ public class RegressionPanel extends JLayeredPane {
         dataPanel = new DataPanel(this); // 两列布局，用于输入x和y值
         chartPanel = new ChartPanel(this);
 
+        init();
+    }
+
+    public RegressionPanel(List<Double> dataX, List<Double> dataY) {
+        // 初始化图表区域
+        dataPanel = new DataPanel(this, dataX, dataY); // 两列布局，用于输入x和y值
+        chartPanel = new ChartPanel(this);
+
+        init();
+    }
+
+    private void init() {
         dataPanel.setVisible(false);
 
         add(chartPanel, JLayeredPane.DEFAULT_LAYER);
@@ -35,7 +49,6 @@ public class RegressionPanel extends JLayeredPane {
                 dataPanel.repaint();
             }
         });
-
     }
 
     public void switchDataPanelState(boolean isShow) {
@@ -57,6 +70,22 @@ public class RegressionPanel extends JLayeredPane {
 
     public List<TwoPoint> getDataPoints() {
         return dataPanel.getData();
+    }
+    public List<Double> getDataX() {
+        var data = dataPanel.getData();
+        List<Double> x = new ArrayList<>();
+        for (TwoPoint point : data) {
+            x.add(point.getX());
+        }
+        return x;
+    }
+    public List<Double> getDataY() {
+        var data = dataPanel.getData();
+        List<Double> y = new ArrayList<>();
+        for (TwoPoint point : data) {
+            y.add(point.getY());
+        }
+        return y;
     }
 
     public JButton initButton(String buttonTitle) {
