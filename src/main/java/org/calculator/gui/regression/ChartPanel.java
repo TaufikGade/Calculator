@@ -1,6 +1,7 @@
 package org.calculator.gui.regression;
 
 import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -22,20 +23,6 @@ public class ChartPanel extends JPanel {
     private List<TwoPoint> dataPoints;
     private int hoveredIndex = -1;
     private final int POINT_RADIUS = 3;
-    //region ColorDefinitions
-    private final Color dayLineColor = new Color(70, 130, 255);
-    private final Color darkLineColor = new Color(70, 130, 255);
-    private final Color dayAxisColor = Color.BLACK;
-    private final Color darkAxisColor = Color.WHITE;
-    private final Color dayPointColor = new Color(33, 33, 33);
-    private final Color darkPointColor = new Color(230, 230, 230);
-    protected Color dayTooltipBgColor = new Color(255, 255, 200);
-    protected Color darkTooltipBgColor = new Color(25, 25, 25);
-    protected Color dayTooltipBorderColor = Color.DARK_GRAY;
-    protected Color darkTooltipBorderColor = Color.DARK_GRAY;
-    protected Color dayTooltipTextColor = Color.BLACK;
-    protected Color darkTooltipTextColor = Color.lightGray;
-    //endregion
 
     public ChartPanel(RegressionPanel top) {
         this.topPanel = top;
@@ -105,12 +92,12 @@ public class ChartPanel extends JPanel {
         dataButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                dataButton.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkHoverColor : topPanel.dayHoverColor); // 悬停颜色
+                dataButton.setBackground(ThemeColors.getFunctionHoverColor()); // 悬停颜色
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                dataButton.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkBgColor : topPanel.dayBgColor); // 恢复默认颜色
+                dataButton.setBackground(ThemeColors.getDarkBgColor()); // 恢复默认颜色
             }
         });
 
@@ -146,7 +133,7 @@ public class ChartPanel extends JPanel {
 
     private void drawChart(Graphics g) {
         dataPoints = topPanel.getDataPoints();
-        g.setColor(CalculatorGUI.isDarkMode ? topPanel.darkBgColor : topPanel.dayBgColor);
+        g.setColor(ThemeColors.getDarkBgColor());
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         Graphics2D g2d = (Graphics2D) g;
@@ -154,12 +141,12 @@ public class ChartPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         // 绘制坐标轴
-        g2d.setColor(CalculatorGUI.isDarkMode ? darkAxisColor : dayAxisColor);
+        g2d.setColor(ThemeColors.getAxisColor());
         g2d.drawLine(50, this.getHeight() - 50, this.getWidth() - 50, this.getHeight() - 50); // X轴
         g2d.drawLine(50, 50, 50, this.getHeight() - 50); // Y轴
 
         // 绘制数据点
-        g2d.setColor(CalculatorGUI.isDarkMode ? darkPointColor : dayPointColor);
+        g2d.setColor(ThemeColors.getPointColor());
         for (TwoPoint p : dataPoints) {
             int x = (int) ((p.getX() / getMaxX(dataPoints)) * (this.getWidth() - 100)) + 50;
             int y = this.getHeight() - 50 - (int) ((p.getY() / getMaxY(dataPoints)) * (this.getHeight() - 100));
@@ -179,7 +166,7 @@ public class ChartPanel extends JPanel {
             int startY = this.getHeight() - 50 - (int) ((slope * 0 + intercept) / getMaxY(dataPoints) * (this.getHeight() - 100));
             int endY = this.getHeight() - 50 - (int) ((slope * getMaxX(dataPoints) + intercept) / getMaxY(dataPoints) * (this.getHeight() - 100));
 
-            g2d.setColor(CalculatorGUI.isDarkMode ? darkLineColor : dayLineColor);
+            g2d.setColor(ThemeColors.getLineColor());
 
             g2d.drawLine(startX, startY, endX, endY);
         }
@@ -260,15 +247,15 @@ public class ChartPanel extends JPanel {
         }
 
         // 绘制背景
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBgColor : dayTooltipBgColor);
+        g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor);
+        g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipTextColor : dayTooltipTextColor);
+        g.setColor(ThemeColors.getTextColor());
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }
 }

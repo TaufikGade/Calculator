@@ -1,6 +1,7 @@
 package org.calculator.gui.drawing;
 
 import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,16 +14,12 @@ public class MainPanel extends JPanel {
     private final PieChartPanel pieChartPanel;
     private final LineChartPanel lineChartPanel;
     private ChartPanel currentPanel = null;
-    //region ColorDefinitions
-    private final Color dayBgColor = new Color(238, 238, 238);
-    private final Color darkBgColor = new Color(40, 40, 40);
-    //endregion
 
     public MainPanel(DrawingPanel top) {
         this.topPanel = top;
 
         setLayout(new BorderLayout());
-        setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        setBackground(ThemeColors.getDarkBgColor());
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
@@ -55,7 +52,7 @@ public class MainPanel extends JPanel {
 
         // 创建图表面板
         chartPanel = new JPanel();
-        chartPanel.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        chartPanel.setBackground(ThemeColors.getDarkBgColor());
         chartPanel.setBorder(null);
         chartPanel.setLayout(new BorderLayout());
 

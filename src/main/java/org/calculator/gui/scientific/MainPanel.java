@@ -1,7 +1,9 @@
 package org.calculator.gui.scientific;
 
 import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
+import org.knowm.xchart.style.theme.Theme;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -28,38 +30,9 @@ public class MainPanel extends JPanel {
     private boolean isHistoryShow = false;
     private boolean isSecondMode = false;
 
-    //region ColorDefinitions
-    private final Color dayBgColor = new Color(243, 243, 243); //F3F3F3
-    private final Color darkBgColor = new Color(20, 20, 20); //202020
-    private final Color daySymbolColor = new Color(249, 249, 249); //F9F9F9
-    private final Color darkSymbolColor = new Color(32, 32, 32); //323232
-    private final Color dayNumberColor = Color.white; //FFFFFF
-    private final Color darkNumberColor = new Color(59, 59, 59); //3B3B3B
-    private final Color dayTextColor = Color.black;
-    private final Color darkTextColor = Color.lightGray;
-    private final Color dayEqualColor = new Color(0, 67, 192);//#0067C0
-    private final Color darkEqualColor = new Color(76, 194, 255);//#4CC2FF
-    private final Color dayNumberHoverColor = new Color(252, 252, 252);
-    private final Color darkNumberHoverColor = new Color(32, 32, 32);
-    private final Color daySymbolHoverColor = new Color(246, 246, 246);
-    private final Color darkSymbolHoverColor = new Color(60, 60, 60);
-    private final Color dayNumberClickColor = new Color(249, 249, 251);
-    private final Color darkNumberClickColor = new Color(28, 28, 28);
-    private final Color daySymbolClickColor = new Color(244, 244, 246);
-    private final Color darkSymbolClickColor = new Color(32, 32, 32);
-    private final Color dayEqualHoverColor = new Color(19, 75, 197); //1975C5
-    private final Color darkEqualHoverColor = new Color(47, 177, 232); //47B1E8
-    private final Color dayEqualClickColor = new Color(30, 83, 202); //3083CA
-    private final Color darkEqualClickColor = new Color(42, 17, 211); //42A1D3
-    private final Color dayFunctionHoverColor = new Color(234, 234, 234);
-    private final Color darkFunctionHoverColor = new Color(45, 45, 45);
-    private final Color dayFunctionClick = new Color(236, 237, 238);
-    private final Color darkFunctionClick = new Color(29, 29, 42);
-    //endregion
-
     public MainPanel(ScientificPanel top) {
         this.topPanel = top;
-        setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        setBackground(ThemeColors.getLightBgColor());
         setBorder(BorderFactory.createEmptyBorder());
 
         this.evaluator = new MathEvaluator();
@@ -68,8 +41,8 @@ public class MainPanel extends JPanel {
         setLayout(new BorderLayout());
         // 显示屏
         display = new JTextField();
-        display.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
-        display.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        display.setForeground(ThemeColors.getTextColor());
+        display.setBackground(ThemeColors.getLightBgColor());
         display.setBorder(null);
 
         try {
@@ -111,15 +84,15 @@ public class MainPanel extends JPanel {
 
     private JPanel createTopFunctionsPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
-        panel.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        panel.setBackground(ThemeColors.getLightBgColor());
 
         // 创建三角学按钮
         trigButton = new JButton("三角学 ▼");
         trigButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 16));
-        trigButton.setBorder(BorderFactory.createLineBorder(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor));
+        trigButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         trigButton.setFocusPainted(false);
-        trigButton.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
-        trigButton.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        trigButton.setForeground(ThemeColors.getTextColor());
+        trigButton.setBackground(ThemeColors.getLightBgColor());
         trigButton.addMouseListener(new FunctionMouseHandler(trigButton));
 
         // 创建三角函数弹出菜单
@@ -135,10 +108,10 @@ public class MainPanel extends JPanel {
         // 添加求导按钮
         JButton derivativeButton = new JButton("求导");
         derivativeButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 16));
-        derivativeButton.setBorder(BorderFactory.createLineBorder(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor));
+        derivativeButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         derivativeButton.setFocusPainted(false);
-        derivativeButton.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
-        derivativeButton.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        derivativeButton.setForeground(ThemeColors.getTextColor());
+        derivativeButton.setBackground(ThemeColors.getLightBgColor());
         derivativeButton.addActionListener(buttonHandler);
         derivativeButton.addMouseListener(new FunctionMouseHandler(derivativeButton));
         panel.add(derivativeButton);
@@ -149,11 +122,11 @@ public class MainPanel extends JPanel {
     // 创建三角函数弹出菜单
     private void createTrigPopupMenu() {
         trigPopupMenu = new JPopupMenu();
-        trigPopupMenu.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        trigPopupMenu.setBackground(ThemeColors.getLightBgColor());
 
         // 创建包含三角函数按钮的面板
         JPanel trigPanel = new JPanel(new GridLayout(2, 3, 2, 2));
-        trigPanel.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        trigPanel.setBackground(ThemeColors.getLightBgColor());
 
         // 添加三角函数按钮
         String[] showText = {"sin", "cos", "tan", "asin", "acos", "atan"};
@@ -162,9 +135,9 @@ public class MainPanel extends JPanel {
         // 添加三角函数
         for (int i = 0; i < 6; i++) {
             TeXFormula formula = new TeXFormula(latexText[i]);
-            Icon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 17, TeXFormula.SERIF, CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
+            Icon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 17, TeXFormula.SERIF, ThemeColors.getTextColor());
             JButton button = new JButton(icon);
-            button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+            button.setBackground(ThemeColors.getLightBgColor());
             button.setBorder(null);
             button.setFocusPainted(false);
             button.setActionCommand(showText[i]);
@@ -209,7 +182,7 @@ public class MainPanel extends JPanel {
 
     private JPanel createSymbolPanel() {
         JPanel panel = new JPanel(new GridLayout(7, 5, 5, 5));
-        panel.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        panel.setBackground(ThemeColors.getLightBgColor());
 
         String[][] buttonDefinitions = {
                 {"2^{nd}", "2nd"},
@@ -264,24 +237,20 @@ public class MainPanel extends JPanel {
             // LaTeX表达式颜色
             TeXFormula primaryFormula = new TeXFormula(primaryLatex), secondaryFormula = new TeXFormula(secondaryLatex);
             Icon primaryIcon, secondaryIcon;
-            if (CalculatorGUI.isDarkMode) {
-                if (i == buttonDefinitions.length - 1) {
-                    //等于号的字体颜色与其他的相反
-                    primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, dayTextColor);
-                    secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, dayTextColor);
-                } else {
-                    primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, darkTextColor);
-                    secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, darkTextColor);
-                }
+
+            if (i == buttonDefinitions.length - 1) {
+                //等于号的字体颜色与其他的相反
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
             } else {
-                if (i == buttonDefinitions.length - 1) {
-                    //等于号的字体颜色与其他的相反
-                    primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, darkTextColor);
-                    secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, darkTextColor);
-                } else {
-                    primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, dayTextColor);
-                    secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, dayTextColor);
-                }
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
             }
 
             FunctionButton button;
@@ -292,13 +261,13 @@ public class MainPanel extends JPanel {
             }
 
             if (i == buttonDefinitions.length - 1) {
-                button.setBackground(CalculatorGUI.isDarkMode ? darkEqualColor : dayEqualColor);
+                button.setBackground(ThemeColors.getEqualColor());
                 button.addMouseListener(new EqualMouseHandler(button));
             } else if (i >= 16 && i <= 18 || i >= 21 && i <= 23 || i >= 26 && i <= 28 || i == 32) {
-                button.setBackground(CalculatorGUI.isDarkMode ? darkNumberColor : dayNumberColor);
+                button.setBackground(ThemeColors.getNumberColor());
                 button.addMouseListener(new NumberMouseHandler(button));
             } else {
-                button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolColor : daySymbolColor);
+                button.setBackground(ThemeColors.getSymbolColor());
                 button.addMouseListener(new SymbolMouseHandler(button));
             }
 
@@ -314,9 +283,9 @@ public class MainPanel extends JPanel {
                     public void mousePressed(MouseEvent e) {
                         if (!button.isEnabled()) return;
                         if (isSecondMode) {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualClickColor : dayEqualClickColor);
+                            button.setBackground(ThemeColors.getEqualClickColor());
                         } else {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolClickColor : daySymbolClickColor);
+                            button.setBackground(ThemeColors.getSymbolClickColor());
                         }
                     }
 
@@ -324,9 +293,9 @@ public class MainPanel extends JPanel {
                     public void mouseReleased(MouseEvent e) {
                         if (!button.isEnabled()) return;
                         if (isSecondMode) {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+                            button.setBackground(ThemeColors.getEqualHoverColor());
                         } else {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
                         }
                     }
 
@@ -334,9 +303,9 @@ public class MainPanel extends JPanel {
                     public void mouseEntered(MouseEvent e) {
                         if (!button.isEnabled()) return;
                         if (isSecondMode) {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+                            button.setBackground(ThemeColors.getEqualHoverColor());
                         } else {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
                         }
                     }
 
@@ -344,9 +313,9 @@ public class MainPanel extends JPanel {
                     public void mouseExited(MouseEvent e) {
                         if (!button.isEnabled()) return;
                         if (isSecondMode) {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualColor : dayEqualColor);
+                            button.setBackground(ThemeColors.getEqualColor());
                         } else {
-                            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolColor : daySymbolColor);
+                            button.setBackground(ThemeColors.getSymbolColor());
                         }
                     }
                 });
@@ -391,25 +360,25 @@ public class MainPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkNumberClickColor : dayNumberClickColor);
+            button.setBackground(ThemeColors.getNumberClickColor());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkNumberHoverColor : dayNumberHoverColor);
+            button.setBackground(ThemeColors.getNumberHoverColor());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkNumberHoverColor : dayNumberHoverColor);
+            button.setBackground(ThemeColors.getNumberHoverColor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkNumberColor : dayNumberColor);
+            button.setBackground(ThemeColors.getNumberColor());
         }
     }
 
@@ -426,25 +395,25 @@ public class MainPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolClickColor : daySymbolClickColor);
+            button.setBackground(ThemeColors.getSymbolClickColor());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
+            button.setBackground(ThemeColors.getSymbolHoverColor());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
+            button.setBackground(ThemeColors.getSymbolHoverColor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolColor : daySymbolColor);
+            button.setBackground(ThemeColors.getSymbolColor());
         }
     }
 
@@ -461,25 +430,25 @@ public class MainPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualClickColor : dayEqualClickColor);
+            button.setBackground(ThemeColors.getEqualClickColor());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+            button.setBackground(ThemeColors.getEqualHoverColor());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+            button.setBackground(ThemeColors.getEqualHoverColor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkEqualColor : dayEqualColor);
+            button.setBackground(ThemeColors.getEqualColor());
         }
     }
 
@@ -496,73 +465,25 @@ public class MainPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionClick : dayFunctionClick);
+            button.setBackground(ThemeColors.getFunctionClickColor());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionHoverColor : dayFunctionHoverColor);
+            button.setBackground(ThemeColors.getFunctionHoverColor());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionHoverColor : dayFunctionHoverColor);
+            button.setBackground(ThemeColors.getFunctionHoverColor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
-        }
-    }
-
-    private class SwitchMouseHandler extends MouseAdapter {
-        private final JButton button;
-        private boolean enable = false;
-
-        public SwitchMouseHandler(JButton button) {
-            this.button = button;
-            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
-            button.setBorderPainted(false);      // 取消默认边框绘制
-            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (!button.isEnabled()) return;
-            enable = !enable;
-            System.out.println(enable);
-            if (enable) {
-                button.setBackground(CalculatorGUI.isDarkMode ? darkEqualColor : dayEqualColor);
-            } else {
-                button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolColor : daySymbolColor);
-            }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (!button.isEnabled() || enable) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolClickColor : daySymbolClickColor);
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (!button.isEnabled() || enable) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            if (!button.isEnabled() || enable) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkSymbolHoverColor : daySymbolHoverColor);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            if (!button.isEnabled() || enable) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+            button.setBackground(ThemeColors.getLightBgColor());
         }
     }
 
@@ -852,14 +773,14 @@ public class MainPanel extends JPanel {
             String[] buttons = {
                     "MC", "MR", "M+", "M-", "MS", "History"
             };
-            setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+            setBackground(ThemeColors.getLightBgColor());
             for (int i = 0; i < 6; i++) {
                 String text = buttons[i];
                 JButton button = new JButton(text);
                 button.setFocusPainted(false);
                 button.setFont(new Font("Arial", Font.PLAIN, 15));
-                button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
-                button.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
+                button.setBackground(ThemeColors.getLightBgColor());
+                button.setForeground(ThemeColors.getTextColor());
                 button.setBorder(BorderFactory.createEmptyBorder());
                 switch (i) {
                     case 0:
@@ -891,9 +812,9 @@ public class MainPanel extends JPanel {
                             public void mousePressed(MouseEvent e) {
                                 if (!button.isEnabled()) return;
                                 if (isHistoryShow) {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkEqualClickColor : dayEqualClickColor);
+                                    button.setBackground(ThemeColors.getEqualClickColor());
                                 } else {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionClick : dayFunctionClick);
+                                    button.setBackground(ThemeColors.getFunctionClickColor());
                                 }
                             }
 
@@ -901,9 +822,9 @@ public class MainPanel extends JPanel {
                             public void mouseReleased(MouseEvent e) {
                                 if (!button.isEnabled()) return;
                                 if (isHistoryShow) {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+                                    button.setBackground(ThemeColors.getEqualHoverColor());
                                 } else {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionHoverColor : dayFunctionHoverColor);
+                                    button.setBackground(ThemeColors.getFunctionHoverColor());
                                 }
                             }
 
@@ -911,9 +832,9 @@ public class MainPanel extends JPanel {
                             public void mouseEntered(MouseEvent e) {
                                 if (!button.isEnabled()) return;
                                 if (isHistoryShow) {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkEqualHoverColor : dayEqualHoverColor);
+                                    button.setBackground(ThemeColors.getEqualHoverColor());
                                 } else {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkFunctionHoverColor : dayFunctionHoverColor);
+                                    button.setBackground(ThemeColors.getFunctionHoverColor());
                                 }
                             }
 
@@ -921,9 +842,9 @@ public class MainPanel extends JPanel {
                             public void mouseExited(MouseEvent e) {
                                 if (!button.isEnabled()) return;
                                 if (isHistoryShow) {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkEqualColor : dayEqualColor);
+                                    button.setBackground(ThemeColors.getEqualColor());
                                 } else {
-                                    button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+                                    button.setBackground(ThemeColors.getLightBgColor());
                                 }
                             }
                         });
@@ -1000,7 +921,7 @@ public class MainPanel extends JPanel {
         }
 
         public void onHistoryPanelHide() {
-            historyButton.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+            historyButton.setBackground(ThemeColors.getLightBgColor());
         }
     }
 }

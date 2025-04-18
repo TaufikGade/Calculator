@@ -1,6 +1,7 @@
 package org.calculator.gui.drawing;
 
 import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 
 import java.awt.*;
 import java.util.*;
@@ -11,12 +12,6 @@ public class BarChartPanel extends ChartPanel {
     private List<Integer> barLowerBounds;
     private List<Integer> barUpperBounds;
     private final List<Color> barColors;
-    //region ColorDefinitions
-    private final Color dayDataColor = Color.BLACK;
-    private final Color darkDataColor = Color.WHITE;
-    private final Color daySplitColor = Color.LIGHT_GRAY;
-    private final Color darkSplitColor = Color.LIGHT_GRAY;
-    //endregion
 
     public BarChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
@@ -60,7 +55,7 @@ public class BarChartPanel extends ChartPanel {
                     int barHeight = (int) (num / dataDiff * height) - BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
                     //g.setColor(Color.BLACK);
-                    g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
+                    g.setColor(ThemeColors.getDataColor());
                     //g.drawRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y - 10);
                     barLowerBounds.add(y - barHeight);
@@ -69,7 +64,7 @@ public class BarChartPanel extends ChartPanel {
                     int barHeight = (int) (-num / dataDiff * height) + BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
                     //g.setColor(Color.BLACK);
-                    g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
+                    g.setColor(ThemeColors.getDataColor());
                     //g.drawRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y + 15);
                     barLowerBounds.add(y);
@@ -82,10 +77,10 @@ public class BarChartPanel extends ChartPanel {
             for (int i = 0; i <= numTicks; i++) {
                 int ty = height - (i * height / numTicks) + BAR_PADDING;
                 //g.setColor(Color.LIGHT_GRAY);
-                g.setColor(CalculatorGUI.isDarkMode ? darkSplitColor : daySplitColor);
+                g.setColor(ThemeColors.getSplitColor());
                 g.drawLine(BAR_PADDING, ty, width + BAR_PADDING, ty); // 绘制分割线
                 //g.setColor(Color.BLACK);
-                g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
+                g.setColor(ThemeColors.getDataColor());
                 g.drawString(String.format("%.2f", i * dataDiff / numTicks + minData), 10, ty); // 标注数值
                 g.setFont(new Font("Arial", Font.PLAIN, 12));
             }
@@ -100,7 +95,7 @@ public class BarChartPanel extends ChartPanel {
                 g.setColor(hoveredIndex == i ? barColors.get(i).brighter() : barColors.get(i));
                 g.fillRect(i * barWidth + BAR_PADDING, height - barHeight + BAR_PADDING, barWidth, barHeight);
                 //g.setColor(Color.BLACK);
-                g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
+                g.setColor(ThemeColors.getDataColor());
                 //g.drawRect(i * barWidth + BAR_PADDING, height - barHeight + BAR_PADDING, barWidth, barHeight);
                 g.drawString("Data " + (i + 1), i * barWidth + 30, height + 10);
                 barLowerBounds.add(height - barHeight + BAR_PADDING);
@@ -112,10 +107,10 @@ public class BarChartPanel extends ChartPanel {
             for (int i = 0; i <= numTicks; i++) {
                 int y = height - (i * height / numTicks) + BAR_PADDING;
                 //g.setColor(Color.LIGHT_GRAY);
-                g.setColor(CalculatorGUI.isDarkMode ? darkSplitColor : daySplitColor);
+                g.setColor(ThemeColors.getSplitColor());
                 g.drawLine(BAR_PADDING, y, width + BAR_PADDING, y); // 绘制分割线
                 //g.setColor(Color.BLACK);
-                g.setColor(CalculatorGUI.isDarkMode ? darkDataColor : dayDataColor);
+                g.setColor(ThemeColors.getDataColor());
                 g.drawString(String.valueOf(Math.round(i * maxData / numTicks)), 10, y); // 标注数值
                 g.setFont(new Font("Arial", Font.PLAIN, 12));
             }
@@ -181,17 +176,17 @@ public class BarChartPanel extends ChartPanel {
 
         // 绘制背景
         //g.setColor(new Color(255, 255, 180));
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBgColor : dayTooltipBgColor);
+        g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(tooltipX, tooltipY, textWidth + 20, textHeight + 6);
 
         // 绘制边框
         //g.setColor(Color.DARK_GRAY);
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor);
+        g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(tooltipX, tooltipY, textWidth + 20, textHeight + 6);
 
         // 绘制文字
         //g.setColor(Color.BLACK);
-        g.setColor(CalculatorGUI.isDarkMode ? darkTooltipTextColor : dayTooltipTextColor);
+        g.setColor(ThemeColors.getTextColor());
         g.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }

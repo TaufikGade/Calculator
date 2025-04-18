@@ -1,6 +1,6 @@
 package org.calculator.gui.scientific;
 
-import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,45 +11,33 @@ import java.util.Objects;
 public class HistoryPanel extends JPanel {
     private final ScientificPanel topPanel;
     private final JTextArea historyArea;
-    //region ColorDefinitions
-    private final Color dayBgColor = new Color(238, 238, 238); //EEEEEE
-    private final Color darkBgColor = new Color(40, 40, 40);
-    private final Color dayContentColor = new Color(255, 255, 255); //FFFFFF
-    private final Color darkContentColor = new Color(10, 10, 10);
-    private final Color dayTextColor = Color.black;
-    private final Color darkTextColor = Color.lightGray;
-    private final Color dayHoverColor = new Color(234, 234, 234);
-    private final Color darkHoverColor = new Color(45, 45, 45);
-    private final Color dayClickColor = new Color(236, 237, 238);
-    private final Color darkClickColor = new Color(29, 29, 42);
-    //endregion
 
     public HistoryPanel(ScientificPanel top) {
         this.topPanel = top;
 
         // Panel本体
         setLayout(new BorderLayout());
-        setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        setBackground(ThemeColors.getDarkBgColor());
         this.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
         Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 20);
 
         // 顶部区域
         JPanel topArea = new JPanel(new BorderLayout());
-        topArea.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+        topArea.setBackground(ThemeColors.getDarkBgColor());
         topArea.setBorder(BorderFactory.createEmptyBorder());
 
         // title标题
         JLabel title = new JLabel("历史记录");
         title.setFont(chineseFont);
-        title.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
+        title.setForeground(ThemeColors.getTextColor());
         topArea.add(title, BorderLayout.WEST);
 
         JButton closeButton = new JButton("关闭历史记录");
         closeButton.setBorder(BorderFactory.createEmptyBorder());
         closeButton.setFont(chineseFont);
-        closeButton.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
-        closeButton.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
+        closeButton.setBackground(ThemeColors.getDarkBgColor());
+        closeButton.setForeground(ThemeColors.getTextColor());
         closeButton.setFocusPainted(false);
         //closeButton.setBackground(new Color(238, 238, 238));
         topArea.add(closeButton, BorderLayout.EAST);
@@ -63,8 +51,8 @@ public class HistoryPanel extends JPanel {
         historyArea.setEditable(false);
         historyArea.setBorder(null);
         historyArea.setFont(new Font("Microsoft YaHei", Font.PLAIN, 15));
-        historyArea.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
-        historyArea.setBackground(CalculatorGUI.isDarkMode ? darkContentColor : dayContentColor);
+        historyArea.setForeground(ThemeColors.getTextColor());
+        historyArea.setBackground(ThemeColors.getLightContentColor());
 
         // historyScroll 历史记录区域滚动条
         JScrollPane historyScroll = new JScrollPane(historyArea);
@@ -77,8 +65,8 @@ public class HistoryPanel extends JPanel {
         clearButton.addActionListener(e -> historyArea.setText("没有历史记录\n"));
         clearButton.setFocusPainted(false);
         clearButton.setBorder(null);
-        clearButton.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
-        clearButton.setForeground(CalculatorGUI.isDarkMode ? darkTextColor : dayTextColor);
+        clearButton.setBackground(ThemeColors.getDarkBgColor());
+        clearButton.setForeground(ThemeColors.getTextColor());
         clearButton.addMouseListener(new ButtonMouseHandler(clearButton));
         add(clearButton, BorderLayout.SOUTH);
 
@@ -132,25 +120,25 @@ public class HistoryPanel extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             if (!button.isEnabled()) return;
-            button.setBackground(CalculatorGUI.isDarkMode ? darkClickColor : dayClickColor);
+            button.setBackground(ThemeColors.getFunctionClickColor());
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
-            button.setBackground(CalculatorGUI.isDarkMode ? darkHoverColor : dayHoverColor);
+            button.setBackground(ThemeColors.getFunctionHoverColor());
         }
 
         @Override
         public void mouseEntered(MouseEvent e) {
             super.mouseEntered(e);
-            button.setBackground(CalculatorGUI.isDarkMode ? darkHoverColor : dayHoverColor);
+            button.setBackground(ThemeColors.getFunctionHoverColor());
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
             super.mouseExited(e);
-            button.setBackground(CalculatorGUI.isDarkMode ? darkBgColor : dayBgColor);
+            button.setBackground(ThemeColors.getDarkBgColor());
         }
     }
 }

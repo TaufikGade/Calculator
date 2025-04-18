@@ -1,6 +1,6 @@
 package org.calculator.gui.regression;
 
-import org.calculator.gui.CalculatorGUI;
+import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,21 +23,21 @@ public class DataPanel extends JPanel {
         yFields = new ArrayList<>();
         data = new ArrayList<>();
 
-        setBackground(CalculatorGUI.isDarkMode ? Color.black : topPanel.dayBgColor);
+        setBackground(ThemeColors.getTotalBgColor());
         setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
         // 顶部区域
         JPanel topArea = new JPanel(new BorderLayout());
         topArea.setBorder(null);
-        topArea.setBackground(CalculatorGUI.isDarkMode ? Color.black : Color.white);
+        topArea.setBackground(ThemeColors.getTotalBgColor());
 
         Font chineseFont = new Font("Microsoft YaHei", Font.PLAIN, 25);
 
         // title标题
         JLabel title = new JLabel("数据：");
         title.setFont(chineseFont);
-        title.setForeground(CalculatorGUI.isDarkMode ? top.darkTextColor : top.dayTextColor);
+        title.setForeground(ThemeColors.getTextColor());
 
         JButton closeButton = topPanel.initButton("关闭数据面板");
         closeButton.addActionListener(_ -> topPanel.switchDataPanelState(false));
@@ -49,7 +49,7 @@ public class DataPanel extends JPanel {
         // 创建输入部分的面板（中部区域）
         inputFieldPanel = new JPanel();
         inputFieldPanel.setLayout(new BoxLayout(inputFieldPanel, BoxLayout.Y_AXIS));
-        inputFieldPanel.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        inputFieldPanel.setBackground(ThemeColors.getDarkContentColor());
         inputFieldPanel.setBorder(null);
 
         // 添加输入框面板和按钮面板到中央滚动面板
@@ -106,40 +106,40 @@ public class DataPanel extends JPanel {
         if (inputCount == MAX_DATA_POINTS) return;
 
         JPanel inputItem = new JPanel(new BorderLayout());
-        inputItem.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        inputItem.setBackground(ThemeColors.getDarkContentColor());
 
         JLabel label = new JLabel(String.format("数据%02d：", xFields.size() + 1));
         label.setFont(labelFont);
-        label.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
-        label.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
+        label.setBackground(ThemeColors.getDarkContentColor());
+        label.setForeground(ThemeColors.getTextColor());
         inputItem.add(label, BorderLayout.WEST);
 
         JPanel SingleInputPanelX = new JPanel(new BorderLayout());
         JLabel dimensionLabelX = new JLabel("x:");
-        dimensionLabelX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
-        dimensionLabelX.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
+        dimensionLabelX.setBackground(ThemeColors.getDarkContentColor());
+        dimensionLabelX.setForeground(ThemeColors.getTextColor());
         JTextField textFieldX = new JTextField(30);
         textFieldX.setFont(dataFont);
-        textFieldX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : Color.white);
-        textFieldX.setForeground(CalculatorGUI.isDarkMode ? Color.lightGray : Color.black);
+        textFieldX.setBackground(ThemeColors.getDarkContentColor());
+        textFieldX.setForeground(ThemeColors.getTextColor());
         SingleInputPanelX.add(dimensionLabelX, BorderLayout.WEST);
         SingleInputPanelX.add(textFieldX, BorderLayout.CENTER);
-        SingleInputPanelX.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        SingleInputPanelX.setBackground(ThemeColors.getDarkContentColor());
 
         JPanel SingleInputPanelY = new JPanel(new BorderLayout());
         JLabel dimensionLabelY = new JLabel("y:");
-        dimensionLabelY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
-        dimensionLabelY.setForeground(CalculatorGUI.isDarkMode ? topPanel.darkTextColor : topPanel.dayTextColor);
+        dimensionLabelY.setBackground(ThemeColors.getDarkContentColor());
+        dimensionLabelY.setForeground(ThemeColors.getTextColor());
         JTextField textFieldY = new JTextField(30);
         textFieldY.setFont(dataFont);
-        textFieldY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : Color.white);
-        textFieldY.setForeground(CalculatorGUI.isDarkMode ? Color.lightGray : Color.black);
+        textFieldY.setBackground(ThemeColors.getDarkContentColor());
+        textFieldY.setForeground(ThemeColors.getTextColor());
         SingleInputPanelY.add(dimensionLabelY, BorderLayout.WEST);
         SingleInputPanelY.add(textFieldY, BorderLayout.CENTER);
-        SingleInputPanelY.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        SingleInputPanelY.setBackground(ThemeColors.getDarkContentColor());
 
         JPanel inputPart = new JPanel(new GridLayout(1, 2, 10, 10));
-        inputPart.setBackground(CalculatorGUI.isDarkMode ? topPanel.darkContentColor : topPanel.dayContentColor);
+        inputPart.setBackground(ThemeColors.getDarkContentColor());
         inputPart.add(SingleInputPanelX);
         inputPart.add(SingleInputPanelY);
 
