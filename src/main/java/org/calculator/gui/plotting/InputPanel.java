@@ -16,7 +16,6 @@ public class InputPanel extends JPanel{
     private JTextField display;
     private final StringBuilder inputExpression;
     private final MathEvaluator evaluator;
-    private final MathEvaluator symEvaluator;
     private boolean isSecondMode = false;
     private final Map<String, InputPanel.FunctionButton> functionButtons;
     private final InputPanel.ButtonHandler buttonHandler;
@@ -26,7 +25,6 @@ public class InputPanel extends JPanel{
     public InputPanel(PlottingPanel top) {
         this.topPanel = top;
         this.evaluator = new MathEvaluator();
-        this.symEvaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         buttonHandler = new InputPanel.ButtonHandler();
         display = new JTextField();

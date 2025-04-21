@@ -329,10 +329,14 @@ public class GraphPanel extends JPanel {
 
     private double evaluateFunction(String function, double x) {
         try {
-            // 替换函数中的 x 变量为具体值
-            String expression = function.replaceAll("x", "(" + x + ")");
-
-            // 使用MathEvaluator计算表达式的值
+            // 使用\\b表示单词边界，确保只替换独立的x，不替换函数名中的x
+            String expression = function.replaceAll("\\bx\\b", "(" + x + ")");// 在绘图之前添加调试代码，测试三角函数计算是否正确
+           // double testSin0 = topPanel.getEvaluator().evaluate("sin(0)");
+            //double testSin90 = topPanel.getEvaluator().evaluate("sin(1.5707963267948966)"); // π/2 弧度，应接近1
+            //double testSin180 = topPanel.getEvaluator().evaluate("sin(3.141592653589793)");  // π 弧度，应接近0
+            //System.out.println("sin(0) = " + testSin0);
+            //System.out.println("sin(π/2) = " + testSin90);
+            //System.out.println("sin(π) = " + testSin180);
             return topPanel.getEvaluator().evaluate(expression);
         } catch (Exception e) {
             return Double.NaN;
@@ -344,6 +348,6 @@ public class GraphPanel extends JPanel {
     }
 
     private int mapY(double y, int height) {
-        return (int) ((yMax - y) / (yMax - yMin) * height);
+        return height - (int)((y - yMin) * height / (yMax - yMin));
     }
 }

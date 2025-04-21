@@ -41,9 +41,9 @@ public class PostfixEvaluator {
         String func = token.getFunctionName();
         double arg = stack.pop();
         switch (func) {
-            case "sin" -> stack.push(Math.sin(Math.toRadians(arg)));
-            case "cos" -> stack.push(Math.cos(Math.toRadians(arg)));
-            case "tan" -> stack.push(Math.tan(Math.toRadians(arg)));
+            case "sin" -> stack.push(Math.sin(arg));
+            case "cos" -> stack.push(Math.cos(arg));
+            case "tan" -> stack.push(Math.tan(arg));
             case "lg" -> stack.push(Math.log10(arg));
             case "ln" -> stack.push(Math.log(arg));
             case "exp" -> stack.push(Math.exp(arg));
