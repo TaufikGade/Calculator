@@ -1,5 +1,7 @@
 package org.calculator.gui.drawing;
 
+import org.calculator.gui.ThemeColors;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
@@ -8,22 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PieChartPanel extends ChartPanel {
-    private final int PIE_PADDING = 15;
     private int centerX;
     private int centerY;
     private int radius;
     private double dataSum = 0;
-    private List<Color> fragmentColor;
+    private final List<Color> fragmentColor;
 
     public PieChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
-        setBorder(BorderFactory.createTitledBorder("饼状图"));
+        //setBorder(BorderFactory.createTitledBorder("饼状图"));
         setPreferredSize(new Dimension(400, 400));
 
         fragmentColor = new ArrayList<>();
 
         JLabel tipLabel = new JLabel("注：负数不计入饼状图");
+        tipLabel.setForeground(ThemeColors.getTextColor());
         add(tipLabel, -1);
     }
 
@@ -32,6 +34,7 @@ public class PieChartPanel extends ChartPanel {
         if (this.data == null) return;
 
         super.paintComponent(g);
+        setBackground(topPanel.getBackground());
         calculateLayout();
 
         dataSum = 0;
@@ -130,15 +133,18 @@ public class PieChartPanel extends ChartPanel {
         if (y < 20) y = 20;
 
         // 绘制背景
-        g.setColor(new Color(255, 255, 200));
+        //g.setColor(new Color(255, 255, 200));
+        g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        g.setColor(Color.DARK_GRAY);
+        //g.setColor(Color.DARK_GRAY);
+        g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        g.setColor(Color.BLACK);
+        //g.setColor(Color.BLACK);
+        g.setColor(ThemeColors.getTextColor());
         g.drawString(text, x + 5, y + textHeight - 2);
     }
 

@@ -5,24 +5,35 @@ import org.calculator.gui.CalculatorGUI;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     private static final String CONFIG_PATH = System.getProperty("user.home") + "/.jiage/config.property";
 
     public static void main(String[] args) {
-        JFrame mainFrame = new CalculatorGUI();
+        CalculatorGUI mainFrame = new CalculatorGUI();
         loadSavedProperty(mainFrame);
+        mainFrame.init();
         mainFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 saveProperty(mainFrame);
             }
         });
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        // 定期检查黑暗模式状态
+        scheduler.scheduleAtFixedRate(() -> {
+            mainFrame.setDarkMode(isDarkMode());
+        }, 5, 5, TimeUnit.SECONDS);  // 每5秒检查一次
+
     }
 
     private static void saveProperty(JFrame frame) {
@@ -33,6 +44,7 @@ public class Main {
             var dimension = frame.getSize();
             props.setProperty("size.width", String.valueOf(dimension.width));
             props.setProperty("size.height", String.valueOf(dimension.height));
+            props.setProperty("darkMode", String.valueOf(CalculatorGUI.isDarkMode));
 
             // 保存到用户目录的隐藏文件
             new File(System.getProperty("user.home") + "/.jiage").mkdirs();
@@ -53,6 +65,7 @@ public class Main {
             int y = Integer.parseInt(props.getProperty("position.y", "0"));
             int width = Integer.parseInt(props.getProperty("size.width", "600"));
             int height = Integer.parseInt(props.getProperty("size.height", "800"));
+            CalculatorGUI.isDarkMode = Boolean.parseBoolean(props.getProperty("darkMode", "false"));
 
             // 设置窗口位置
             frame.setLocation(x, y);
@@ -62,5 +75,29 @@ public class Main {
             frame.setLocationRelativeTo(null); // 居中显示（备用方案）
             frame.setSize(600, 800);
         }
+    }
+
+    private static boolean isDarkMode() {
+        try {
+            Process process = Runtime.getRuntime().exec("reg query \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /v AppsUseLightTheme");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("AppsUseLightTheme")) {
+                    String[] parts = line.split("\\s+");
+                    String value = parts[parts.length - 1];
+                    if (Objects.equals(value, "0x0")) {
+                        System.out.println("System is in Dark Mode");
+                        return true;
+                    } else {
+                        System.out.println("System is in Light Mode");
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

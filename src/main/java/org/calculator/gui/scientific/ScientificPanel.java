@@ -9,9 +9,20 @@ public class ScientificPanel extends JLayeredPane {
     private MainPanel mainPanel;
 
     public ScientificPanel() {
-        mainPanel = new MainPanel(this);
         historyPanel = new HistoryPanel(this);
         historyPanel.setVisible(false);
+        init();
+    }
+
+    public ScientificPanel(String history) {
+        historyPanel = new HistoryPanel(this, history);
+        historyPanel.setVisible(false);
+        init();
+    }
+
+    public void init() {
+        mainPanel = new MainPanel(this);
+
         add(mainPanel, JLayeredPane.DEFAULT_LAYER);
         add(historyPanel, JLayeredPane.PALETTE_LAYER);
 
@@ -23,6 +34,7 @@ public class ScientificPanel extends JLayeredPane {
             }
         });
     }
+
 
     // 返回true  表示历史记录面板出现
     // 返回false 表示隐藏历史记录面板
@@ -37,5 +49,9 @@ public class ScientificPanel extends JLayeredPane {
 
     public void provideCalHistory(String history) {
         mainPanel.catchCalHistory(history);
+    }
+
+    public String getHistory() {
+        return historyPanel.getHistory();
     }
 }

@@ -1,6 +1,7 @@
 package org.calculator.gui.drawing;
 
-import javax.swing.*;
+import org.calculator.gui.ThemeColors;
+
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -9,13 +10,13 @@ public class BarChartPanel extends ChartPanel {
     private final int BAR_PADDING = 25;
     private List<Integer> barLowerBounds;
     private List<Integer> barUpperBounds;
-    private List<Color> barColors;
+    private final List<Color> barColors;
 
     public BarChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
         setPreferredSize(new Dimension(400, 300));
-        setBorder(BorderFactory.createTitledBorder("柱状图"));
+        //setBorder(BorderFactory.createTitledBorder("柱状图"));
 
         barColors = new ArrayList<>();
     }
@@ -25,7 +26,7 @@ public class BarChartPanel extends ChartPanel {
         if (this.data == null) return;
 
         super.paintComponent(g);
-
+        setBackground(topPanel.getBackground());
         barLowerBounds = new ArrayList<>(data.size());
         barUpperBounds = new ArrayList<>(data.size());
 
@@ -52,7 +53,8 @@ public class BarChartPanel extends ChartPanel {
                 if (num > 0) {
                     int barHeight = (int) (num / dataDiff * height) - BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
-                    g.setColor(Color.BLACK);
+                    //g.setColor(Color.BLACK);
+                    g.setColor(ThemeColors.getDataColor());
                     //g.drawRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y - 10);
                     barLowerBounds.add(y - barHeight);
@@ -60,7 +62,8 @@ public class BarChartPanel extends ChartPanel {
                 } else {
                     int barHeight = (int) (-num / dataDiff * height) + BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
-                    g.setColor(Color.BLACK);
+                    //g.setColor(Color.BLACK);
+                    g.setColor(ThemeColors.getDataColor());
                     //g.drawRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y + 15);
                     barLowerBounds.add(y);
@@ -72,9 +75,11 @@ public class BarChartPanel extends ChartPanel {
             int numTicks = 5; // Y 轴的分割线数量
             for (int i = 0; i <= numTicks; i++) {
                 int ty = height - (i * height / numTicks) + BAR_PADDING;
-                g.setColor(Color.LIGHT_GRAY);
+                //g.setColor(Color.LIGHT_GRAY);
+                g.setColor(ThemeColors.getSplitColor());
                 g.drawLine(BAR_PADDING, ty, width + BAR_PADDING, ty); // 绘制分割线
-                g.setColor(Color.BLACK);
+                //g.setColor(Color.BLACK);
+                g.setColor(ThemeColors.getDataColor());
                 g.drawString(String.format("%.2f", i * dataDiff / numTicks + minData), 10, ty); // 标注数值
                 g.setFont(new Font("Arial", Font.PLAIN, 12));
             }
@@ -88,7 +93,8 @@ public class BarChartPanel extends ChartPanel {
                 }
                 g.setColor(hoveredIndex == i ? barColors.get(i).brighter() : barColors.get(i));
                 g.fillRect(i * barWidth + BAR_PADDING, height - barHeight + BAR_PADDING, barWidth, barHeight);
-                g.setColor(Color.BLACK);
+                //g.setColor(Color.BLACK);
+                g.setColor(ThemeColors.getDataColor());
                 //g.drawRect(i * barWidth + BAR_PADDING, height - barHeight + BAR_PADDING, barWidth, barHeight);
                 g.drawString("Data " + (i + 1), i * barWidth + 30, height + 10);
                 barLowerBounds.add(height - barHeight + BAR_PADDING);
@@ -99,9 +105,11 @@ public class BarChartPanel extends ChartPanel {
             int numTicks = 5; // Y 轴的分割线数量
             for (int i = 0; i <= numTicks; i++) {
                 int y = height - (i * height / numTicks) + BAR_PADDING;
-                g.setColor(Color.LIGHT_GRAY);
+                //g.setColor(Color.LIGHT_GRAY);
+                g.setColor(ThemeColors.getSplitColor());
                 g.drawLine(BAR_PADDING, y, width + BAR_PADDING, y); // 绘制分割线
-                g.setColor(Color.BLACK);
+                //g.setColor(Color.BLACK);
+                g.setColor(ThemeColors.getDataColor());
                 g.drawString(String.valueOf(Math.round(i * maxData / numTicks)), 10, y); // 标注数值
                 g.setFont(new Font("Arial", Font.PLAIN, 12));
             }
@@ -166,15 +174,18 @@ public class BarChartPanel extends ChartPanel {
         }
 
         // 绘制背景
-        g.setColor(new Color(255, 255, 180));
+        //g.setColor(new Color(255, 255, 180));
+        g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(tooltipX, tooltipY, textWidth + 20, textHeight + 6);
 
         // 绘制边框
-        g.setColor(Color.DARK_GRAY);
+        //g.setColor(Color.DARK_GRAY);
+        g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(tooltipX, tooltipY, textWidth + 20, textHeight + 6);
 
         // 绘制文字
-        g.setColor(Color.BLACK);
+        //g.setColor(Color.BLACK);
+        g.setColor(ThemeColors.getTextColor());
         g.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }

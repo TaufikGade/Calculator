@@ -1,13 +1,13 @@
 package org.calculator.gui.scientific;
 
+import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,8 +18,6 @@ public class MainPanel extends JPanel {
     private final JTextField display;
     private final StringBuilder inputExpression;
     private final MathEvaluator evaluator;
-    private final MathEvaluator symEvaluator;
-    private boolean isSecondMode = false;
     private final Map<String, FunctionButton> functionButtons;
     private final ButtonHandler buttonHandler;
     // 添加三角函数弹出菜单
@@ -27,24 +25,29 @@ public class MainPanel extends JPanel {
     private JButton trigButton;
     private final ControlPanel controlPanel;
     private double memoryValue = Double.MAX_VALUE; // 新增变量，用于存储内存中的值
+    private boolean isHistoryShow = false;
+    private boolean isSecondMode = false;
 
     public MainPanel(ScientificPanel top) {
         this.topPanel = top;
+        setBackground(ThemeColors.getLightBgColor());
+        setBorder(BorderFactory.createEmptyBorder());
 
         this.evaluator = new MathEvaluator();
-        this.symEvaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         buttonHandler = new ButtonHandler();
         setLayout(new BorderLayout());
         // 显示屏
         display = new JTextField();
+        display.setForeground(ThemeColors.getTextColor());
+        display.setBackground(ThemeColors.getLightBgColor());
+        display.setBorder(null);
 
         try {
             InputStream fontStream = MainPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
             Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(38f);
             display.setFont(customFont);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "字体加载失败！");
         }
@@ -78,20 +81,23 @@ public class MainPanel extends JPanel {
     }
 
     private JPanel createTopFunctionsPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel.setBackground(new Color(240, 240, 240));
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        panel.setBackground(ThemeColors.getLightBgColor());
 
         // 创建三角学按钮
         trigButton = new JButton("三角学 ▼");
-        trigButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        trigButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 16));
+        trigButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         trigButton.setFocusPainted(false);
-        trigButton.setBackground(new Color(248, 249, 250));
+        trigButton.setForeground(ThemeColors.getTextColor());
+        trigButton.setBackground(ThemeColors.getLightBgColor());
+        trigButton.addMouseListener(new FunctionMouseHandler(trigButton));
 
         // 创建三角函数弹出菜单
-        trigPopupMenu = createTrigPopupMenu();
+        createTrigPopupMenu();
 
         // 添加三角学按钮点击事件
-        trigButton.addActionListener(e -> {
+        trigButton.addActionListener(_ -> {
             // 显示弹出菜单在按钮下方
             trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
         });
@@ -99,101 +105,82 @@ public class MainPanel extends JPanel {
 
         // 添加求导按钮
         JButton derivativeButton = new JButton("求导");
-        derivativeButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        derivativeButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 16));
+        derivativeButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         derivativeButton.setFocusPainted(false);
-        derivativeButton.setBackground(new Color(248, 249, 250));
+        derivativeButton.setForeground(ThemeColors.getTextColor());
+        derivativeButton.setBackground(ThemeColors.getLightBgColor());
         derivativeButton.addActionListener(buttonHandler);
+        derivativeButton.addMouseListener(new FunctionMouseHandler(derivativeButton));
         panel.add(derivativeButton);
-
-        // 添加函数按钮
-        JButton functionButton = new JButton("函数");
-        functionButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
-        functionButton.setFocusPainted(false);
-        functionButton.setBackground(new Color(248, 249, 250));
-        functionButton.addActionListener(e -> {
-            // 显示函数弹出菜单在按钮下方
-            JPopupMenu functionPopupMenu = createFunctionPopupMenu();
-            functionPopupMenu.show(functionButton, 0, functionButton.getHeight());
-        });
-        panel.add(functionButton);
 
         return panel;
     }
 
     // 创建三角函数弹出菜单
-    private JPopupMenu createTrigPopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.setBackground(new Color(248, 249, 250));
+    private void createTrigPopupMenu() {
+        trigPopupMenu = new JPopupMenu();
+        trigPopupMenu.setBackground(ThemeColors.getLightBgColor());
 
         // 创建包含三角函数按钮的面板
         JPanel trigPanel = new JPanel(new GridLayout(2, 3, 2, 2));
-        trigPanel.setBackground(new Color(248, 249, 250));
+        trigPanel.setBackground(ThemeColors.getLightBgColor());
 
         // 添加三角函数按钮
-        String[] regularFunctions = {"sin", "cos", "tan"};
-        String[] inverseFunctions = {"asin", "acos", "atan"};
+        String[] showText = {"sin", "cos", "tan", "asin", "acos", "atan"};
+        String[] latexText = {"\\sin", "\\cos", "\\tan", "\\arcsin", "\\arccos", "\\arctan"};
 
-        // 添加常规三角函数
-        for (String function : regularFunctions) {
-            JButton button = new JButton(function);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setForeground(Color.BLACK);
-            button.setBackground(new Color(248, 249, 250));
+        // 添加三角函数
+        for (int i = 0; i < 6; i++) {
+            TeXFormula formula = new TeXFormula(latexText[i]);
+            Icon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 17, TeXFormula.SERIF, ThemeColors.getTextColor());
+            JButton button = new JButton(icon);
+            button.setBackground(ThemeColors.getLightBgColor());
+            button.setBorder(null);
             button.setFocusPainted(false);
-            button.setActionCommand(function);
+            button.setActionCommand(showText[i]);
             button.addActionListener(buttonHandler);
+            button.addMouseListener(new SymbolMouseHandler(button));
             trigPanel.add(button);
         }
 
-        // 添加反三角函数
-        for (String function : inverseFunctions) {
-            JButton button = new JButton(function);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setForeground(Color.BLACK);
-            button.setBackground(new Color(248, 249, 250));
-            button.setFocusPainted(false);
-            button.setActionCommand(function);
-            button.addActionListener(buttonHandler);
-            trigPanel.add(button);
-        }
-
-        menu.add(trigPanel);
-        return menu;
+        trigPopupMenu.add(trigPanel);
     }
 
-    private JPopupMenu createFunctionPopupMenu() {
-        JPopupMenu menu = new JPopupMenu();
-        menu.setBackground(new Color(248, 249, 250));
-
-        JPanel functionPanel = new JPanel(new GridLayout(2, 3, 2, 2));
-        functionPanel.setBackground(new Color(248, 249, 250));
-
-        String[] functions = {"sin(x)", "cos(x)", "tan(x)", "ln(x)", "lg(10, x)", "exp(x)"};
-
-        for (String function : functions) {
-            JButton button = new JButton(function);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setForeground(Color.BLACK);
-            button.setBackground(new Color(248, 249, 250));
-            button.setFocusPainted(false);
-            button.setActionCommand(function);
-            button.addActionListener(e -> {
-                // 如果前一个字符是数字，则自动添加乘号
-                if (!inputExpression.isEmpty() && Character.isDigit(inputExpression.charAt(inputExpression.length() - 1))) {
-                    inputExpression.append("×");
-                }
-                inputExpression.append(function);
-                display.setText(inputExpression.toString());
-            });
-            functionPanel.add(button);
-        }
-
-        menu.add(functionPanel);
-        return menu;
-    }
+//    private JPopupMenu createFunctionPopupMenu() {
+//        JPopupMenu menu = new JPopupMenu();
+//        menu.setBackground(new Color(248, 249, 250));
+//
+//        JPanel functionPanel = new JPanel(new GridLayout(2, 3, 2, 2));
+//        functionPanel.setBackground(new Color(248, 249, 250));
+//
+//        String[] functions = {"sin(x)", "cos(x)", "tan(x)", "ln(x)", "lg(10, x)", "exp(x)"};
+//
+//        for (String function : functions) {
+//            JButton button = new JButton(function);
+//            button.setFont(new Font("Arial", Font.PLAIN, 12));
+//            button.setForeground(Color.BLACK);
+//            button.setBackground(new Color(248, 249, 250));
+//            button.setFocusPainted(false);
+//            button.setActionCommand(function);
+//            button.addActionListener(e -> {
+//                // 如果前一个字符是数字，则自动添加乘号
+//                if (!inputExpression.isEmpty() && Character.isDigit(inputExpression.charAt(inputExpression.length() - 1))) {
+//                    inputExpression.append("×");
+//                }
+//                inputExpression.append(function);
+//                display.setText(inputExpression.toString());
+//            });
+//            functionPanel.add(button);
+//        }
+//
+//        menu.add(functionPanel);
+//        return menu;
+//    }
 
     private JPanel createSymbolPanel() {
         JPanel panel = new JPanel(new GridLayout(7, 5, 5, 5));
+        panel.setBackground(ThemeColors.getLightBgColor());
 
         String[][] buttonDefinitions = {
                 {"2^{nd}", "2nd"},
@@ -226,7 +213,7 @@ public class MainPanel extends JPanel {
                 {"6", "6"},
                 {"-", "-"},
 
-                {"\\log", "log(", "\\log_{y}{x}", "log_base"},
+                {"\\lg", "lg(", "\\log_{y}{x}", "log_base"},
                 {"1", "1"},
                 {"2", "2"},
                 {"3", "3"},
@@ -245,15 +232,24 @@ public class MainPanel extends JPanel {
             String secondaryLatex = (buttonDefinitions[i].length > 2) ? buttonDefinitions[i][2] : primaryLatex;
             String secondaryCmd = (buttonDefinitions[i].length > 3) ? buttonDefinitions[i][3] : primaryCmd;
 
-            TeXFormula primaryFormula = new TeXFormula(primaryLatex);
-            Icon primaryIcon = i == buttonDefinitions.length - 1 ?
-                    primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, Color.white) :
-                    primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20);
+            // LaTeX表达式颜色
+            TeXFormula primaryFormula = new TeXFormula(primaryLatex), secondaryFormula = new TeXFormula(secondaryLatex);
+            Icon primaryIcon, secondaryIcon;
 
-            TeXFormula secondaryFormula = new TeXFormula(secondaryLatex);
-            Icon secondaryIcon = i == buttonDefinitions.length - 1 ?
-                    secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, Color.white) :
-                    secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20);
+            if (i == buttonDefinitions.length - 1) {
+                //等于号的字体颜色与其他的相反
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
+            } else {
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
+            }
 
             FunctionButton button;
             if (buttonDefinitions[i].length > 2) {
@@ -262,24 +258,63 @@ public class MainPanel extends JPanel {
                 button = new FunctionButton(primaryIcon, primaryCmd);
             }
 
-            Color btnColor;
             if (i == buttonDefinitions.length - 1) {
-                btnColor = new Color(0, 103, 192);
-            } else if (i >= 16 && i <= 18 || i >= 21 && i <= 23 || i >= 26 && i <= 28) {
-                btnColor = Color.white;
+                button.setBackground(ThemeColors.getEqualColor());
+                button.addMouseListener(new EqualMouseHandler(button));
+            } else if (i >= 16 && i <= 18 || i >= 21 && i <= 23 || i >= 26 && i <= 28 || i == 32) {
+                button.setBackground(ThemeColors.getNumberColor());
+                button.addMouseListener(new NumberMouseHandler(button));
             } else {
-                btnColor = new Color(248, 249, 250);
+                button.setBackground(ThemeColors.getSymbolColor());
+                button.addMouseListener(new SymbolMouseHandler(button));
             }
-            button.setBackground(btnColor);
+
+            button.setBorder(null);
             button.setFocusPainted(false);
             if (primaryCmd.equals("2nd")) {
-                button.addActionListener(e -> {
+                button.addActionListener(_ -> {
                     isSecondMode = !isSecondMode;
                     updateButtonsMode();
-                    if (isSecondMode) {
-                        button.setBackground(new Color(0, 103, 192));
-                    } else {
-                        button.setBackground(new Color(248, 249, 250));
+                });
+                button.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualClickColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolClickColor());
+                        }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualHoverColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
+                        }
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualHoverColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
+                        }
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolColor());
+                        }
                     }
                 });
             } else {
@@ -303,7 +338,151 @@ public class MainPanel extends JPanel {
     }
 
     public void onHistoryPanelVisible(boolean isVisible) {
-        controlPanel.updateHistoryButton(isVisible);
+        isHistoryShow = isVisible;
+        if (!isVisible) {
+            controlPanel.onHistoryPanelHide();
+        }
+    }
+
+    //region Handler
+    private class NumberMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public NumberMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberColor());
+        }
+    }
+
+    private class SymbolMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public SymbolMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolColor());
+        }
+    }
+
+    private class EqualMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public EqualMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualColor());
+        }
+    }
+
+    private class FunctionMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public FunctionMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getLightBgColor());
+        }
     }
 
     private class ButtonHandler implements ActionListener {
@@ -336,10 +515,10 @@ public class MainPanel extends JPanel {
                             inputExpression.setLength(0);
                             inputExpression.append(result);
                         } catch (StackOverflowError | ArithmeticException ex) {
-                            display.setText("溢出");
+                            display.setText("OVERFLOW");
                             inputExpression.setLength(0);
                         } catch (Exception ex) {
-                            display.setText("错误");
+                            display.setText("ERROR");
                             inputExpression.setLength(0);
                         }
                     }
@@ -392,7 +571,7 @@ public class MainPanel extends JPanel {
 
                 // 对数函数
                 case "log(":
-                    inputExpression.append("log(");
+                    inputExpression.append("lg(");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -440,7 +619,7 @@ public class MainPanel extends JPanel {
                     break;
 
                 case "cbrt":
-                    inputExpression.append("cbrt(");
+                    inputExpression.append(" ^(1/3)");
                     display.setText(inputExpression.toString());
                     break;
 
@@ -520,7 +699,7 @@ public class MainPanel extends JPanel {
                         inputExpression.append(derivative);
                         display.setText(derivative);
                     } catch (Exception ex) {
-                        display.setText("无法求导");
+                        display.setText("CANNOT DIFF");
                     }
                     break;
 
@@ -532,6 +711,7 @@ public class MainPanel extends JPanel {
             }
         }
     }
+    //endregion
 
 
     private class FunctionButton extends JButton {
@@ -575,10 +755,6 @@ public class MainPanel extends JPanel {
                 setMaximumSize(currentSize);
             }
         }
-
-        public boolean isInSecondMode() {
-            return isInSecondMode;
-        }
     }
 
     private class ControlPanel extends JPanel {
@@ -591,34 +767,81 @@ public class MainPanel extends JPanel {
             String[] buttons = {
                     "MC", "MR", "M+", "M-", "MS", "History"
             };
-
+            setBackground(ThemeColors.getLightBgColor());
             for (int i = 0; i < 6; i++) {
                 String text = buttons[i];
                 JButton button = new JButton(text);
                 button.setFocusPainted(false);
                 button.setFont(new Font("Arial", Font.PLAIN, 15));
-                button.setBackground(new Color(238, 238, 238));
+                button.setBackground(ThemeColors.getLightBgColor());
+                button.setForeground(ThemeColors.getTextColor());
                 button.setBorder(BorderFactory.createEmptyBorder());
                 switch (i) {
                     case 0:
                         button.addActionListener(_ -> memoryClear());
+                        button.addMouseListener(new FunctionMouseHandler(button));
                         MCButton = button;
                         break;
                     case 1:
                         button.addActionListener(_ -> memoryRecall());
+                        button.addMouseListener(new FunctionMouseHandler(button));
                         MRButton = button;
                         break;
                     case 2:
                         button.addActionListener(_ -> memoryAdd());
+                        button.addMouseListener(new FunctionMouseHandler(button));
                         break;
                     case 3:
                         button.addActionListener(_ -> memorySubtract());
+                        button.addMouseListener(new FunctionMouseHandler(button));
                         break;
                     case 4:
                         button.addActionListener(_ -> memoryStore());
+                        button.addMouseListener(new FunctionMouseHandler(button));
                         break;
                     case 5:
                         button.addActionListener(_ -> historyButton());
+                        button.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mousePressed(MouseEvent e) {
+                                if (!button.isEnabled()) return;
+                                if (isHistoryShow) {
+                                    button.setBackground(ThemeColors.getEqualClickColor());
+                                } else {
+                                    button.setBackground(ThemeColors.getFunctionClickColor());
+                                }
+                            }
+
+                            @Override
+                            public void mouseReleased(MouseEvent e) {
+                                if (!button.isEnabled()) return;
+                                if (isHistoryShow) {
+                                    button.setBackground(ThemeColors.getEqualHoverColor());
+                                } else {
+                                    button.setBackground(ThemeColors.getFunctionHoverColor());
+                                }
+                            }
+
+                            @Override
+                            public void mouseEntered(MouseEvent e) {
+                                if (!button.isEnabled()) return;
+                                if (isHistoryShow) {
+                                    button.setBackground(ThemeColors.getEqualHoverColor());
+                                } else {
+                                    button.setBackground(ThemeColors.getFunctionHoverColor());
+                                }
+                            }
+
+                            @Override
+                            public void mouseExited(MouseEvent e) {
+                                if (!button.isEnabled()) return;
+                                if (isHistoryShow) {
+                                    button.setBackground(ThemeColors.getEqualColor());
+                                } else {
+                                    button.setBackground(ThemeColors.getLightBgColor());
+                                }
+                            }
+                        });
                         historyButton = button;
                         break;
                 }
@@ -643,7 +866,7 @@ public class MainPanel extends JPanel {
                 try {
                     memoryValue = Double.parseDouble(text); // 从内存中减去当前值
                 } catch (NumberFormatException ex) {
-                    display.setText("错误"); // 如果解析失败，显示错误
+                    display.setText("ERROR"); // 如果解析失败，显示错误
                 }
             }
             updateButtonState();
@@ -657,7 +880,7 @@ public class MainPanel extends JPanel {
                     double currentValue = Double.parseDouble(text);
                     memoryValue += currentValue; // 从内存中减去当前值
                 } catch (NumberFormatException ex) {
-                    display.setText("错误"); // 如果解析失败，显示错误
+                    display.setText("ERROR"); // 如果解析失败，显示错误
                 }
             }
             updateButtonState();
@@ -671,7 +894,7 @@ public class MainPanel extends JPanel {
                     double currentValue = Double.parseDouble(text);
                     memoryValue -= currentValue; // 从内存中减去当前值
                 } catch (NumberFormatException ex) {
-                    display.setText("错误"); // 如果解析失败，显示错误
+                    display.setText("ERROR"); // 如果解析失败，显示错误
                 }
             }
             updateButtonState();
@@ -691,9 +914,8 @@ public class MainPanel extends JPanel {
             }
         }
 
-        public void updateHistoryButton(boolean isVisible) {
-            historyButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
-            // #EEEEEE
+        public void onHistoryPanelHide() {
+            historyButton.setBackground(ThemeColors.getLightBgColor());
         }
     }
 }

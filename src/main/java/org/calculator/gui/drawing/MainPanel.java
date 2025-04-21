@@ -1,8 +1,9 @@
 package org.calculator.gui.drawing;
 
+import org.calculator.gui.ThemeColors;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Path2D;
 
 public class MainPanel extends JPanel {
     private final DrawingPanel topPanel;
@@ -11,12 +12,12 @@ public class MainPanel extends JPanel {
     private final BarChartPanel barChartPanel;
     private final PieChartPanel pieChartPanel;
     private final LineChartPanel lineChartPanel;
-    private ChartPanel currentPanel = null;
 
     public MainPanel(DrawingPanel top) {
         this.topPanel = top;
 
         setLayout(new BorderLayout());
+        setBackground(ThemeColors.getDarkBgColor());
 
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
@@ -39,16 +40,18 @@ public class MainPanel extends JPanel {
         buttonPanel.add(showLineChartButton);
 
         // 添加按钮事件
-        showDataButton.addActionListener(e -> topPanel.switchDataPanelState());
+        showDataButton.addActionListener(_ -> topPanel.switchDataPanelState());
 
-        showBarChartButton.addActionListener(e -> showBarChartPanel());
+        showBarChartButton.addActionListener(_ -> showBarChartPanel());
 
-        showPieChartButton.addActionListener(e -> updatePieChartPanel());
+        showPieChartButton.addActionListener(_ -> updatePieChartPanel());
 
-        showLineChartButton.addActionListener(e -> generateLineChart());
+        showLineChartButton.addActionListener(_ -> generateLineChart());
 
         // 创建图表面板
         chartPanel = new JPanel();
+        chartPanel.setBackground(ThemeColors.getDarkBgColor());
+        chartPanel.setBorder(null);
         chartPanel.setLayout(new BorderLayout());
 
         // 将图表面板添加到DrawingPanel
@@ -71,7 +74,6 @@ public class MainPanel extends JPanel {
         chartPanel.add(barChartPanel, BorderLayout.CENTER);
         chartPanel.revalidate();
         chartPanel.repaint();
-        currentPanel = barChartPanel;
     }
 
     // 更新饼状图
@@ -89,7 +91,6 @@ public class MainPanel extends JPanel {
         chartPanel.add(pieChartPanel);
         chartPanel.revalidate();
         chartPanel.repaint();
-        currentPanel = pieChartPanel;
     }
 
     // 更新折线图
@@ -107,7 +108,6 @@ public class MainPanel extends JPanel {
         chartPanel.add(lineChartPanel, BorderLayout.CENTER);
         chartPanel.revalidate();
         chartPanel.repaint();
-        currentPanel = lineChartPanel;
     }
 
     // 获取随机颜色
@@ -115,10 +115,4 @@ public class MainPanel extends JPanel {
         return new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
     }
 
-    public void onDataPanelVisible(boolean isVisible) {
-        showDataButton.setBackground(isVisible ? new Color(0, 103, 192) : new Color(238, 238, 238));
-        if (!isVisible && currentPanel != null) {
-            currentPanel.updateData(this.topPanel.getData());
-        }
-    }
 }
