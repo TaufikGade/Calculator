@@ -12,7 +12,6 @@ import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 public class GraphPanel extends JPanel {
     private double xMin = -15;

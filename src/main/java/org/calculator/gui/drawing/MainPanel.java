@@ -8,7 +8,6 @@ import java.awt.*;
 public class MainPanel extends JPanel {
     private final DrawingPanel topPanel;
     private final JPanel chartPanel; // 用于显示图表的面板
-    private final JButton showDataButton; // 显示数据区域按钮
     private final BarChartPanel barChartPanel;
     private final PieChartPanel pieChartPanel;
     private final LineChartPanel lineChartPanel;
@@ -22,7 +21,8 @@ public class MainPanel extends JPanel {
         // 创建按钮面板
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 4));
-        showDataButton = topPanel.initButton("数据");
+        // 显示数据区域按钮
+        JButton showDataButton = topPanel.initButton("数据");
         // 显示柱状图按钮
         JButton showBarChartButton = topPanel.initButton("柱状图");
         // 显示饼图按钮

@@ -10,23 +10,11 @@ public class ThemeColors {
         return CalculatorGUI.isDarkMode ? darkLightBgColor : dayLightBgColor;
     }
 
-    public static Color getLightBgColor(boolean swap) {
-        if (swap)
-            return CalculatorGUI.isDarkMode ? dayLightBgColor : darkLightBgColor;
-        else return getLightBgColor();
-    }
-
     private static final Color dayDarkBgColor = new Color(238, 238, 238);
     private static final Color darkDarkBgColor = new Color(40, 40, 40);
 
     public static Color getDarkBgColor() {
         return CalculatorGUI.isDarkMode ? darkDarkBgColor : dayDarkBgColor;
-    }
-
-    public static Color getDarkBgColor(boolean swap) {
-        if (swap)
-            return CalculatorGUI.isDarkMode ? dayDarkBgColor : darkDarkBgColor;
-        else return getDarkBgColor();
     }
 
     private static final Color dayTotalBgColor = Color.white;

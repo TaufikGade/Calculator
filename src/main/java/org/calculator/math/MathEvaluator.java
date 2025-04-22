@@ -33,7 +33,6 @@ public class MathEvaluator {
     }
 
     public String derivativeWithSymja(String expression) {
-        // TODO:泛型的函数求导
         try {
             expression = convertLogbase(expression);
 
