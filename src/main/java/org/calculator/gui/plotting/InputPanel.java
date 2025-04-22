@@ -1,11 +1,7 @@
 package org.calculator.gui.plotting;
 
 import org.calculator.gui.ThemeColors;
-import org.calculator.gui.scientific.MainPanel;
 import org.calculator.math.MathEvaluator;
-import org.matheclipse.core.expression.F;
-import org.matheclipse.core.expression.J;
-import org.matheclipse.core.reflection.system.D;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -21,7 +17,7 @@ import java.util.Map;
 
 public class InputPanel extends JPanel {
     private final PlottingPanel topPanel;
-    private JTextField display;
+    private final JTextField display;
     private final StringBuilder inputExpression;
     private final MathEvaluator evaluator;
     private final Map<String, InputPanel.FunctionButton> functionButtons;

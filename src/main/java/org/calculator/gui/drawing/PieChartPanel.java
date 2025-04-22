@@ -48,7 +48,7 @@ public class PieChartPanel extends ChartPanel {
         for (int i = 0; i < data.size(); i++) {
             double datum = data.get(i);
             if (fragmentColor.size() == i) {
-                Color color = topPanel.getRandomColor();
+                Color color = ThemeColors.getRandomColor();
                 fragmentColor.add(color);
             }
             g2d.setColor(i == hoveredIndex ? fragmentColor.get(i).brighter() : fragmentColor.get(i));

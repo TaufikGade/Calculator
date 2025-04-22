@@ -46,25 +46,21 @@ public class BarChartPanel extends ChartPanel {
             for (int i = 0; i < data.size(); i++) {
                 double num = data.get(i);
                 if (i == barColors.size()) {
-                    Color color = topPanel.getRandomColor();
+                    Color color = ThemeColors.getRandomColor();
                     barColors.add(i, color);
                 }
                 g.setColor(hoveredIndex == i ? barColors.get(i).brighter() : barColors.get(i));
                 if (num > 0) {
                     int barHeight = (int) (num / dataDiff * height) - BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
-                    //g.setColor(Color.BLACK);
                     g.setColor(ThemeColors.getDataColor());
-                    //g.drawRect(i * barWidth + BAR_PADDING, y - barHeight, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y - 10);
                     barLowerBounds.add(y - barHeight);
                     barUpperBounds.add(y);
                 } else {
                     int barHeight = (int) (-num / dataDiff * height) + BAR_PADDING;
                     g.fillRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
-                    //g.setColor(Color.BLACK);
                     g.setColor(ThemeColors.getDataColor());
-                    //g.drawRect(i * barWidth + BAR_PADDING, y, barWidth, barHeight);
                     g.drawString("Data " + (i + 1), i * barWidth + 30, y + 15);
                     barLowerBounds.add(y);
                     barUpperBounds.add(y + barHeight);
@@ -88,7 +84,7 @@ public class BarChartPanel extends ChartPanel {
             for (int i = 0; i < data.size(); i++) {
                 int barHeight = (int) (((data.get(i)) / maxData) * height);
                 if (i == barColors.size()) {
-                    Color color = topPanel.getRandomColor();
+                    Color color = ThemeColors.getRandomColor();
                     barColors.add(i, color);
                 }
                 g.setColor(hoveredIndex == i ? barColors.get(i).brighter() : barColors.get(i));

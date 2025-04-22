@@ -109,10 +109,4 @@ public class MainPanel extends JPanel {
         chartPanel.revalidate();
         chartPanel.repaint();
     }
-
-    // 获取随机颜色
-    public Color getRandomColor() {
-        return new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256));
-    }
-
 }

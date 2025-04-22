@@ -5,8 +5,8 @@ import java.awt.event.*;
 
 // 科学计算器主面板类
 public class ScientificPanel extends JLayeredPane {
-    private HistoryPanel historyPanel;
-    private MainPanel mainPanel;
+    private final HistoryPanel historyPanel;
+    private final MainPanel mainPanel;
 
     public ScientificPanel() {
         historyPanel = new HistoryPanel(this);

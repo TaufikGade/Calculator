@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class PlottingPanel extends JPanel {
     private GraphPanel graphPanel;
-    private InputPanel inputPanel;
+    private final InputPanel inputPanel;
     private MathEvaluator evaluator;
     private FunctionData function;
     private JPanel cards; // 卡片面板
@@ -67,11 +67,7 @@ public class PlottingPanel extends JPanel {
     public void addFunction(String expression) {
         if (expression != null && !expression.isEmpty()) {
             // 生成随机颜色，但避免太浅的颜色
-            Color color = new Color(
-                    (int) (Math.random() * 200),
-                    (int) (Math.random() * 200),
-                    (int) (Math.random() * 200)
-            );
+            Color color = ThemeColors.getRandomColor();
 
             function = new FunctionData(expression, color);
 
@@ -95,8 +91,8 @@ public class PlottingPanel extends JPanel {
 
     // 数据类，存储函数表达式和绘图颜色
     public static class FunctionData {
-        private String expression;
-        private Color color;
+        private final String expression;
+        private final Color color;
 
         public FunctionData(String expression, Color color) {
             this.expression = expression;

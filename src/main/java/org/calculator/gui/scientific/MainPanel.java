@@ -2,8 +2,6 @@ package org.calculator.gui.scientific;
 
 import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
-import org.matheclipse.core.builtin.ListFunctions;
-import org.matheclipse.core.reflection.system.D;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -800,7 +798,6 @@ public class MainPanel extends JPanel {
         private final Icon secondaryIcon;
         private final String primaryCommand;
         private final String secondaryCommand;
-        private boolean isInSecondMode = false;
         private boolean hasSecondaryFunction;
 
         public FunctionButton(Icon primaryIcon, Icon secondaryIcon, String primaryCommand, String secondaryCommand) {
@@ -820,7 +817,6 @@ public class MainPanel extends JPanel {
 
         public void setSecondMode(boolean secondMode) {
             if (hasSecondaryFunction) {
-                isInSecondMode = secondMode;
                 Dimension currentSize = getSize();
 
                 if (secondMode) {
