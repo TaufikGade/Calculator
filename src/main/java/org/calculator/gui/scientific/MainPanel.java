@@ -2,6 +2,8 @@ package org.calculator.gui.scientific;
 
 import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
+import org.matheclipse.core.builtin.ListFunctions;
+import org.matheclipse.core.reflection.system.D;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -36,16 +38,24 @@ public class MainPanel extends JPanel {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         buttonHandler = new ButtonHandler();
-        setLayout(new BorderLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.setBackground(ThemeColors.getLightBgColor());
+
         // 显示屏
         display = new JTextField();
         display.setForeground(ThemeColors.getTextColor());
-        display.setBackground(ThemeColors.getLightBgColor());
-        display.setBorder(null);
+        display.setBackground(ThemeColors.getTotalBgColor());
+        display.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        inputPanel.add(display, BorderLayout.CENTER);
 
         try {
             InputStream fontStream = MainPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(38f);
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
             display.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +64,7 @@ public class MainPanel extends JPanel {
 
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setEditable(false);
-        add(display, BorderLayout.NORTH);
+        add(inputPanel);
 
         inputExpression = new StringBuilder();
 
@@ -74,12 +84,74 @@ public class MainPanel extends JPanel {
 
         // 创建中央面板来容纳北部面板和符号面板
         JPanel centralPanel = new JPanel(new BorderLayout());
+        centralPanel.setPreferredSize(new Dimension(600, 800));
+        centralPanel.setMaximumSize(new Dimension(10000, 10800));
         centralPanel.add(northPanel, BorderLayout.NORTH);
         centralPanel.add(symbolPanel, BorderLayout.CENTER);
 
-        add(centralPanel, BorderLayout.CENTER);
+        add(centralPanel);
     }
+    public MainPanel(ScientificPanel top, String expression) {
+        this.topPanel = top;
+        setBackground(ThemeColors.getLightBgColor());
+        setBorder(BorderFactory.createEmptyBorder());
 
+        this.evaluator = new MathEvaluator();
+        this.functionButtons = new HashMap<>();
+        buttonHandler = new ButtonHandler();
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.setBackground(ThemeColors.getLightBgColor());
+
+        // 显示屏
+        display = new JTextField(expression);
+        display.setForeground(ThemeColors.getTextColor());
+        display.setBackground(ThemeColors.getTotalBgColor());
+        display.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        inputPanel.add(display, BorderLayout.CENTER);
+
+        try {
+            InputStream fontStream = MainPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            display.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "字体加载失败！");
+        }
+
+        display.setHorizontalAlignment(JTextField.RIGHT);
+        display.setEditable(false);
+        add(inputPanel);
+
+        inputExpression = new StringBuilder(expression);
+
+        // 创建顶部面板，包含特殊功能按钮（如三角函数按钮）
+        JPanel topFunctionsPanel = createTopFunctionsPanel();
+
+        // 控制符号面板
+        controlPanel = new ControlPanel();
+
+        // 将两个面板放在一个垂直面板中
+        JPanel northPanel = new JPanel(new GridLayout(2, 1));
+        northPanel.add(topFunctionsPanel, BorderLayout.NORTH);
+        northPanel.add(controlPanel, BorderLayout.CENTER);
+
+        // 下方符号面板
+        JPanel symbolPanel = createSymbolPanel();
+
+        // 创建中央面板来容纳北部面板和符号面板
+        JPanel centralPanel = new JPanel(new BorderLayout());
+        centralPanel.setPreferredSize(new Dimension(600, 800));
+        centralPanel.setMaximumSize(new Dimension(10000, 10800));
+        centralPanel.add(northPanel, BorderLayout.NORTH);
+        centralPanel.add(symbolPanel, BorderLayout.CENTER);
+
+        add(centralPanel);
+    }
     private JPanel createTopFunctionsPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         panel.setBackground(ThemeColors.getLightBgColor());
@@ -280,11 +352,20 @@ public class MainPanel extends JPanel {
                     @Override
                     public void mousePressed(MouseEvent e) {
                         if (!button.isEnabled()) return;
+                        TeXFormula formula = new TeXFormula("2^{nd}");
+
+                        Icon newIcon;
                         if (isSecondMode) {
+                            newIcon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                                    TeXFormula.SERIF, ThemeColors.getTextColor());
                             button.setBackground(ThemeColors.getEqualClickColor());
                         } else {
+                            newIcon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                                    TeXFormula.SERIF, ThemeColors.getTextColor(true));
+
                             button.setBackground(ThemeColors.getSymbolClickColor());
                         }
+                        button.setIcon(newIcon);
                     }
 
                     @Override
@@ -917,5 +998,9 @@ public class MainPanel extends JPanel {
         public void onHistoryPanelHide() {
             historyButton.setBackground(ThemeColors.getLightBgColor());
         }
+    }
+
+    public String getExpression() {
+        return inputExpression.toString();
     }
 }

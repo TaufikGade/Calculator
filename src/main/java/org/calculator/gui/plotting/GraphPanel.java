@@ -1,10 +1,18 @@
 package org.calculator.gui.plotting;
 
+import org.calculator.gui.ThemeColors;
+import org.calculator.gui.regression.ChartPanel;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
-import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class GraphPanel extends JPanel {
     private double xMin = -15;
@@ -13,18 +21,78 @@ public class GraphPanel extends JPanel {
     private double yMax = 15;
     private Point dragStart;
     private final PlottingPanel topPanel;
-    private List<PlottingPanel.FunctionData> functions;
-
-    // Colors similar to Windows Calculator
-    private final Color BACKGROUND_COLOR = Color.WHITE;
-    private final Color MAJOR_GRID_COLOR = new Color(220, 220, 220);
-    private final Color MINOR_GRID_COLOR = new Color(240, 240, 240);
-    private final Color AXIS_COLOR = new Color(0, 0, 0);
+    //private List<PlottingPanel.FunctionData> functions;
+    private PlottingPanel.FunctionData function;
+    private JButton dataButton;
 
     public GraphPanel(PlottingPanel top) {
         this.topPanel = top;
-        setBackground(BACKGROUND_COLOR);
+        setBackground(ThemeColors.getTotalBgColor());
         setLayout(new BorderLayout());
+
+        try {
+            // 从类路径加载图片
+            InputStream imgStream = ChartPanel.class.getResourceAsStream("/images/123pic.png");
+            if (imgStream == null) {
+                throw new IOException("图片资源未找到！");
+            }
+            BufferedImage originalImage = ImageIO.read(imgStream);
+
+            // 调整大小并创建图标
+            Image scaledImage = originalImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+            ImageIcon icon = new ImageIcon(scaledImage);
+
+            dataButton = new JButton(icon) {
+                // 定义按钮形状为圆形
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    // 绘制圆形背景
+                    if (getModel().isArmed()) {
+                        g2.setColor(Color.darkGray); // 按下时颜色
+                    } else {
+                        g2.setColor(Color.lightGray);
+                    }
+                    int radius = Math.min(getWidth(), getHeight());
+                    g2.fillOval(0, 0, radius, radius);
+
+                    // 绘制文字
+                    super.paintComponent(g2);
+                    g2.dispose();
+                }
+                @Override
+                public boolean contains(int x, int y) {
+                    return new Ellipse2D.Float(0, 0, getWidth(), getHeight()).contains(x, y);
+                }
+            };
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // 设置按钮属性
+        dataButton.setOpaque(false);
+        dataButton.setContentAreaFilled(false);
+        dataButton.setBorderPainted(false);
+        dataButton.setFocusPainted(false);
+
+        // 添加悬停效果
+        dataButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                dataButton.setBackground(ThemeColors.getFunctionHoverColor()); // 悬停颜色
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                dataButton.setBackground(ThemeColors.getDarkBgColor()); // 恢复默认颜色
+            }
+        });
+
+        dataButton.addActionListener(_ -> topPanel.switchInputPanelState(true));
+
+        this.add(dataButton, BorderLayout.PAGE_END);
 
         // Mouse event handlers for panning and zooming
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -79,8 +147,8 @@ public class GraphPanel extends JPanel {
         addMouseWheelListener(mouseAdapter);
     }
 
-    public void setFunctions(List<PlottingPanel.FunctionData> functions) {
-        this.functions = functions;
+    public void setFunction(PlottingPanel.FunctionData function) {
+        this.function = function;
     }
 
     @Override
@@ -91,17 +159,16 @@ public class GraphPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
+        dataButton.setBounds(this.getWidth() - 60, this.getHeight() - 60, 40, 40);
+
         int width = getWidth();
         int height = getHeight();
 
         // Draw grid and axes
         drawGrid(g2, width, height);
 
-        // Draw functions
-        if (functions != null && !functions.isEmpty()) {
-            for (PlottingPanel.FunctionData function : functions) {
-                drawFunction(g2, width, height, function.getExpression(), function.getColor());
-            }
+        if (function != null) {
+            drawFunction(g2, width, height, function.getExpression(), function.getColor());
         }
     }
 
@@ -113,7 +180,7 @@ public class GraphPanel extends JPanel {
         double yMinorSpacing = yMajorSpacing / 5;
 
         // Draw minor grid lines
-        g2.setColor(MINOR_GRID_COLOR);
+        g2.setColor(ThemeColors.getMinorGridColor());
         g2.setStroke(new BasicStroke(0.5f));
 
         // X minor grid lines
@@ -131,7 +198,7 @@ public class GraphPanel extends JPanel {
         }
 
         // Draw major grid lines
-        g2.setColor(MAJOR_GRID_COLOR);
+        g2.setColor(ThemeColors.getMajorGridColor());
         g2.setStroke(new BasicStroke(1.0f));
 
         // X major grid lines
@@ -147,7 +214,7 @@ public class GraphPanel extends JPanel {
         }
 
         // Draw axes
-        g2.setColor(AXIS_COLOR);
+        g2.setColor(ThemeColors.getAxisColor());
         g2.setStroke(new BasicStroke(1.5f));
 
         int x0 = mapX(0, width);
@@ -170,7 +237,7 @@ public class GraphPanel extends JPanel {
     private void drawTickMarksAndLabels(Graphics2D g2, int width, int height,
                                         double xSpacing, double ySpacing) {
         // Prepare font for labels
-        g2.setColor(AXIS_COLOR);
+        g2.setColor(ThemeColors.getAxisColor());
         Font labelFont = new Font("Segoe UI", Font.PLAIN, 10);
         g2.setFont(labelFont);
         FontMetrics metrics = g2.getFontMetrics();
@@ -331,7 +398,7 @@ public class GraphPanel extends JPanel {
         try {
             // 使用\\b表示单词边界，确保只替换独立的x，不替换函数名中的x
             String expression = function.replaceAll("\\bx\\b", "(" + x + ")");// 在绘图之前添加调试代码，测试三角函数计算是否正确
-           // double testSin0 = topPanel.getEvaluator().evaluate("sin(0)");
+            // double testSin0 = topPanel.getEvaluator().evaluate("sin(0)");
             //double testSin90 = topPanel.getEvaluator().evaluate("sin(1.5707963267948966)"); // π/2 弧度，应接近1
             //double testSin180 = topPanel.getEvaluator().evaluate("sin(3.141592653589793)");  // π 弧度，应接近0
             //System.out.println("sin(0) = " + testSin0);
@@ -348,6 +415,6 @@ public class GraphPanel extends JPanel {
     }
 
     private int mapY(double y, int height) {
-        return height - (int)((y - yMin) * height / (yMax - yMin));
+        return height - (int) ((y - yMin) * height / (yMax - yMin));
     }
 }

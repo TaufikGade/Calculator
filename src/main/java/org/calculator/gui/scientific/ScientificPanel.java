@@ -11,17 +11,19 @@ public class ScientificPanel extends JLayeredPane {
     public ScientificPanel() {
         historyPanel = new HistoryPanel(this);
         historyPanel.setVisible(false);
+        mainPanel = new MainPanel(this);
         init();
     }
 
-    public ScientificPanel(String history) {
+    public ScientificPanel(String history, String expression) {
         historyPanel = new HistoryPanel(this, history);
         historyPanel.setVisible(false);
+        mainPanel = new MainPanel(this, expression);
         init();
     }
 
     public void init() {
-        mainPanel = new MainPanel(this);
+
 
         add(mainPanel, JLayeredPane.DEFAULT_LAYER);
         add(historyPanel, JLayeredPane.PALETTE_LAYER);
@@ -53,5 +55,8 @@ public class ScientificPanel extends JLayeredPane {
 
     public String getHistory() {
         return historyPanel.getHistory();
+    }
+    public String getExpression() {
+        return mainPanel.getExpression();
     }
 }

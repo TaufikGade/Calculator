@@ -1,5 +1,11 @@
 package org.calculator.gui.plotting;
+
+import org.calculator.gui.ThemeColors;
+import org.calculator.gui.scientific.MainPanel;
 import org.calculator.math.MathEvaluator;
+import org.matheclipse.core.expression.F;
+import org.matheclipse.core.expression.J;
+import org.matheclipse.core.reflection.system.D;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 
@@ -7,128 +13,204 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InputPanel extends JPanel{
+public class InputPanel extends JPanel {
     private final PlottingPanel topPanel;
     private JTextField display;
     private final StringBuilder inputExpression;
     private final MathEvaluator evaluator;
-    private boolean isSecondMode = false;
     private final Map<String, InputPanel.FunctionButton> functionButtons;
     private final InputPanel.ButtonHandler buttonHandler;
     // 添加三角函数弹出菜单
     private JPopupMenu trigPopupMenu;
     private JButton trigButton;
+    private Font customFont;
+    private boolean isSecondMode = false;
+
     public InputPanel(PlottingPanel top) {
         this.topPanel = top;
+        setBackground(ThemeColors.getLightBgColor());
+        setBorder(BorderFactory.createEmptyBorder());
+
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         buttonHandler = new InputPanel.ButtonHandler();
+        //setLayout(new BorderLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
         display = new JTextField();
-        setLayout(new BorderLayout());
+        display.setForeground(ThemeColors.getTextColor());
+        display.setBackground(ThemeColors.getTotalBgColor());
+        display.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        display.setEditable(false);
+
         try {
             InputStream fontStream = InputPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(26f);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
             display.setFont(customFont);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "字体加载失败！");
         }
         // 显示屏
         JPanel WritePanel = createInputPanel();
-        add(WritePanel,BorderLayout.NORTH);
+        //add(WritePanel, BorderLayout.NORTH);
+        add(WritePanel);
 
         inputExpression = new StringBuilder();
 
         // 创建顶部面板，包含特殊功能按钮（如三角函数按钮）
         JPanel topFunctionsPanel = createTopFunctionsPanel();
-        // 将两个面板放在一个垂直面板中
-        JPanel northPanel = new JPanel(new GridLayout(2, 1));
-        northPanel.add(topFunctionsPanel, BorderLayout.NORTH);
 
         // 下方符号面板
         JPanel symbolPanel = createSymbolPanel();
         // 创建中央面板来容纳北部面板和符号面板
         JPanel centralPanel = new JPanel(new BorderLayout());
-        centralPanel.add(northPanel, BorderLayout.NORTH);
+        centralPanel.add(topFunctionsPanel, BorderLayout.NORTH);
         centralPanel.add(symbolPanel, BorderLayout.CENTER);
 
-        add(centralPanel, BorderLayout.CENTER);
+        add(centralPanel);
     }
+
+    public InputPanel(PlottingPanel top, String function) {
+        this.topPanel = top;
+        setBackground(ThemeColors.getLightBgColor());
+        setBorder(BorderFactory.createEmptyBorder());
+
+        this.evaluator = new MathEvaluator();
+        this.functionButtons = new HashMap<>();
+        buttonHandler = new InputPanel.ButtonHandler();
+        //setLayout(new BorderLayout());
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        display = new JTextField(function);
+        display.setForeground(ThemeColors.getTextColor());
+        display.setBackground(ThemeColors.getTotalBgColor());
+        display.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        display.setEditable(false);
+
+        try {
+            InputStream fontStream = InputPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
+            customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            display.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "字体加载失败！");
+        }
+        // 显示屏
+        JPanel WritePanel = createInputPanel();
+        //add(WritePanel, BorderLayout.NORTH);
+        add(WritePanel);
+
+        inputExpression = new StringBuilder(function);
+
+        // 创建顶部面板，包含特殊功能按钮（如三角函数按钮）
+        JPanel topFunctionsPanel = createTopFunctionsPanel();
+
+        // 下方符号面板
+        JPanel symbolPanel = createSymbolPanel();
+        // 创建中央面板来容纳北部面板和符号面板
+        JPanel centralPanel = new JPanel(new BorderLayout());
+        centralPanel.add(topFunctionsPanel, BorderLayout.NORTH);
+        centralPanel.add(symbolPanel, BorderLayout.CENTER);
+
+        add(centralPanel);
+    }
+
     private JPanel createTopFunctionsPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel.setBackground(new Color(240, 240, 240));
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(ThemeColors.getLightBgColor());
+
+        JPanel leftArea = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        leftArea.setBackground(ThemeColors.getLightBgColor());
+
+        Font yahei = new Font("Microsoft YaHei", Font.PLAIN, 16);
 
         // 创建三角学按钮
         trigButton = new JButton("三角学 ▼");
-        trigButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        trigButton.setFont(yahei);
+        trigButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         trigButton.setFocusPainted(false);
-        trigButton.setBackground(new Color(248, 249, 250));
+        trigButton.setForeground(ThemeColors.getTextColor());
+        trigButton.setBackground(ThemeColors.getLightBgColor());
+        trigButton.addMouseListener(new FunctionMouseHandler(trigButton));
 
         // 创建三角函数弹出菜单
         trigPopupMenu = createTrigPopupMenu();
 
         // 添加三角学按钮点击事件
-        trigButton.addActionListener(e -> {
+        trigButton.addActionListener(_ -> {
             // 显示弹出菜单在按钮下方
             trigPopupMenu.show(trigButton, 0, trigButton.getHeight());
         });
-        panel.add(trigButton);
+        leftArea.add(trigButton);
 
         // 添加求导按钮
         JButton derivativeButton = new JButton("求导");
-        derivativeButton.setFont(new Font("Microsoft YaHei", Font.PLAIN, 12));
+        derivativeButton.setFont(yahei);
+        derivativeButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
         derivativeButton.setFocusPainted(false);
-        derivativeButton.setBackground(new Color(248, 249, 250));
+        derivativeButton.setForeground(ThemeColors.getTextColor());
+        derivativeButton.setBackground(ThemeColors.getLightBgColor());
         derivativeButton.addActionListener(buttonHandler);
-        panel.add(derivativeButton);
+        derivativeButton.addMouseListener(new FunctionMouseHandler(derivativeButton));
+        leftArea.add(derivativeButton);
+
+        JButton hideButton = new JButton("隐藏输入区域");
+        hideButton.setFont(yahei);
+        hideButton.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
+        hideButton.setFocusPainted(false);
+        hideButton.setForeground(ThemeColors.getTextColor());
+        hideButton.setBackground(ThemeColors.getLightBgColor());
+        hideButton.addActionListener(_ -> topPanel.switchInputPanelState(false));
+        hideButton.addMouseListener(new FunctionMouseHandler(hideButton));
+
+        panel.add(leftArea, BorderLayout.WEST);
+        panel.add(hideButton, BorderLayout.EAST);
+
         return panel;
     }
+
     private JPopupMenu createTrigPopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-        menu.setBackground(new Color(248, 249, 250));
+        menu.setBackground(ThemeColors.getLightBgColor());
 
         // 创建包含三角函数按钮的面板
         JPanel trigPanel = new JPanel(new GridLayout(2, 3, 2, 2));
-        trigPanel.setBackground(new Color(248, 249, 250));
+        trigPanel.setBackground(ThemeColors.getLightBgColor());
 
         // 添加三角函数按钮
-        String[] regularFunctions = {"sin", "cos", "tan"};
-        String[] inverseFunctions = {"asin", "acos", "atan"};
+        String[] showText = {"sin", "cos", "tan", "asin", "acos", "atan"};
+        String[] latexText = {"\\sin", "\\cos", "\\tan", "\\arcsin", "\\arccos", "\\arctan"};
 
-        // 添加常规三角函数
-        for (String function : regularFunctions) {
-            JButton button = new JButton(function);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setForeground(Color.BLACK);
-            button.setBackground(new Color(248, 249, 250));
+        // 添加三角函数
+        for (int i = 0; i < 6; i++) {
+            TeXFormula formula = new TeXFormula(latexText[i]);
+            Icon icon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 17, TeXFormula.SERIF, ThemeColors.getTextColor());
+            JButton button = new JButton(icon);
+            button.setBackground(ThemeColors.getLightBgColor());
+            button.setBorder(null);
             button.setFocusPainted(false);
-            button.setActionCommand(function);
+            button.setActionCommand(showText[i]);
             button.addActionListener(buttonHandler);
-            trigPanel.add(button);
-        }
-
-        // 添加反三角函数
-        for (String function : inverseFunctions) {
-            JButton button = new JButton(function);
-            button.setFont(new Font("Arial", Font.PLAIN, 12));
-            button.setForeground(Color.BLACK);
-            button.setBackground(new Color(248, 249, 250));
-            button.setFocusPainted(false);
-            button.setActionCommand(function);
-            button.addActionListener(buttonHandler);
+            button.addMouseListener(new SymbolMouseHandler(button));
             trigPanel.add(button);
         }
 
         menu.add(trigPanel);
         return menu;
     }
+
     private JPanel createSymbolPanel() {
         JPanel panel = new JPanel(new GridLayout(7, 5, 5, 5));
+        panel.setBackground(ThemeColors.getLightBgColor());
+        panel.setPreferredSize(new Dimension(500, 800));
+        panel.setMaximumSize(new Dimension(10000, 10800));
 
         String[][] buttonDefinitions = {
                 {"2^{nd}", "2nd"},
@@ -180,41 +262,98 @@ public class InputPanel extends JPanel{
             String secondaryLatex = (buttonDefinitions[i].length > 2) ? buttonDefinitions[i][2] : primaryLatex;
             String secondaryCmd = (buttonDefinitions[i].length > 3) ? buttonDefinitions[i][3] : primaryCmd;
 
-            TeXFormula primaryFormula = new TeXFormula(primaryLatex);
-            Icon primaryIcon = i == buttonDefinitions.length - 1 ?
-                    primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, Color.white) :
-                    primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20);
+            // LaTeX表达式颜色
+            TeXFormula primaryFormula = new TeXFormula(primaryLatex), secondaryFormula = new TeXFormula(secondaryLatex);
+            Icon primaryIcon, secondaryIcon;
 
-            TeXFormula secondaryFormula = new TeXFormula(secondaryLatex);
-            Icon secondaryIcon = i == buttonDefinitions.length - 1 ?
-                    secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20, TeXFormula.SERIF, Color.white) :
-                    secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20);
-
-            InputPanel.FunctionButton button;
-            if (buttonDefinitions[i].length > 2) {
-                button = new InputPanel.FunctionButton(primaryIcon, secondaryIcon, primaryCmd, secondaryCmd);
-            } else {
-                button = new InputPanel.FunctionButton(primaryIcon, primaryCmd);
-            }
-
-            Color btnColor;
             if (i == buttonDefinitions.length - 1) {
-                btnColor = new Color(0, 103, 192);
-            } else if (i >= 16 && i <= 18 || i >= 21 && i <= 23 || i >= 26 && i <= 28) {
-                btnColor = Color.white;
+                //等于号的字体颜色与其他的相反
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor(true));
             } else {
-                btnColor = new Color(248, 249, 250);
+                primaryIcon = primaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
+
+                secondaryIcon = secondaryFormula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                        TeXFormula.SERIF, ThemeColors.getTextColor());
             }
-            button.setBackground(btnColor);
+
+            FunctionButton button;
+            if (buttonDefinitions[i].length > 2) {
+                button = new FunctionButton(primaryIcon, secondaryIcon, primaryCmd, secondaryCmd);
+            } else {
+                button = new FunctionButton(primaryIcon, primaryCmd);
+            }
+
+            if (i == buttonDefinitions.length - 1) {
+                button.setBackground(ThemeColors.getEqualColor());
+                button.addMouseListener(new EqualMouseHandler(button));
+            } else if (i >= 16 && i <= 18 || i >= 21 && i <= 23 || i >= 26 && i <= 28 || i == 32) {
+                button.setBackground(ThemeColors.getNumberColor());
+                button.addMouseListener(new NumberMouseHandler(button));
+            } else {
+                button.setBackground(ThemeColors.getSymbolColor());
+                button.addMouseListener(new SymbolMouseHandler(button));
+            }
+
+            button.setBorder(null);
             button.setFocusPainted(false);
             if (primaryCmd.equals("2nd")) {
-                button.addActionListener(e -> {
+                button.addActionListener(_ -> {
                     isSecondMode = !isSecondMode;
                     updateButtonsMode();
-                    if (isSecondMode) {
-                        button.setBackground(new Color(0, 103, 192));
-                    } else {
-                        button.setBackground(new Color(248, 249, 250));
+                });
+                button.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        TeXFormula formula = new TeXFormula("2^{nd}");
+
+                        Icon newIcon;
+                        if (isSecondMode) {
+                            newIcon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                                    TeXFormula.SERIF, ThemeColors.getTextColor());
+                            button.setBackground(ThemeColors.getEqualClickColor());
+                        } else {
+                            newIcon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20,
+                                    TeXFormula.SERIF, ThemeColors.getTextColor(true));
+
+                            button.setBackground(ThemeColors.getSymbolClickColor());
+                        }
+                        button.setIcon(newIcon);
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualHoverColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
+                        }
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualHoverColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolHoverColor());
+                        }
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        if (!button.isEnabled()) return;
+                        if (isSecondMode) {
+                            button.setBackground(ThemeColors.getEqualColor());
+                        } else {
+                            button.setBackground(ThemeColors.getSymbolColor());
+                        }
                     }
                 });
             } else {
@@ -231,33 +370,154 @@ public class InputPanel extends JPanel{
             button.setSecondMode(isSecondMode);
         }
     }
+
+    private class NumberMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public NumberMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getNumberColor());
+        }
+    }
+
+    private class SymbolMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public SymbolMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getSymbolColor());
+        }
+    }
+
+    private class EqualMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public EqualMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getEqualColor());
+        }
+    }
+
+    private class FunctionMouseHandler extends MouseAdapter {
+        private final JButton button;
+
+        public FunctionMouseHandler(JButton button) {
+            this.button = button;
+            button.setContentAreaFilled(false);  // 取消默认背景填充（包括点击变色）
+            button.setBorderPainted(false);      // 取消默认边框绘制
+            button.setOpaque(true);              // 允许自定义背景色（必须设为不透明）
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionClickColor());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionHoverColor());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getFunctionHoverColor());
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (!button.isEnabled()) return;
+            button.setBackground(ThemeColors.getLightBgColor());
+        }
+    }
+
     private class ButtonHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String cmd = e.getActionCommand();
 
             switch (cmd) {
                 case "=":
-                    String expression = inputExpression.toString();
-                        topPanel.addFunction(expression);
-                     if(expression.contains("=")) {
-                        String result = evaluator.solveEquation(expression);
-                        display.setText(result);
-                        inputExpression.setLength(0);
-                        inputExpression.append(result);
-                    } else {
-                        try {
-                            double result = evaluator.evaluate(inputExpression.toString());
-                            display.setText(String.valueOf(result));
-                            inputExpression.setLength(0);
-                            inputExpression.append(result);
-                        } catch (StackOverflowError | ArithmeticException ex) {
-                            display.setText("溢出");
-                            inputExpression.setLength(0);
-                        } catch (Exception ex) {
-                            display.setText("错误");
-                            inputExpression.setLength(0);
-                        }
-                    }
+                    calExpression();
                     break;
 
                 // 这里添加一个clear函数的命令
@@ -429,13 +689,13 @@ public class InputPanel extends JPanel{
                 // 求导
                 case "求导":
                     try {
-                        expression = inputExpression.toString();
+                        String expression = inputExpression.toString();
                         String derivative = evaluator.derivativeWithSymja(expression);
                         inputExpression.setLength(0);
                         inputExpression.append(derivative);
                         display.setText(derivative);
                     } catch (Exception ex) {
-                        display.setText("无法求导");
+                        display.setText("CANNOT DIFF");
                     }
                     break;
 
@@ -448,13 +708,25 @@ public class InputPanel extends JPanel{
         }
     }
 
+    public void calExpression() {
+        String expression = inputExpression.toString();
+        try {
+            double result = evaluator.evaluate(inputExpression.toString());
+            display.setText(String.valueOf(result));
+            inputExpression.setLength(0);
+            inputExpression.append(result);
+        } catch (StackOverflowError | Exception ex) {
+
+        }
+        topPanel.addFunction(expression);
+    }
+
 
     private class FunctionButton extends JButton {
         private final Icon primaryIcon;
         private final Icon secondaryIcon;
         private final String primaryCommand;
         private final String secondaryCommand;
-        private boolean isInSecondMode = false;
         private boolean hasSecondaryFunction;
 
         public FunctionButton(Icon primaryIcon, Icon secondaryIcon, String primaryCommand, String secondaryCommand) {
@@ -474,7 +746,6 @@ public class InputPanel extends JPanel{
 
         public void setSecondMode(boolean secondMode) {
             if (hasSecondaryFunction) {
-                isInSecondMode = secondMode;
                 Dimension currentSize = getSize();
 
                 if (secondMode) {
@@ -490,35 +761,27 @@ public class InputPanel extends JPanel{
                 setMaximumSize(currentSize);
             }
         }
-
-        public boolean isInSecondMode() {
-            return isInSecondMode;
-        }
     }
+
     private JPanel createInputPanel() {
         JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.setBackground(new Color(33, 33, 33));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        inputPanel.setBackground(ThemeColors.getLightBgColor());
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
 
         // 函数输入框，带有函数符号
         JPanel displayPanel = new JPanel(new BorderLayout());
-        displayPanel.setBackground(new Color(33, 33, 33));
+        displayPanel.setBackground(ThemeColors.getTotalBgColor());
 
-        JLabel functionSymbol = new JLabel("ƒ(x)");
+        JLabel functionSymbol = new JLabel("ƒ");
         functionSymbol.setFont(new Font("Times New Roman", Font.ITALIC, 20));
-        functionSymbol.setForeground(Color.WHITE);
-        functionSymbol.setBackground(new Color(50, 50, 50));
-        functionSymbol.setOpaque(true);
-        functionSymbol.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        // 设置文本（在设置字体之后）
-        display.setText("Enter Expression:");
 
-        display.setForeground(Color.LIGHT_GRAY);
-        display.setBackground(new Color(33, 33, 33));
-        display.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(60, 60, 60)),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
-        ));
+        functionSymbol.setForeground(ThemeColors.getTextColor());
+        functionSymbol.setBackground(ThemeColors.getDarkBgColor());
+        functionSymbol.setOpaque(true);
+        functionSymbol.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+
+        displayPanel.setForeground(ThemeColors.getTextColor());
+        displayPanel.setBackground(ThemeColors.getTotalBgColor());
 
         displayPanel.add(functionSymbol, BorderLayout.WEST);
         displayPanel.add(display, BorderLayout.CENTER);
@@ -528,30 +791,30 @@ public class InputPanel extends JPanel{
         return inputPanel;
     }
 
-    public static void main(String[] args) {
-            // 设置 Swing 应用的线程安全性
-            SwingUtilities.invokeLater(() -> {
-                // 创建一个 JFrame（主窗口）
-                JFrame frame = new JFrame("计算器输入面板");
-
-                // 设置关闭操作，退出程序
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                // 创建一个 PlottingPanel 实例 (在你的代码中有定义这个类)
-                PlottingPanel plottingPanel = new PlottingPanel();
-
-                // 创建 InputPanel 实例并将 PlottingPanel 传递进去
-                InputPanel inputPanel = new InputPanel(plottingPanel);
-
-                // 将 InputPanel 添加到 JFrame 中
-                frame.getContentPane().add(inputPanel);
-
-                // 设置窗口的尺寸
-                frame.setSize(600, 800);
-
-                // 设置窗口为可见
-                frame.setVisible(true);
-            });
-        }
-    }
+//    public static void main(String[] args) {
+//            // 设置 Swing 应用的线程安全性
+//            SwingUtilities.invokeLater(() -> {
+//                // 创建一个 JFrame（主窗口）
+//                JFrame frame = new JFrame("计算器输入面板");
+//
+//                // 设置关闭操作，退出程序
+//                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//                // 创建一个 PlottingPanel 实例 (在你的代码中有定义这个类)
+//                PlottingPanel plottingPanel = new PlottingPanel();
+//
+//                // 创建 InputPanel 实例并将 PlottingPanel 传递进去
+//                InputPanel inputPanel = new InputPanel(plottingPanel);
+//
+//                // 将 InputPanel 添加到 JFrame 中
+//                frame.getContentPane().add(inputPanel);
+//
+//                // 设置窗口的尺寸
+//                frame.setSize(600, 800);
+//
+//                // 设置窗口为可见
+//                frame.setVisible(true);
+//            });
+//        }
+}
 

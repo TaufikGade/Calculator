@@ -84,8 +84,6 @@ public class ChartPanel extends JPanel {
         dataButton.setContentAreaFilled(false);
         dataButton.setBorderPainted(false);
         dataButton.setFocusPainted(false);
-        dataButton.setBackground(new Color(0, 150, 255)); // 默认背景色
-        dataButton.setForeground(Color.WHITE); // 文字颜色
 
         // 添加悬停效果
         dataButton.addMouseListener(new MouseAdapter() {

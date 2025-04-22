@@ -10,11 +10,23 @@ public class ThemeColors {
         return CalculatorGUI.isDarkMode ? darkLightBgColor : dayLightBgColor;
     }
 
+    public static Color getLightBgColor(boolean swap) {
+        if (swap)
+            return CalculatorGUI.isDarkMode ? dayLightBgColor : darkLightBgColor;
+        else return getLightBgColor();
+    }
+
     private static final Color dayDarkBgColor = new Color(238, 238, 238);
     private static final Color darkDarkBgColor = new Color(40, 40, 40);
 
     public static Color getDarkBgColor() {
         return CalculatorGUI.isDarkMode ? darkDarkBgColor : dayDarkBgColor;
+    }
+
+    public static Color getDarkBgColor(boolean swap) {
+        if (swap)
+            return CalculatorGUI.isDarkMode ? dayDarkBgColor : darkDarkBgColor;
+        else return getDarkBgColor();
     }
 
     private static final Color dayTotalBgColor = Color.white;
@@ -155,8 +167,8 @@ public class ThemeColors {
         return CalculatorGUI.isDarkMode ? darkTooltipBorderColor : dayTooltipBorderColor;
     }
 
-    private static final Color dayAxisColor = Color.BLACK;
-    private static final Color darkAxisColor = Color.WHITE;
+    private static final Color dayAxisColor = Color.black;
+    private static final Color darkAxisColor = Color.lightGray;
 
     public static Color getAxisColor() {
         return CalculatorGUI.isDarkMode ? darkAxisColor : dayAxisColor;
@@ -174,5 +186,28 @@ public class ThemeColors {
 
     public static Color getLineColor() {
         return CalculatorGUI.isDarkMode ? darkLineColor : dayLineColor;
+    }
+
+    private static final Color dayMajorGridColor = new Color(220, 220, 220);
+    private static final Color darkMajorGridColor = new Color(40, 40, 40);
+
+    public static Color getMajorGridColor() {
+        return CalculatorGUI.isDarkMode ? darkMajorGridColor : dayMajorGridColor;
+    }
+
+    private static final Color dayMinorGridColor = new Color(240, 240, 240);
+    private static final Color darkMinorGridColor = new Color(20, 20, 20);
+
+    public static Color getMinorGridColor() {
+        return CalculatorGUI.isDarkMode ? darkMinorGridColor : dayMinorGridColor;
+    }
+
+    public static Color getRandomColor() {
+        // 生成随机颜色，但避免太浅的颜色
+        return new Color(
+                (int) (Math.random() * 200),
+                (int) (Math.random() * 200),
+                (int) (Math.random() * 200)
+        );
     }
 }
