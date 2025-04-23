@@ -38,35 +38,6 @@ public class CalculatorGUI extends JFrame {
         setVisible(true);
         tabbedPane.setFocusable(false);
         tabbedPane.setUI(new BasicTabbedPaneUI() {
-
-            @Override
-            protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex,
-                                          int x, int y, int w, int h, boolean isSelected) {
-//                Graphics2D g2d = (Graphics2D) g.create();
-//                int BORDER_THICKNESS = 1;
-//                g2d.setStroke(new BasicStroke(BORDER_THICKNESS));
-//                g2d.setColor(ThemeColors.getAxisColor());
-//
-//                // 根据标签位置（顶部/底部/左侧/右侧）绘制边框
-//                switch (tabPlacement) {
-//                    case JTabbedPane.TOP:
-//                        g2d.drawRect(x, y, w - 1, h - BORDER_THICKNESS); // 顶部标签：底部加粗边框
-//                        break;
-//                    case JTabbedPane.BOTTOM:
-//                        g2d.drawRect(x, y + BORDER_THICKNESS, w - 1, h - BORDER_THICKNESS);
-//                        break;
-//                    case JTabbedPane.LEFT:
-//                        g2d.drawRect(x + w - BORDER_THICKNESS, y, BORDER_THICKNESS, h - 1);
-//                        break;
-//                    case JTabbedPane.RIGHT:
-//                        g2d.drawRect(x, y, BORDER_THICKNESS, h - 1);
-//                        break;
-//                }
-//                g2d.dispose();
-                g.setColor(ThemeColors.getAxisColor());
-                super.paintTabBorder(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
-            }
-
             // 不绘制内容区域周围的边框
             @Override
             protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
@@ -91,8 +62,6 @@ public class CalculatorGUI extends JFrame {
                 return 30;
             }
         });
-        tabbedPane.setBorder(BorderFactory.createLineBorder(ThemeColors.getLightBgColor()));
-        //UIManager.put("TabbedPane.tabInsets", new Insets(4, 8, 4, 8));
     }
 
     public void init() {
