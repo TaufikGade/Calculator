@@ -606,12 +606,12 @@ public class InputPanel extends JPanel {
 
                 // 开方
                 case "sqrt":
-                    inputExpression.append("sqrt(");
+                    inputExpression.append("^(1/2)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "cbrt":
-                    inputExpression.append("cbrt(");
+                    inputExpression.append("^(1/3)");
                     display.setText(inputExpression.toString());
                     break;
 

@@ -72,6 +72,7 @@ public class HistoryPanel extends JPanel {
         // 清除历史按钮
         JButton clearButton = new JButton("清除历史");
         clearButton.addActionListener(_ -> historyArea.setText("没有历史记录\n"));
+        clearButton.setFont(chineseFont);
         clearButton.setFocusPainted(false);
         clearButton.setBorder(null);
         clearButton.setBackground(ThemeColors.getDarkBgColor());

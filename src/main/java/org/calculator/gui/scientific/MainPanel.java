@@ -217,37 +217,6 @@ public class MainPanel extends JPanel {
         trigPopupMenu.add(trigPanel);
     }
 
-//    private JPopupMenu createFunctionPopupMenu() {
-//        JPopupMenu menu = new JPopupMenu();
-//        menu.setBackground(new Color(248, 249, 250));
-//
-//        JPanel functionPanel = new JPanel(new GridLayout(2, 3, 2, 2));
-//        functionPanel.setBackground(new Color(248, 249, 250));
-//
-//        String[] functions = {"sin(x)", "cos(x)", "tan(x)", "ln(x)", "lg(10, x)", "exp(x)"};
-//
-//        for (String function : functions) {
-//            JButton button = new JButton(function);
-//            button.setFont(new Font("Arial", Font.PLAIN, 12));
-//            button.setForeground(Color.BLACK);
-//            button.setBackground(new Color(248, 249, 250));
-//            button.setFocusPainted(false);
-//            button.setActionCommand(function);
-//            button.addActionListener(e -> {
-//                // 如果前一个字符是数字，则自动添加乘号
-//                if (!inputExpression.isEmpty() && Character.isDigit(inputExpression.charAt(inputExpression.length() - 1))) {
-//                    inputExpression.append("×");
-//                }
-//                inputExpression.append(function);
-//                display.setText(inputExpression.toString());
-//            });
-//            functionPanel.add(button);
-//        }
-//
-//        menu.add(functionPanel);
-//        return menu;
-//    }
-
     private JPanel createSymbolPanel() {
         JPanel panel = new JPanel(new GridLayout(7, 5, 5, 5));
         panel.setBackground(ThemeColors.getLightBgColor());
@@ -559,7 +528,6 @@ public class MainPanel extends JPanel {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (!button.isEnabled()) return;
             button.setBackground(ThemeColors.getLightBgColor());
         }
     }
@@ -693,12 +661,12 @@ public class MainPanel extends JPanel {
 
                 // 开方
                 case "sqrt":
-                    inputExpression.append("sqrt(");
+                    inputExpression.append("^(1/2)");
                     display.setText(inputExpression.toString());
                     break;
 
                 case "cbrt":
-                    inputExpression.append(" ^(1/3)");
+                    inputExpression.append("^(1/3)");
                     display.setText(inputExpression.toString());
                     break;
 
