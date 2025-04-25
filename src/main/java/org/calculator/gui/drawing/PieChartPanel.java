@@ -3,7 +3,13 @@ package org.calculator.gui.drawing;
 import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.FontMetrics;
+import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;

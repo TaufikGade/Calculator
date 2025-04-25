@@ -3,7 +3,11 @@ package org.calculator.gui.drawing;
 import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Font;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,10 +1,9 @@
 package org.calculator.gui.regression;
 
 import org.calculator.gui.ThemeColors;
-import org.matheclipse.core.reflection.system.D;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;

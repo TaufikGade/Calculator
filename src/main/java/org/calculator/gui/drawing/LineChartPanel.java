@@ -2,7 +2,12 @@ package org.calculator.gui.drawing;
 
 import org.calculator.gui.ThemeColors;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;

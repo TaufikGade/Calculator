@@ -55,6 +55,12 @@ public class MathEvaluator {
             for (int i = 0; i < sb.length(); i++) {
                 if (sb.charAt(i) == '*') sb.replace(i, i + 1, "×");
             }
+            int log = sb.indexOf("log");
+            while (log != -1) {
+                if (sb.charAt(log + 4) == 'e') sb.replace(log - 1, log + 6, "");
+                else sb.replace(log, log + 3, "ln");
+                log = sb.indexOf("log");
+            }
             return sb.toString();
         } catch (Exception e) {
             throw new RuntimeException("Symja 求导失败: " + e.getMessage());

@@ -3,7 +3,7 @@ package org.calculator.gui.drawing;
 import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 

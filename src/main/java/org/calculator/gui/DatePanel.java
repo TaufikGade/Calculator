@@ -1,9 +1,7 @@
 package org.calculator.gui;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.GridLayout;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;

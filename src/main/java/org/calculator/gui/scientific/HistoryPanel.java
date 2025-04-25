@@ -3,7 +3,8 @@ package org.calculator.gui.scientific;
 import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;

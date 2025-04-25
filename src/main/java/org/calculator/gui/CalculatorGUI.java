@@ -5,7 +5,10 @@ import org.calculator.gui.plotting.PlottingPanel;
 import org.calculator.gui.scientific.ScientificPanel;
 import org.calculator.gui.regression.RegressionPanel;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.List;
 
 import javax.swing.*;
@@ -29,6 +32,8 @@ public class CalculatorGUI extends JFrame {
 
     public CalculatorGUI() {
         setTitle("Java Calculator");
+        setFocusTraversalPolicyProvider(true);
+        setFocusTraversalPolicy(new LayoutFocusTraversalPolicy());
         setSize(600, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tabbedPane = new JTabbedPane();

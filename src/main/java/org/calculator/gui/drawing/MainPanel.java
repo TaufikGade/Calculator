@@ -3,7 +3,8 @@ package org.calculator.gui.drawing;
 import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 public class MainPanel extends JPanel {
     private final DrawingPanel topPanel;

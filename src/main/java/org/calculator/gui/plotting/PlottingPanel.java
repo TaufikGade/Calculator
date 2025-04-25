@@ -4,7 +4,9 @@ import org.calculator.gui.ThemeColors;
 import org.calculator.math.MathEvaluator;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
 
 public class PlottingPanel extends JPanel {
     private GraphPanel graphPanel;

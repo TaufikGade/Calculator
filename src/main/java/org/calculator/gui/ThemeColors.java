@@ -1,6 +1,6 @@
 package org.calculator.gui;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class ThemeColors {
     private static final Color dayLightBgColor = new Color(243, 243, 243);

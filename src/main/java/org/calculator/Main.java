@@ -31,7 +31,11 @@ public class Main {
 
         // 定期检查黑暗模式状态
         scheduler.scheduleAtFixedRate(() -> {
-            mainFrame.setDarkMode(isDarkMode());
+            try {
+                mainFrame.setDarkMode(isDarkMode());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }, 5, 5, TimeUnit.SECONDS);  // 每5秒检查一次
 
     }
