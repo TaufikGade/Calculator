@@ -366,7 +366,7 @@ public class GraphPanel extends JPanel {
         Double lastY = null;
 
         // Calculate points with adaptive sampling
-// 设定合理的采样间距
+        // 设定合理的采样间距
         double step = (xMax - xMin) / width / 4; // 4倍像素采样
         for (double x = xMin; x <= xMax; x += step) {
             try {
