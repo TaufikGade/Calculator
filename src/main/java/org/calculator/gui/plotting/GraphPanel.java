@@ -367,22 +367,22 @@ public class GraphPanel extends JPanel {
         Double lastY = null;
 
         // Calculate points with adaptive sampling
-        for (int screenX = 0; screenX < width; screenX++) {
-            double x = xMin + screenX * (xMax - xMin) / width;
-
+// 设定合理的采样间距
+        double step = (xMax - xMin) / width / 4; // 4倍像素采样
+        for (double x = xMin; x <= xMax; x += step) {
             try {
                 double y = evaluateFunction(function.getExpression(), x);
 
-                // Skip points outside the visible area
-                if (Double.isNaN(y) || Double.isInfinite(y) || y < yMin || y > yMax) {
+                if (Double.isNaN(y) || Double.isInfinite(y)) {
                     started = false;
                     continue;
                 }
 
+                int screenX = mapX(x, width);
                 int screenY = mapY(y, height);
 
-                // Detect discontinuities
-                if (lastY != null && Math.abs(y - lastY) > (yMax - yMin) / 10) {
+                // 检测函数跳跃（不连续）的问题
+                if (lastY != null && Math.abs(y - lastY) > (yMax - yMin) / 2) {
                     started = false;
                 }
 
@@ -400,6 +400,7 @@ public class GraphPanel extends JPanel {
         }
 
         g2.draw(path);
+
     }
 
     private double evaluateFunction(String function, double x) {

@@ -17,7 +17,7 @@ public class ExpressionTokenizer {
 
             if (c == ' ') {
                 // 处理当前缓冲区中的数字
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(parseNumber(buffer.toString()));
                     buffer.setLength(0);
                 }
@@ -50,13 +50,13 @@ public class ExpressionTokenizer {
             } else if (c == '-' && (i == 0 || isOperatorOrParenthesis(expression.charAt(i - 1)) ||
                     expression.charAt(i - 1) == ' ')) {
                 // 处理一元负号
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(new NumberToken(Double.parseDouble(buffer.toString())));
                     buffer.setLength(0);
                 }
                 tokens.add(new OperatorToken("u-"));
             } else {
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(parseNumber(buffer.toString()));
                     buffer.setLength(0);
                 }
@@ -79,7 +79,7 @@ public class ExpressionTokenizer {
             }
         }
 
-        if (buffer.length() > 0) {
+        if (!buffer.isEmpty()) {
             tokens.add(parseNumber(buffer.toString()));
         }
 
