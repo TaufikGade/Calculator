@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static final String CONFIG_PATH = System.getProperty("user.home") + "/.jiage/config.property";
+    private static final String CONFIG_PATH = System.getProperty("user.home") + "/.嘉哥哥/config.property";
 
     public static void main(String[] args) {
         CalculatorGUI mainFrame = new CalculatorGUI();
@@ -51,7 +51,7 @@ public class Main {
             props.setProperty("darkMode", String.valueOf(CalculatorGUI.isDarkMode));
 
             // 保存到用户目录的隐藏文件
-            new File(System.getProperty("user.home") + "/.jiage").mkdirs();
+            new File(System.getProperty("user.home") + "/.嘉哥哥").mkdirs();
             props.store(new FileOutputStream(CONFIG_PATH), "Window Position");
         } catch (Exception e) {
             e.printStackTrace();

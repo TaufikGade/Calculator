@@ -13,11 +13,11 @@ import java.util.List;
 
 public class DataPanel extends JPanel {
     private final DrawingPanel topPanel;
-    private List<JTextField> inputFields; // 存储输入框的列表
+    private final List<JTextField> inputFields; // 存储输入框的列表
     private int inputCount = 0; // 当前输入框的数量
     private final int MAX_INPUTS = 50; // 最大输入框数量限制
-    private List<Double> data; // 存储输入的数据
-    private JPanel inputFieldPanel;
+    private final List<Double> data; // 存储输入的数据
+    private final JPanel inputFieldPanel;
 
     public DataPanel(DrawingPanel top) {
         this.topPanel = top;

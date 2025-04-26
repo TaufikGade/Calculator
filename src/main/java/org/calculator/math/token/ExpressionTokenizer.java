@@ -1,7 +1,9 @@
 package org.calculator.math.token;
+
 import org.calculator.math.operator.Operator;
 import org.calculator.math.operator.OperatorType;
 import org.calculator.math.exception.InvalidExpressionException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class ExpressionTokenizer {
 
             if (c == ' ') {
                 // 处理当前缓冲区中的数字
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(parseNumber(buffer.toString()));
                     buffer.setLength(0);
                 }
@@ -31,7 +33,7 @@ public class ExpressionTokenizer {
 
                 // 如果还有字符，且下一个字符是字母，则尝试解析特殊操作符或函数
                 if (nextNonSpaceIndex < expression.length() &&
-                        Character.isLetter(expression.charAt(nextNonSpaceIndex))){
+                        Character.isLetter(expression.charAt(nextNonSpaceIndex))) {
 
                     int endIndex = nextNonSpaceIndex;
                     // 一直读取直到遇到空格或其他非字母字符
@@ -47,16 +49,20 @@ public class ExpressionTokenizer {
                 }
             } else if (Character.isDigit(c) || c == '.') {
                 buffer.append(c);
+            } else if (c == 'e') {
+                buffer.append(Math.E);
+            } else if (c == 'π') {
+                buffer.append(Math.PI);
             } else if (c == '-' && (i == 0 || isOperatorOrParenthesis(expression.charAt(i - 1)) ||
                     expression.charAt(i - 1) == ' ')) {
                 // 处理一元负号
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(new NumberToken(Double.parseDouble(buffer.toString())));
                     buffer.setLength(0);
                 }
                 tokens.add(new OperatorToken("u-"));
             } else {
-                if (buffer.length() > 0) {
+                if (!buffer.isEmpty()) {
                     tokens.add(parseNumber(buffer.toString()));
                     buffer.setLength(0);
                 }
@@ -79,7 +85,7 @@ public class ExpressionTokenizer {
             }
         }
 
-        if (buffer.length() > 0) {
+        if (!buffer.isEmpty()) {
             tokens.add(parseNumber(buffer.toString()));
         }
 

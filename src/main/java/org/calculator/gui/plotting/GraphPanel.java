@@ -29,7 +29,6 @@ public class GraphPanel extends JPanel {
     private double yMax = 15;
     private Point dragStart;
     private final PlottingPanel topPanel;
-    //private List<PlottingPanel.FunctionData> functions;
     private PlottingPanel.FunctionData function;
     private JButton dataButton;
 
