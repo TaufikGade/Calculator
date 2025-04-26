@@ -40,7 +40,6 @@ public class InputPanel extends JPanel {
         this.evaluator = new MathEvaluator();
         this.functionButtons = new HashMap<>();
         buttonHandler = new InputPanel.ButtonHandler();
-        //setLayout(new BorderLayout());
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         display = new JTextField();
@@ -51,7 +50,9 @@ public class InputPanel extends JPanel {
 
         try {
             InputStream fontStream = InputPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
-            customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            if (fontStream != null) {
+                customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            }
             display.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,7 +97,9 @@ public class InputPanel extends JPanel {
 
         try {
             InputStream fontStream = InputPanel.class.getResourceAsStream("/fonts/JetBrainsMono-Bold.ttf");
-            customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            if (fontStream != null) {
+                customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(30f);
+            }
             display.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
@@ -371,7 +374,7 @@ public class InputPanel extends JPanel {
         }
     }
 
-    private class NumberMouseHandler extends MouseAdapter {
+    private static class NumberMouseHandler extends MouseAdapter {
         private final JButton button;
 
         public NumberMouseHandler(JButton button) {
@@ -406,7 +409,7 @@ public class InputPanel extends JPanel {
         }
     }
 
-    private class SymbolMouseHandler extends MouseAdapter {
+    private static class SymbolMouseHandler extends MouseAdapter {
         private final JButton button;
 
         public SymbolMouseHandler(JButton button) {
@@ -441,7 +444,7 @@ public class InputPanel extends JPanel {
         }
     }
 
-    private class EqualMouseHandler extends MouseAdapter {
+    private static class EqualMouseHandler extends MouseAdapter {
         private final JButton button;
 
         public EqualMouseHandler(JButton button) {
@@ -476,7 +479,7 @@ public class InputPanel extends JPanel {
         }
     }
 
-    private class FunctionMouseHandler extends MouseAdapter {
+    private static class FunctionMouseHandler extends MouseAdapter {
         private final JButton button;
 
         public FunctionMouseHandler(JButton button) {
@@ -715,14 +718,14 @@ public class InputPanel extends JPanel {
             display.setText(String.valueOf(result));
             inputExpression.setLength(0);
             inputExpression.append(result);
-        } catch (StackOverflowError | Exception ex) {
+        } catch (StackOverflowError | Exception _) {
 
         }
         topPanel.addFunction(expression);
     }
 
 
-    private class FunctionButton extends JButton {
+    private static class FunctionButton extends JButton {
         private final Icon primaryIcon;
         private final Icon secondaryIcon;
         private final String primaryCommand;

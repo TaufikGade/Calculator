@@ -26,7 +26,6 @@ public class LineChartPanel extends ChartPanel {
         super(data, top);
 
         setPreferredSize(new Dimension(400, 300));
-        //setBorder(BorderFactory.createTitledBorder("折线图"));
     }
 
     @Override
@@ -64,7 +63,6 @@ public class LineChartPanel extends ChartPanel {
                 path.moveTo(x, y);
             }
         }
-        //g2d.setColor(new Color(70, 130, 255));
         g2d.setColor(ThemeColors.getLineColor());
         g2d.draw(path);
 
@@ -123,23 +121,19 @@ public class LineChartPanel extends ChartPanel {
         }
 
         // 绘制背景
-        //g.setColor(new Color(255, 255, 200));
         g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        //g.setColor(Color.DARK_GRAY);
         g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(tooltipX, tooltipY, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        //g.setColor(Color.BLACK);
         g.setColor(ThemeColors.getTextColor());
         g.drawString(text, tooltipX + 5, tooltipY + textHeight - 2);
     }
 
     private void drawAxes(Graphics g) {
-        //g.setColor(Color.BLACK);
         g.setColor(ThemeColors.getAxisColor());
 
         // 绘制坐标轴线
@@ -153,10 +147,8 @@ public class LineChartPanel extends ChartPanel {
         g.setFont(new Font("Arial", Font.PLAIN, 12));
         for (int i = 0; i <= numTicks; i++) {
             int ty = chartHeight - (i * chartHeight / 5) + LINE_PADDING;
-            //g.setColor(Color.DARK_GRAY);
             g.setColor(ThemeColors.getSplitColor());
             g.drawLine(LINE_PADDING, ty, chartWidth + LINE_PADDING, ty); // 绘制分割线
-            //g.setColor(Color.BLACK);
             g.setColor(ThemeColors.getDataColor());
             g.drawString(String.format("%.2f", i * (yMax - yMin) / numTicks + yMin), 10, ty); // 标注数值
 

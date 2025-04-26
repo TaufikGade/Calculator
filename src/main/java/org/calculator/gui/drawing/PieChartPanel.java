@@ -25,7 +25,6 @@ public class PieChartPanel extends ChartPanel {
     public PieChartPanel(List<Double> data, MainPanel top) {
         super(data, top);
 
-        //setBorder(BorderFactory.createTitledBorder("饼状图"));
         setPreferredSize(new Dimension(400, 400));
 
         fragmentColor = new ArrayList<>();
@@ -139,17 +138,14 @@ public class PieChartPanel extends ChartPanel {
         if (y < 20) y = 20;
 
         // 绘制背景
-        //g.setColor(new Color(255, 255, 200));
         g.setColor(ThemeColors.getTooltipBgColor());
         g.fillRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制边框
-        //g.setColor(Color.DARK_GRAY);
         g.setColor(ThemeColors.getTooltipBorderColor());
         g.drawRect(x, y, textWidth + 10, textHeight + 4);
 
         // 绘制文字
-        //g.setColor(Color.BLACK);
         g.setColor(ThemeColors.getTextColor());
         g.drawString(text, x + 5, y + textHeight - 2);
     }

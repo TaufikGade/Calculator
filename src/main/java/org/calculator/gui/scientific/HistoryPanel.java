@@ -49,7 +49,6 @@ public class HistoryPanel extends JPanel {
         closeButton.setBackground(ThemeColors.getDarkBgColor());
         closeButton.setForeground(ThemeColors.getTextColor());
         closeButton.setFocusPainted(false);
-        //closeButton.setBackground(new Color(238, 238, 238));
         topArea.add(closeButton, BorderLayout.EAST);
         closeButton.addActionListener(_ -> topPanel.switchHistoryPanelState());
         closeButton.addMouseListener(new ButtonMouseHandler(closeButton));
@@ -118,7 +117,7 @@ public class HistoryPanel extends JPanel {
         }
     }
 
-    private class ButtonMouseHandler extends MouseAdapter {
+    private static class ButtonMouseHandler extends MouseAdapter {
         private final JButton button;
 
         public ButtonMouseHandler(JButton button) {
