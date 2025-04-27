@@ -4,6 +4,7 @@ import org.calculator.gui.ThemeColors;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 
 public class MainPanel extends JPanel {
@@ -12,6 +13,7 @@ public class MainPanel extends JPanel {
     private final BarChartPanel barChartPanel;
     private final PieChartPanel pieChartPanel;
     private final LineChartPanel lineChartPanel;
+    private ChartPanel currentPanel;
 
     public MainPanel(DrawingPanel top) {
         this.topPanel = top;
@@ -75,6 +77,8 @@ public class MainPanel extends JPanel {
         chartPanel.add(barChartPanel, BorderLayout.CENTER);
         chartPanel.revalidate();
         chartPanel.repaint();
+
+        currentPanel = barChartPanel;
     }
 
     // 更新饼状图
@@ -92,6 +96,8 @@ public class MainPanel extends JPanel {
         chartPanel.add(pieChartPanel);
         chartPanel.revalidate();
         chartPanel.repaint();
+
+        currentPanel = pieChartPanel;
     }
 
     // 更新折线图
@@ -109,5 +115,19 @@ public class MainPanel extends JPanel {
         chartPanel.add(lineChartPanel, BorderLayout.CENTER);
         chartPanel.revalidate();
         chartPanel.repaint();
+
+        currentPanel = lineChartPanel;
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        if (currentPanel == barChartPanel) {
+            showBarChartPanel();
+        } else if (currentPanel == lineChartPanel) {
+            generateLineChart();
+        }
+        else if (currentPanel == pieChartPanel) {
+            updatePieChartPanel();
+        }
     }
 }

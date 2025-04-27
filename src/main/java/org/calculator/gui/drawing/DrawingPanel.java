@@ -16,6 +16,7 @@ public class DrawingPanel extends JLayeredPane {
     private MainPanel mainPanel;
     private final DataPanel dataPanel;
     private final Font font = new Font("Microsoft YaHei", Font.PLAIN, 25);
+    public ChartPanel currentPanel;
 
     public DrawingPanel() {
 
@@ -44,8 +45,11 @@ public class DrawingPanel extends JLayeredPane {
     }
 
     public void switchDataPanelState() {
-
         dataPanel.setVisible(!dataPanel.isVisible());
+        if (!dataPanel.isVisible() && currentPanel != null) {
+            mainPanel.repaint();
+        }
+        
     }
 
     public List<Double> getData() {
